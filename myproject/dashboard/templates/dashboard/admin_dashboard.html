@@ -1,0 +1,5972 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Management Portal - Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/admin_dashboard.css' %}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-building-user brand-icon"></i>
+                <div class="brand-text">
+                    <h2>REAL ESTATE</h2>
+                    <span>MANAGEMENT PORTAL</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Search Bar -->
+            <div style="padding: 10px 15px; background: rgba(0, 0, 0, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 6px;">
+                    <i class="fa-solid fa-magnifying-glass" style="color: #6c757d; margin-right: 8px; font-size: 13px;"></i>
+                    <input type="text" id="sidebarSearchInput" placeholder="Search menu..." style="background: transparent; border: none; outline: none; color: #333; width: 100%; font-size: 13px;">
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="active"><a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li>
+                    <a href="{% url 'property_list' %}" class="nav-link-ajax"><i class="fa-solid fa-building"></i> Property Management</a>
+                </li>
+
+                <li> 
+                    <a href="{% url 'project_list' %}" class="nav-link-ajax">
+                        <i class="fa-solid fa-city"></i> Project Management
+                    </a> 
+                </li>
+
+                <li>
+                    <a href="{% url 'blog_list' %}" class="nav-link-ajax">
+                        <i class="fa-solid fa-blog"></i> Blog Management
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a href="#" class="dropdown-toggle">
+                        <span>
+                            <i class="fa-solid fa-envelope"></i> Enquiry Management
+                        </span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </a>
+
+                    <ul class="dropdown-menu" style="list-style: none; padding-left: 20px; display: none; margin-top: 5px;">
+                        <li>
+                            <a href="{% url 'lead_list' %}" class="nav-link-ajax">
+                                <i class="fa-solid fa-user-tie"></i> All Enquiries
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'site_visit_approvals' %}" class="nav-link-ajax">
+                                <i class="fa-solid fa-clipboard-check"></i> Site Visit Approvals
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li>
+                    <a href="{% url 'visit_schedule_list' %}" class="nav-link-ajax">
+                        <i class="fa-solid fa-calendar-check"></i> Scheduling
+                    </a>
+                </li>
+
+
+
+                <!-- <li>
+                    <a href="{% url 'customer_list' %}" class="nav-link-ajax"><i class="fa-solid fa-users"></i> Customer Management</a>
+                </li> -->
+                <li>
+                    <a href="{% url 'agent_list' %}" class="nav-link-ajax"><i class="fa-solid fa-id-badge"></i> Agent Management</a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_bookings' %}" class="nav-link-ajax"><i class="fa-solid fa-bookmark"></i> Booking Management</a>
+                </li>
+                <li>
+                    <a href="{% url 'payment_list' %}" class="nav-link-ajax"><i class="fa-solid fa-wallet"></i> Payment Management</a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_commission_management' %}" class="nav-link-ajax"><i class="fa-solid fa-coins"></i> Commission Management</a>
+                </li>
+                <li>
+                    <a href="{% url 'reports_analytics' %}" class="nav-link-ajax"><i class="fa-solid fa-chart-line"></i> Reports & Analytics</a>
+                </li>
+
+                <!-- Settings Menu (Matching other items) -->
+                <li class="nav-item dropdown">
+                    <a href="#" class="dropdown-toggle">
+                        <span><i class="fa-solid fa-gear"></i> Settings</span> 
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </a>
+                    <ul class="dropdown-menu" style="list-style: none; padding-left: 20px; display: none; margin-top: 5px;">
+                        <li>
+                            <a href="{% url 'admin_change_password' %}" class="nav-link-ajax">
+                                <i class="fa-solid fa-key"></i> Change Password
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li>
+                    <a href="{% url 'admin_profile' %}" class="nav-link-ajax"><i class="fa-solid fa-user"></i> Profile</a>
+                </li>
+
+                <!-- Logout -->
+<li>
+    <form action="{% url 'admin_logout' %}" method="POST" id="logout-form" style="display: none;">
+        {% csrf_token %}
+    </form>
+    <a href="#" onclick="confirmLogout(event)" style="display: flex; align-items: center;">
+        <i class="fa-solid fa-right-from-bracket" style="width: 20px; text-align: center; font-size: 16px; margin-right: 10px;"></i> 
+        <span>Logout</span>
+    </a>
+</li>
+                
+            <div class="sidebar-promo">
+                <div class="promo-bg-icon"><i class="fa-solid fa-city"></i></div>
+                <h4>Grow Your Real Estate Business With Us</h4>
+                <p>Manage properties, leads, customers & more from one powerful dashboard.</p>
+                <button class="btn-upgrade">Upgrade Plan</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <div class="nav-left">
+                  <button id="sidebar-toggle" type="button" aria-label="Open Sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                  </button> 
+                    
+                </div>
+                <div class="nav-right">
+                    <!-- Notification Bell & Dropdown -->
+<!-- Notification Bell & Dropdown -->
+<div class="nav-icon-badge" id="notificationBtn" style="position: relative; cursor: pointer;">
+    <i class="fa-regular fa-bell"></i>
+    {% if notif_count > 0 %}
+        <span class="badge">{{ notif_count }}</span>
+    {% else %}
+        <span class="badge" style="display: none;">0</span>
+    {% endif %}
+    
+    <!-- Dropdown jo by default hidden rahega -->
+    <div class="dropdown-menu-custom" id="notificationDropdown">
+        <div class="dropdown-header">Notifications ({{ notif_count }})</div>
+        
+        {% for notif in notifications %}
+            <div class="dropdown-item-custom" style="padding: 12px 15px; border-bottom: 1px solid #f1f1f1; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="font-size: 14px; color: #1e293b;">{{ notif.title }}</strong><br>
+                    <small style="color: #64748b;">{{ notif.message|truncatechars:35 }}</small>
+                </div>
+                <!-- Read karne ka link/button -->
+                <a href="{% url 'mark_notification_read' notif.id %}" style="font-size: 11px; font-weight: 600; color: #2563eb; text-decoration: none; padding: 4px 8px; background: #eff6ff; border-radius: 4px; white-space: nowrap; margin-left: 10px;">Mark Read</a>
+            </div>
+        {% empty %}
+            <div class="dropdown-item-custom" style="text-align: center; color: #777; padding: 15px;">No new notifications</div>
+        {% endfor %}
+    </div>
+</div>      
+                    <div class="nav-icon-badge" id="darkModeToggle" style="cursor: pointer;">
+        <i class="fa-regular fa-moon" id="moonIcon"></i>
+    </div>
+                    <div class="profile-dropdown-wrapper" style="position: relative; display: inline-block;">
+    <!-- Profile Trigger Box -->
+    <div class="admin-profile" id="profileDropdownBtn" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+        <img src="{% if request.user.profile_image %}{{ request.user.profile_image.url }}{% else %}https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100{% endif %}" alt="Admin">
+        <div class="admin-info">
+            <h4 style="margin: 0; font-size: 14px; font-weight: 600;">
+                {% if request.user.full_name %}
+                    {{ request.user.full_name }}
+                {% else %}
+                    {{ request.user.email|title }}
+                {% endif %}
+            </h4>
+            <span style="font-size: 12px; color: #666;">
+                {% if request.user.role == 'admin' or request.user.is_superuser %}
+                    Super Admin
+                {% elif request.user.role == 'agent' %}
+                    Agent
+                {% else %}
+                    Customer
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- Dropdown Card -->
+    <div id="profileDropdownCard" class="dropdown-card" style="display: none; position: absolute; right: 0; top: 55px; width: 260px; background: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #eaeaea; z-index: 1000; overflow: hidden;">
+        <!-- Header Info inside Card -->
+        <div style="padding: 15px; text-align: center; background: #f8f9fa; border-bottom: 1px solid #eee;">
+            <img src="{% if request.user.profile_image %}{{ request.user.profile_image.url }}{% else %}https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100{% endif %}" alt="Profile" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #007bff;">
+            <h4 style="margin: 0; font-size: 15px; color: #333;">{{ request.user.full_name }}</h4>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #777;">{{ request.user.email }}</p>
+        </div>
+
+        <!-- Menu Links -->
+        <!-- <div style="padding: 8px 0;">
+            <a href="{% url 'admin_profile' %}" style="display: flex; align-items: center; gap: 10px; padding: 10px 18px; color: #333; text-decoration: none; font-size: 13px;">
+                <i class="fas fa-user-circle" style="color: #007bff; width: 16px;"></i> My Profile
+            </a>
+            <a href="{% url 'admin_change_password' %}" style="display: flex; align-items: center; gap: 10px; padding: 10px 18px; color: #333; text-decoration: none; font-size: 13px;">
+                <i class="fas fa-key" style="color: #6c757d; width: 16px;"></i> Change Password
+            </a>
+        </div> -->
+
+        <!-- Menu Links -->
+        <div style="padding: 8px 0;">
+
+            <!-- My Profile -->
+    <a href="{% url 'admin_profile' %}"
+       class="nav-link-ajax"
+       style="display: flex; align-items: center; gap: 10px; padding: 11px 18px; color: #0f172a; text-decoration: none; font-size: 13px; font-weight: 500;">
+
+        <i class="fas fa-user"
+           style="color: #2563eb; width: 16px;"></i>
+
+        My Profile
+    </a>
+
+
+            <a href="{% url 'home' %}"
+            style="display: flex; align-items: center; gap: 10px; padding: 11px 18px; color: #0f172a; text-decoration: none; font-size: 13px; font-weight: 500;">
+
+                <i class="fas fa-house"
+                style="color: #2563eb; width: 16px;"></i>
+
+                Back to Home
+            </a>
+
+        </div>
+
+        <!-- Footer Logout -->
+        <div style="padding: 10px 18px; background: #f8f9fa; border-top: 1px solid #eee; text-align: center;">
+            <a href="#" onclick="confirmLogout(event)" style="display: block; width: 100%; padding: 7px 0; background: #dc3545; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">Logout</a>
+        </div>
+    </div>
+</div>
+                </div>
+            </header>
+
+            <!-- Dashboard Body Content -->
+            <div class="dashboard-body" id="main-content-area">
+                
+               <!-- 1. Top Stats Row -->
+<div class="stats-grid">
+    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+        <div class="stat-header">
+            <span class="stat-title">Total Properties</span>
+            <div class="stat-icon blue"><i class="fa-solid fa-building"></i></div>
+        </div>
+        <h2 class="stat-value">{{ total_properties }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> this month</span>
+    </a>
+    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+        <div class="stat-header">
+            <span class="stat-title">Available Properties</span>
+            <div class="stat-icon green"><i class="fa-solid fa-house-chimney"></i></div>
+        </div>
+        <h2 class="stat-value">{{ available_properties }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
+    </a>
+    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+
+        <div class="stat-header">
+            <span class="stat-title">Sold Properties</span>
+            <div class="stat-icon red"><i class="fa-solid fa-handshake"></i></div>
+        </div>
+        <h2 class="stat-value">{{ sold_properties }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
+    </a>
+    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+
+        <div class="stat-header">
+            <span class="stat-title">Rented Properties</span>
+            <div class="stat-icon yellow"><i class="fa-solid fa-key"></i></div>
+        </div>
+        <h2 class="stat-value">{{ rented_properties }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> this month</span>
+    </a>
+    <a href="{% url 'agent_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+        <div class="stat-header">
+            <span class="stat-title">Total Agents</span>
+            <div class="stat-icon purple"><i class="fa-solid fa-user-group"></i></div>
+        </div>
+        <h2 class="stat-value">{{ total_agents }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
+    </a>
+    <a href="{% url 'lead_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+        <div class="stat-header">
+            <span class="stat-title">Total Leads</span>
+            <div class="stat-icon teal"><i class="fa-solid fa-bullhorn"></i></div>
+        </div>
+        <h2 class="stat-value">{{ total_leads }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
+    </a>
+    <a href="{% url 'payment_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+        <div class="stat-header">
+            <span class="stat-title">Monthly Revenue</span>
+            <div class="stat-icon pink"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        </div>
+        <h2 class="stat-value">₹ {{ monthly_revenue }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
+    </a>
+</div>
+
+                <!-- 2. Charts & Analytics Row -->
+                <div class="analytics-grid">
+                    <div class="card chart-card">
+                    <div class="card-header">
+                <div>
+                <h3>Sales Overview (This Year)</h3>
+                <p class="sub-text">
+                    {{ completed_sales_count }} Completed Sales
+                </p>
+               </div>
+            <select class="dropdown-select"><option>This Year</option></select>
+                </div>
+                <div class="sales-chart-container">
+                <canvas id="salesOverviewChart"></canvas>
+                    </div>
+                    </div>
+
+                    {{ sales_data|json_script:"sales-overview-data" }}
+
+                    <div class="card funnel-card">
+                    <div class="card-header">
+                    <h3>Lead Conversion Funnel</h3>
+                </div>
+                    <div class="funnel-container">
+                    <div class="funnel-stage f1">New Leads <span>{{ funnel_data.new_leads }}</span></div>
+                    <div class="funnel-stage f2">Contacted <span>{{ funnel_data.contacted }}</span></div>
+                    <div class="funnel-stage f3">Site Visit <span>{{ funnel_data.site_visit }}</span></div>
+                    <div class="funnel-stage f4">Negotiation <span>{{ funnel_data.negotiation }}</span></div>
+                    <div class="funnel-stage f5">Converted <span>{{ funnel_data.converted }}</span></div>
+                    </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Revenue Overview</h3>
+                                <p class="sub-text">₹ {{ monthly_revenue }}</p>
+                            </div>
+                            <select class="dropdown-select"><option>This Year</option></select>
+                        </div>
+                        <div class="bar-graph-sim">
+                            <div class="bar" style="height: 40%;" data-tooltip="Jan: ₹ {{ revenue_data.0 }}"></div>
+                            <div class="bar" style="height: 55%;" data-tooltip="Feb: ₹ {{ revenue_data.1 }}"></div>
+                            <div class="bar" style="height: 35%;" data-tooltip="Mar: ₹ {{ revenue_data.2 }}"></div>
+                            <div class="bar" style="height: 70%;" data-tooltip="Apr: ₹ {{ revenue_data.3 }}"></div>
+                            <div class="bar" style="height: 50%;" data-tooltip="May: ₹ {{ revenue_data.4 }}"></div>
+                            <div class="bar" style="height: 85%;" data-tooltip="Jun: ₹ {{ revenue_data.5 }}"></div>
+                            <div class="bar" style="height: 65%;" data-tooltip="Jul: ₹ {{ revenue_data.6 }}"></div>
+                            <div class="bar" style="height: 90%;" data-tooltip="Aug: ₹ {{ revenue_data.7 }}"></div>
+                            <div class="bar" style="height: 75%;" data-tooltip="Sep: ₹ {{ revenue_data.8 }}"></div>
+                            <div class="bar" style="height: 95%;" data-tooltip="Oct: ₹ {{ revenue_data.9 }}"></div>
+                           <div class="bar" style="height: 60%;" data-tooltip="Nov: ₹ {{ revenue_data.10 }}"></div>
+                        <div class="bar" style="height: 80%;" data-tooltip="Dec: ₹ {{ revenue_data.11 }}"></div>
+                        </div>
+                    </div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Properties by Type</h3>
+    </div>
+    <div class="donut-chart-box" style="position: relative; width: 100%; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <canvas id="propertyTypeChart"></canvas>
+    </div>
+</div>   
+                </div>
+
+                <!-- 3. Activities, Enquiries & Actions Row -->
+                <div class="middle-grid">
+<div class="card">
+    <div class="card-header">
+        <h3>Recent Activities</h3>
+       <!-- <a href="{% url 'all_activities' %}" class="view-all">View All</a> -->
+    </div>
+    
+    <ul class="activity-list">
+        {% for act in recent_activities %}
+        <li>
+            <div class="act-icon {{ act.bg_color }}">
+                <i class="fa-solid {{ act.icon }}"></i>
+            </div>
+            <div class="act-details">
+                <p>{{ act.title }}</p>
+                <span>By {{ act.user }} • {{ act.time|date:"h:i A" }}</span>
+            </div>
+        </li>
+        {% empty %}
+        <li style="padding: 10px; font-size: 11px; color: #888;">No recent activities found.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Today's Enquiries</h3>
+        <!-- <a href="{% url 'all_activities' %}" class="view-all">View All</a> -->
+    </div>
+    <div class="enquiry-list">
+        {% for enq in todays_enquiries %}
+        <div class="enquiry-item">
+            <div class="avatar-placeholder" style="width: 40px; height: 40px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #495057;">
+                {{ enq.name|slice:":1"|upper }}
+            </div>
+            <div class="enq-info">
+                <h4>{{ enq.name }}</h4>
+                <p>{{ enq.property_type|default:"General Property Enquiry" }}</p>
+            </div>
+            <div class="enq-meta">
+                <span class="time">{{ enq.created_at|time:"h:i A" }}</span>
+                <span class="phone">{{ enq.phone|default:"No Phone" }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 13px;">
+            No enquiries received today.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Upcoming Site Visits</h3>
+        <!-- <a href="{% url 'all_activities' %}" class="view-all">View All</a> -->
+    </div>
+    <div class="visit-list">
+        {% for visit in upcoming_visits %}
+        <div class="visit-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f1f1;">
+            <div style="display: flex; align-items: center;">
+                <div class="avatar-placeholder" style="width: 38px; height: 38px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #495057; margin-right: 12px;">
+                    {{ visit.property_type|default:"P"|slice:":1"|upper }}
+                </div>
+                <div class="visit-info">
+                    <h4 style="margin: 0; font-size: 14px; font-weight: 600;">{{ visit.property_type|default:"Property Visit" }}</h4>
+                    <p style="margin: 0; font-size: 12px; color: #6c757d;">{{ visit.name }}</p>
+                </div>
+            </div>
+            <div class="visit-meta" style="text-align: right;">
+                <span class="time" style="display: block; font-size: 12px; font-weight: 600;">{{ visit.visit_date|time:"h:i A" }}</span>
+                <span class="date" style="font-size: 11px; color: #6c757d;">{{ visit.visit_date|date:"d M" }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 13px;">
+            No upcoming site visits scheduled.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+                    <div class="right-action-panel">
+                        <div class="card">
+                            <div class="card-header"><h3>Quick Actions</h3></div>
+                            <div class="quick-actions-btns">
+                                <a href="{% url 'add_property' %}" class="qa-btn blue" style="text-decoration: none;">
+                                        <i class="fa-solid fa-plus"></i> Add New Property
+                                </a>
+                                <a href="{% url 'add_lead' %}" class="qa-btn green" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="fa-solid fa-user-plus"></i> Add New Lead
+                                </a>
+                                <button class="qa-btn orange"><i class="fa-solid fa-bookmark"></i> New Booking</button>
+                               <a href="{% url 'add_agent' %}" class="qa-btn" style="background: #6f42c1; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+    <i class="fa-solid fa-user-plus" style="margin-right: 8px;"></i> Add New Agent
+</a>
+                                <button class="qa-btn teal"><i class="fa-solid fa-file-arrow-down"></i> Generate Report</button>
+                                <button class="qa-btn pink"><i class="fa-solid fa-globe"></i> Website Settings</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Today's Tasks</h3>
+                                <a href="#" class="view-all">View All</a>
+                            </div>
+                            <ul class="task-list">
+                                <li><label><input type="checkbox"> Follow up with 5 leads</label></li>
+                                <li><label><input type="checkbox" checked> Update property status</label></li>
+                                <li><label><input type="checkbox"> Site visit at Green City</label></li>
+                                <li><label><input type="checkbox"> Prepare monthly report</label></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+               <!-- 4. Latest Properties Table -->
+<div class="card table-card-section">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Latest Properties</h3>
+        <!-- <div>
+            <a href="{% url 'add_property' %}" class="btn btn-success btn-sm">+ Add Property</a>
+            <a href="{% url 'properties' %}" class="btn btn-primary btn-sm">View All</a>
+        </div> -->
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Property ID</th>
+                    <th>Image</th>
+                    <th>Property Title</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Agent</th>
+                    <th>Added On</th>
+                    <!-- <th>Actions</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for prop in latest_properties %}
+                <tr>
+                    <td>PRP{{ prop.id }}</td>
+                    <td>
+                        {% if prop.image %}
+                            <img src="{{ prop.image.url }}" width="50" alt="Property">
+                        {% else %}
+                            <img src="default.jpg" width="50" alt="Default">
+                        {% endif %}
+                    </td>
+                    <td>{{ prop.title }}</td>
+                    <td>{{ prop.category }}</td>
+                    <td>{{ prop.category }}</td> 
+                    <td>{{ prop.location }}</td>
+                    <td>₹ {{ prop.price }}</td>
+                    <td>
+                        {% if prop.status == 'Sale' %}
+                            <span class="badge bg-success">For Sale</span>
+                        {% else %}
+                            <span class="badge bg-warning">For Rent</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ prop.agent.name|default:"N/A" }}</td>
+                    <td>{{ prop.created_at|date:"d M Y" }}</td>
+                    <!-- <td>
+                        <a href="{% url 'edit_property' prop.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{% url 'delete_property' prop.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Kya aap sach me is property ko delete karna chahte hain?')">Delete</a>
+                    </td> -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center">No properties found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+                <!-- Footer & System Status -->
+                <div class="dashboard-footer-row">
+                    <p>© 2026 Real Estate Management Portal. All rights reserved.</p>
+                    <div class="system-status-pills">
+                        <span><i class="fa-solid fa-circle text-green"></i> Server <b>Online</b></span>
+                        <span><i class="fa-solid fa-circle text-green"></i> Database <b>Online</b></span>
+                        <span><i class="fa-solid fa-circle text-green"></i> Website <b>Online</b></span>
+                        <span><i class="fa-solid fa-circle text-green"></i> Backup <b>Success</b></span>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#">Version 1.0.0</a> • <a href="#">Terms & Conditions</a> • <a href="#">Privacy Policy</a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+<!--Custom JavaScript-->
+<script src="{% static 'dashboard/admin_dashboard.js' %}"></script>
+
+<!-- AJAX & Dropdown Toggle Script -->
+<script>
+    // Logout Confirmation Popup using SweetAlert2
+function confirmLogout(event) {
+    event.preventDefault();
+    
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to logout?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Yes, Logout',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('logout-form').submit();
+        }
+    });
+}
+
+// Dark Mode Toggle Logic
+
+document.addEventListener('DOMContentLoaded', function() {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const moonIcon = document.getElementById('moonIcon');
+    
+    // Check if dark mode was previously enabled
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        moonIcon.classList.remove('fa-regular');
+        moonIcon.classList.add('fa-solid'); // Solid icon jab dark mode on ho
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                moonIcon.classList.remove('fa-regular');
+                moonIcon.classList.add('fa-solid');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                moonIcon.classList.remove('fa-solid');
+                moonIcon.classList.add('fa-regular');
+            }
+        });
+    }
+});
+
+// 15 seconds mein background se naye notifications check karna
+
+setInterval(function() {
+    fetch("{% url 'fetch_notifications_ajax' %}", {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const notifBadge = document.querySelector('#notificationBtn .badge');
+        const notifDropdown = document.getElementById('notificationDropdown');
+        
+        // 1. Update Badge Count
+        if (data.notif_count > 0) {
+            if (notifBadge) {
+                notifBadge.textContent = data.notif_count;
+                notifBadge.style.display = 'inline-block';
+            }
+        } else {
+            if (notifBadge) notifBadge.style.display = 'none';
+        }
+
+        // 2. Update Dropdown HTML Dynamically with ID & Read Button
+        if (notifDropdown) {
+            let htmlContent = `<div class="dropdown-header">Notifications (${data.notif_count})</div>`;
+            
+            if (data.notifications.length > 0) {
+                data.notifications.forEach(item => {
+                    htmlContent += `
+                        <div class="dropdown-item-custom" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid #f1f1f1;">
+                            <div>
+                                <strong>${item.title}</strong><br>
+                                <small style="color: #666;">${item.message}</small>
+                            </div>
+                            <button type="button" onclick="markAsRead(${item.id})" style="font-size: 11px; color: #fff; background: #2563eb; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; margin-left: 10px;">Read</button>
+                        </div>
+                    `;
+                });
+            } else {
+                htmlContent += `<div class="dropdown-item-custom" style="text-align: center; color: #777; padding: 15px;">No new notifications</div>`;
+            }
+            
+            notifDropdown.innerHTML = htmlContent;
+        }
+    })
+    .catch(error => console.error('Error fetching notifications:', error));
+}, 15000);
+
+// Notification ko Read mark karne ka function (AJAX)
+function markAsRead(id) {
+    fetch("{% url 'mark_ajax_read' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: "notif_id=" + id
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Turant background se fetch trigger kar do taaki list aur badge update ho jaye
+            // Ya fir dropdown ko refresh karne ke liye ek baar fetch call kar sakte hain
+        }
+    })
+    .catch(error => console.error('Error marking notification as read:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const notifBtn = document.getElementById('notificationBtn');
+    const notifDropdown = document.getElementById('notificationDropdown');
+
+    // 1. Bell icon par click karne par dropdown toggle ho (Open/Close)
+    if (notifBtn && notifDropdown) {
+        notifBtn.addEventListener('click', function(event) {
+            event.stopPropagation();
+            notifDropdown.classList.toggle('show');
+        });
+
+        // 2. Screen par kahin bhi bahar click karne par dropdown band ho jaye
+        document.addEventListener('click', function(event) {
+            if (!notifBtn.contains(event.target)) {
+                notifDropdown.classList.remove('show');
+            }
+        });
+    }
+});
+
+// Sidebar Menu Search Filter Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('sidebarSearchInput');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filterValue = searchInput.value.toLowerCase();
+            // Sidebar ke saare menu list items select karein
+            const menuItems = document.querySelectorAll('.sidebar-menu > li');
+            
+            menuItems.forEach(function(item) {
+                const text = item.textContent || item.innerText;
+                if (text.toLowerCase().indexOf(filterValue) > -1) {
+                    item.style.display = ""; // Match hone par dikhayein
+                } else {
+                    item.style.display = "none"; // Match na hone par chupayein
+                }
+            });
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdownBtn = document.getElementById('profileDropdownBtn');
+    const dropdownCard = document.getElementById('profileDropdownCard');
+
+    if (dropdownBtn && dropdownCard) {
+        dropdownBtn.addEventListener('click', function(event) {
+            event.stopPropagation();
+            dropdownCard.style.display = dropdownCard.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!dropdownCard.contains(event.target) && !dropdownBtn.contains(event.target)) {
+                dropdownCard.style.display = 'none';
+            }
+        });
+    }
+});
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Settings Dropdown Toggle Logic
+        document.querySelectorAll('.sidebar-menu .dropdown-toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const submenu = this.nextElementSibling;
+
+            if (submenu) {
+                submenu.style.display =
+                    submenu.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+    });
+
+        const mainArea = document.getElementById('main-content-area');
+        if (!mainArea) return;
+
+        // 2. Global AJAX Link click listener
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('.nav-link-ajax');
+            if (!link) return;
+
+            e.preventDefault();
+            const url = link.getAttribute('href');
+
+            mainArea.innerHTML = '<div style="text-align:center; padding:50px; color:#555;"><i class="fa fa-spinner fa-spin fa-2x"></i><p>Loading...</p></div>';
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
+            .then(html => {
+                mainArea.innerHTML = html;
+
+                // ==========================================
+// EDIT PROPERTY - MAIN IMAGE + GALLERY
+// UPLOAD + 4:3 CROP
+// ==========================================
+
+{
+
+    const editPropertyForm =
+        document.getElementById('edit-property-form');
+
+    const editImageInput =
+        document.getElementById('edit-property-images-input');
+
+    const editPreviewBox =
+        document.getElementById('edit-selected-images-preview');
+
+    const editImageCount =
+        document.getElementById('edit-image-count');
+
+
+    // ==========================================
+    // MAIN IMAGE ELEMENTS
+    // ==========================================
+
+    const editChangeMainImageBtn =
+        document.getElementById('editChangeMainImageBtn');
+
+    const editMainImageInput =
+        document.getElementById('edit-main-image-input');
+
+    const selectedMainImagePreview =
+        document.getElementById('selected-main-image-preview');
+
+    const selectedMainImagePreviewImg =
+        document.getElementById('selected-main-image-preview-img');
+
+    const editMainCropModal =
+        document.getElementById('editMainImageCropModal');
+
+    const editMainCropWrapper =
+        document.getElementById('editMainCropCanvasWrapper');
+
+    const editMainCropImage =
+        document.getElementById('editMainCropImage');
+
+    const editMainCropSelection =
+        document.getElementById('editMainCropSelection');
+
+    const editMainCropClose =
+        document.getElementById('editMainCropCloseBtn');
+
+    const editMainCropCancel =
+        document.getElementById('editMainCropCancelBtn');
+
+    const editMainCropConfirm =
+        document.getElementById('editMainCropConfirmBtn');
+
+
+    // ==========================================
+    // GALLERY CROP ELEMENTS
+    // ==========================================
+
+    const editCropModal =
+        document.getElementById('editImageCropModal');
+
+    const editCropWrapper =
+        document.getElementById('editCropCanvasWrapper');
+
+    const editCropImage =
+        document.getElementById('editCropImage');
+
+    const editCropSelection =
+        document.getElementById('editCropSelection');
+
+    const editCropClose =
+        document.getElementById('editCropCloseBtn');
+
+    const editCropCancel =
+        document.getElementById('editCropCancelBtn');
+
+    const editCropConfirm =
+        document.getElementById('editCropConfirmBtn');
+
+
+    // ==========================================
+    // EDIT PAGE CHECK
+    // ==========================================
+
+    if (
+        !editPropertyForm ||
+        !editImageInput ||
+        !editPreviewBox ||
+        !editImageCount ||
+
+        !editChangeMainImageBtn ||
+        !editMainImageInput ||
+        !selectedMainImagePreview ||
+        !selectedMainImagePreviewImg ||
+
+        !editMainCropModal ||
+        !editMainCropWrapper ||
+        !editMainCropImage ||
+        !editMainCropSelection ||
+        !editMainCropClose ||
+        !editMainCropCancel ||
+        !editMainCropConfirm ||
+
+        !editCropModal ||
+        !editCropWrapper ||
+        !editCropImage ||
+        !editCropSelection ||
+        !editCropClose ||
+        !editCropCancel ||
+        !editCropConfirm
+    ) {
+        return;
+    }
+
+
+    // ==========================================
+    // PREVENT DOUBLE INITIALIZATION
+    // ==========================================
+
+    if (
+        editPropertyForm.dataset.initialized === 'true'
+    ) {
+        return;
+    }
+
+    editPropertyForm.dataset.initialized = 'true';
+
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
+    let editSelectedImages = [];
+
+    let selectedMainImage = null;
+
+    let currentGalleryImageFile = null;
+
+    let currentMainImageFile = null;
+
+
+    const CROP_ASPECT_RATIO = 4 / 3;
+
+    const OUTPUT_WIDTH = 1200;
+
+    const OUTPUT_HEIGHT = 900;
+
+    const MIN_CROP_WIDTH = 120;
+
+
+    // ==========================================
+    // GET EXISTING GALLERY INPUTS
+    // ==========================================
+
+    function getExistingGalleryInputs() {
+
+        return Array.from(
+            editPropertyForm.querySelectorAll(
+                'input[name="existing_images"]'
+            )
+        );
+
+    }
+
+
+    // ==========================================
+    // TOTAL IMAGE COUNT
+    // ==========================================
+
+    function getTotalImageCount() {
+
+        const mainImageCount = 1;
+
+        const existingGalleryCount =
+            getExistingGalleryInputs().length;
+
+        const newGalleryCount =
+            editSelectedImages.length;
+
+        return (
+            mainImageCount +
+            existingGalleryCount +
+            newGalleryCount
+        );
+
+    }
+
+
+    // ==========================================
+    // UPDATE IMAGE COUNT
+    // ==========================================
+
+    function updateEditImageCount() {
+
+        editImageCount.textContent =
+            getTotalImageCount() + '/5 images';
+
+    }
+
+
+    // ==========================================
+    // RENDER NEW GALLERY PREVIEWS
+    // ==========================================
+
+    function renderEditPreviews() {
+
+        editPreviewBox.innerHTML = '';
+
+        editSelectedImages.forEach(
+            function (file, index) {
+
+                const reader =
+                    new FileReader();
+
+                reader.onload =
+                    function (event) {
+
+                        const card =
+                            document.createElement('div');
+
+                        card.className =
+                            'edit-new-image-card';
+
+                        card.innerHTML = `
+                            <img
+                                src="${event.target.result}"
+                                alt="New Property Image"
+                            >
+
+                            <button
+                                type="button"
+                                class="edit-new-image-remove"
+                                data-index="${index}"
+                            >
+                                ×
+                            </button>
+                        `;
+
+                        editPreviewBox.appendChild(card);
+
+                    };
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // CROP STATE FACTORY
+    // ==========================================
+
+    function createCropState() {
+
+        return {
+
+            mode: null,
+
+            startX: 0,
+            startY: 0,
+
+            startLeft: 0,
+            startTop: 0,
+
+            startWidth: 0,
+            startHeight: 0
+
+        };
+
+    }
+
+
+    const mainCropState =
+        createCropState();
+
+    const galleryCropState =
+        createCropState();
+
+
+    // ==========================================
+    // GENERIC GET CROP RECT
+    // ==========================================
+
+    function getCropRect(selection) {
+
+        return {
+
+            left:
+                parseFloat(
+                    selection.style.left
+                ) || 0,
+
+            top:
+                parseFloat(
+                    selection.style.top
+                ) || 0,
+
+            width:
+                parseFloat(
+                    selection.style.width
+                ) || 0,
+
+            height:
+                parseFloat(
+                    selection.style.height
+                ) || 0
+
+        };
+
+    }
+
+
+    // ==========================================
+    // GENERIC SET CROP RECT
+    // ==========================================
+
+    function setCropRect(
+        wrapper,
+        selection,
+        left,
+        top,
+        width
+    ) {
+
+        const wrapperWidth =
+            wrapper.clientWidth;
+
+        const wrapperHeight =
+            wrapper.clientHeight;
+
+        if (
+            !wrapperWidth ||
+            !wrapperHeight
+        ) {
+            return;
+        }
+
+
+        const maxWidth =
+            Math.min(
+                wrapperWidth,
+                wrapperHeight *
+                CROP_ASPECT_RATIO
+            );
+
+
+        const minWidth =
+            Math.min(
+                MIN_CROP_WIDTH,
+                maxWidth
+            );
+
+
+        width =
+            Math.max(
+                minWidth,
+                Math.min(
+                    Number(width) || 0,
+                    maxWidth
+                )
+            );
+
+
+        const height =
+            width /
+            CROP_ASPECT_RATIO;
+
+
+        left =
+            Math.max(
+                0,
+                Number(left) || 0
+            );
+
+        top =
+            Math.max(
+                0,
+                Number(top) || 0
+            );
+
+
+        if (
+            left + width >
+            wrapperWidth
+        ) {
+
+            left =
+                wrapperWidth -
+                width;
+
+        }
+
+
+        if (
+            top + height >
+            wrapperHeight
+        ) {
+
+            top =
+                wrapperHeight -
+                height;
+
+        }
+
+
+        selection.style.left =
+            left + 'px';
+
+        selection.style.top =
+            top + 'px';
+
+        selection.style.width =
+            width + 'px';
+
+        selection.style.height =
+            height + 'px';
+
+    }
+
+
+    // ==========================================
+    // INITIALIZE CROP
+    // ==========================================
+
+    function initializeCrop(
+        wrapper,
+        selection
+    ) {
+
+        const wrapperWidth =
+            wrapper.clientWidth;
+
+        const wrapperHeight =
+            wrapper.clientHeight;
+
+
+        if (
+            !wrapperWidth ||
+            !wrapperHeight
+        ) {
+            return;
+        }
+
+
+        let cropWidth;
+
+
+        if (
+            wrapperWidth /
+            wrapperHeight >
+            CROP_ASPECT_RATIO
+        ) {
+
+            cropWidth =
+                wrapperHeight *
+                CROP_ASPECT_RATIO *
+                0.80;
+
+        } else {
+
+            cropWidth =
+                wrapperWidth *
+                0.80;
+
+        }
+
+
+        const maxWidth =
+            Math.min(
+                wrapperWidth,
+                wrapperHeight *
+                CROP_ASPECT_RATIO
+            );
+
+
+        cropWidth =
+            Math.min(
+                cropWidth,
+                maxWidth
+            );
+
+
+        const cropHeight =
+            cropWidth /
+            CROP_ASPECT_RATIO;
+
+
+        const left =
+            (
+                wrapperWidth -
+                cropWidth
+            ) / 2;
+
+
+        const top =
+            (
+                wrapperHeight -
+                cropHeight
+            ) / 2;
+
+
+        setCropRect(
+            wrapper,
+            selection,
+            left,
+            top,
+            cropWidth
+        );
+
+    }
+
+
+    // ==========================================
+    // CLOSE MAIN CROP
+    // ==========================================
+
+    function closeMainCrop() {
+
+        editMainCropModal.style.display =
+            'none';
+
+        document.body.style.overflow =
+            '';
+
+        editMainCropImage.src = '';
+
+        currentMainImageFile = null;
+
+        mainCropState.mode = null;
+
+    }
+
+
+    // ==========================================
+    // CLOSE GALLERY CROP
+    // ==========================================
+
+    function closeGalleryCrop() {
+
+        editCropModal.style.display =
+            'none';
+
+        document.body.style.overflow =
+            '';
+
+        editCropImage.src = '';
+
+        currentGalleryImageFile = null;
+
+        galleryCropState.mode = null;
+
+    }
+
+
+    // ==========================================
+    // OPEN MAIN IMAGE CROP
+    // ==========================================
+
+    function openMainCrop(file) {
+
+        currentMainImageFile = file;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+                editMainCropImage.onload =
+                    function () {
+
+                        editMainCropModal.style.display =
+                            'flex';
+
+                        document.body.style.overflow =
+                            'hidden';
+
+
+                        requestAnimationFrame(
+                            function () {
+
+                                requestAnimationFrame(
+                                    function () {
+
+                                        initializeCrop(
+                                            editMainCropWrapper,
+                                            editMainCropSelection
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    };
+
+
+                editMainCropImage.src =
+                    event.target.result;
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+
+
+    // ==========================================
+    // OPEN GALLERY CROP
+    // ==========================================
+
+    function openGalleryCrop(file) {
+
+        currentGalleryImageFile = file;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+                editCropImage.onload =
+                    function () {
+
+                        editCropModal.style.display =
+                            'flex';
+
+                        document.body.style.overflow =
+                            'hidden';
+
+
+                        requestAnimationFrame(
+                            function () {
+
+                                requestAnimationFrame(
+                                    function () {
+
+                                        initializeCrop(
+                                            editCropWrapper,
+                                            editCropSelection
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    };
+
+
+                editCropImage.src =
+                    event.target.result;
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+
+
+    // ==========================================
+    // CHANGE MAIN IMAGE BUTTON
+    // ==========================================
+
+    editChangeMainImageBtn.addEventListener(
+        'click',
+        function () {
+
+            editMainImageInput.click();
+
+        }
+    );
+
+
+    // ==========================================
+    // MAIN IMAGE SELECT
+    // ==========================================
+
+    editMainImageInput.addEventListener(
+        'change',
+        function () {
+
+            const file =
+                editMainImageInput.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            if (
+                !file.type ||
+                !file.type.startsWith('image/')
+            ) {
+
+                alert(
+                    'Please select a valid image file.'
+                );
+
+                editMainImageInput.value =
+                    '';
+
+                return;
+
+            }
+
+
+            openMainCrop(file);
+
+            editMainImageInput.value =
+                '';
+
+        }
+    );
+
+
+    // ==========================================
+    // MAIN CROP CLOSE BUTTONS
+    // ==========================================
+
+    editMainCropClose.addEventListener(
+        'click',
+        closeMainCrop
+    );
+
+    editMainCropCancel.addEventListener(
+        'click',
+        closeMainCrop
+    );
+
+
+    // ==========================================
+    // GALLERY CROP CLOSE BUTTONS
+    // ==========================================
+
+    editCropClose.addEventListener(
+        'click',
+        closeGalleryCrop
+    );
+
+    editCropCancel.addEventListener(
+        'click',
+        closeGalleryCrop
+    );
+
+
+    // ==========================================
+    // MAIN CROP POINTER DOWN
+    // ==========================================
+
+    editMainCropSelection.addEventListener(
+        'pointerdown',
+        function (event) {
+
+            event.preventDefault();
+
+
+            const handle =
+                event.target.closest(
+                    '.crop-handle'
+                );
+
+
+            if (handle) {
+
+                if (
+                    handle.classList.contains(
+                        'crop-handle-nw'
+                    )
+                ) {
+
+                    mainCropState.mode =
+                        'nw';
+
+                } else if (
+                    handle.classList.contains(
+                        'crop-handle-ne'
+                    )
+                ) {
+
+                    mainCropState.mode =
+                        'ne';
+
+                } else if (
+                    handle.classList.contains(
+                        'crop-handle-sw'
+                    )
+                ) {
+
+                    mainCropState.mode =
+                        'sw';
+
+                } else {
+
+                    mainCropState.mode =
+                        'se';
+
+                }
+
+            } else {
+
+                mainCropState.mode =
+                    'move';
+
+            }
+
+
+            const rect =
+                getCropRect(
+                    editMainCropSelection
+                );
+
+
+            mainCropState.startX =
+                event.clientX;
+
+            mainCropState.startY =
+                event.clientY;
+
+            mainCropState.startLeft =
+                rect.left;
+
+            mainCropState.startTop =
+                rect.top;
+
+            mainCropState.startWidth =
+                rect.width;
+
+            mainCropState.startHeight =
+                rect.height;
+
+
+            editMainCropSelection.setPointerCapture(
+                event.pointerId
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // GALLERY CROP POINTER DOWN
+    // ==========================================
+
+    editCropSelection.addEventListener(
+        'pointerdown',
+        function (event) {
+
+            event.preventDefault();
+
+
+            const handle =
+                event.target.closest(
+                    '.crop-handle'
+                );
+
+
+            if (handle) {
+
+                if (
+                    handle.classList.contains(
+                        'crop-handle-nw'
+                    )
+                ) {
+
+                    galleryCropState.mode =
+                        'nw';
+
+                } else if (
+                    handle.classList.contains(
+                        'crop-handle-ne'
+                    )
+                ) {
+
+                    galleryCropState.mode =
+                        'ne';
+
+                } else if (
+                    handle.classList.contains(
+                        'crop-handle-sw'
+                    )
+                ) {
+
+                    galleryCropState.mode =
+                        'sw';
+
+                } else {
+
+                    galleryCropState.mode =
+                        'se';
+
+                }
+
+            } else {
+
+                galleryCropState.mode =
+                    'move';
+
+            }
+
+
+            const rect =
+                getCropRect(
+                    editCropSelection
+                );
+
+
+            galleryCropState.startX =
+                event.clientX;
+
+            galleryCropState.startY =
+                event.clientY;
+
+            galleryCropState.startLeft =
+                rect.left;
+
+            galleryCropState.startTop =
+                rect.top;
+
+            galleryCropState.startWidth =
+                rect.width;
+
+            galleryCropState.startHeight =
+                rect.height;
+
+
+            editCropSelection.setPointerCapture(
+                event.pointerId
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // GENERIC CROP MOVE / RESIZE
+    // ==========================================
+
+    function handleCropMove(
+        event,
+        wrapper,
+        selection,
+        state
+    ) {
+
+        if (!state.mode) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        const wrapperWidth =
+            wrapper.clientWidth;
+
+        const wrapperHeight =
+            wrapper.clientHeight;
+
+
+        const dx =
+            event.clientX -
+            state.startX;
+
+        const dy =
+            event.clientY -
+            state.startY;
+
+
+        const startLeft =
+            state.startLeft;
+
+        const startTop =
+            state.startTop;
+
+        const startWidth =
+            state.startWidth;
+
+        const startHeight =
+            state.startHeight;
+
+
+        // MOVE
+
+        if (
+            state.mode === 'move'
+        ) {
+
+            let left =
+                startLeft + dx;
+
+            let top =
+                startTop + dy;
+
+
+            left =
+                Math.max(
+                    0,
+                    Math.min(
+                        left,
+                        wrapperWidth -
+                        startWidth
+                    )
+                );
+
+
+            top =
+                Math.max(
+                    0,
+                    Math.min(
+                        top,
+                        wrapperHeight -
+                        startHeight
+                    )
+                );
+
+
+            setCropRect(
+                wrapper,
+                selection,
+                left,
+                top,
+                startWidth
+            );
+
+            return;
+
+        }
+
+
+        // RESIZE
+
+        let newWidth =
+            startWidth;
+
+        let newLeft =
+            startLeft;
+
+        let newTop =
+            startTop;
+
+
+        if (
+            state.mode === 'se'
+        ) {
+
+            newWidth =
+                startWidth +
+                Math.max(
+                    dx,
+                    dy *
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+        else if (
+            state.mode === 'sw'
+        ) {
+
+            newWidth =
+                startWidth +
+                Math.max(
+                    -dx,
+                    dy *
+                    CROP_ASPECT_RATIO
+                );
+
+            newLeft =
+                startLeft +
+                startWidth -
+                newWidth;
+
+        }
+
+        else if (
+            state.mode === 'ne'
+        ) {
+
+            newWidth =
+                startWidth +
+                Math.max(
+                    dx,
+                    -dy *
+                    CROP_ASPECT_RATIO
+                );
+
+            newTop =
+                startTop +
+                startHeight -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+        else if (
+            state.mode === 'nw'
+        ) {
+
+            newWidth =
+                startWidth +
+                Math.max(
+                    -dx,
+                    -dy *
+                    CROP_ASPECT_RATIO
+                );
+
+            newLeft =
+                startLeft +
+                startWidth -
+                newWidth;
+
+            newTop =
+                startTop +
+                startHeight -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+
+        const maxWidth =
+            Math.min(
+                wrapperWidth,
+                wrapperHeight *
+                CROP_ASPECT_RATIO
+            );
+
+
+        const minWidth =
+            Math.min(
+                MIN_CROP_WIDTH,
+                maxWidth
+            );
+
+
+        newWidth =
+            Math.max(
+                minWidth,
+                Math.min(
+                    newWidth,
+                    maxWidth
+                )
+            );
+
+
+        if (
+            state.mode === 'se'
+        ) {
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    wrapperWidth -
+                    startLeft
+                );
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    (
+                        wrapperHeight -
+                        startTop
+                    ) *
+                    CROP_ASPECT_RATIO
+                );
+
+            newLeft =
+                startLeft;
+
+            newTop =
+                startTop;
+
+        }
+
+        else if (
+            state.mode === 'sw'
+        ) {
+
+            const right =
+                startLeft +
+                startWidth;
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    right
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    (
+                        wrapperHeight -
+                        startTop
+                    ) *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                right -
+                newWidth;
+
+            newTop =
+                startTop;
+
+        }
+
+        else if (
+            state.mode === 'ne'
+        ) {
+
+            const bottom =
+                startTop +
+                startHeight;
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    wrapperWidth -
+                    startLeft
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    bottom *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                startLeft;
+
+            newTop =
+                bottom -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+        else if (
+            state.mode === 'nw'
+        ) {
+
+            const right =
+                startLeft +
+                startWidth;
+
+            const bottom =
+                startTop +
+                startHeight;
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    right
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    bottom *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                right -
+                newWidth;
+
+            newTop =
+                bottom -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+
+        setCropRect(
+            wrapper,
+            selection,
+            newLeft,
+            newTop,
+            newWidth
+        );
+
+    }
+
+
+    // ==========================================
+    // MAIN CROP MOVE
+    // ==========================================
+
+    editMainCropSelection.addEventListener(
+        'pointermove',
+        function (event) {
+
+            handleCropMove(
+                event,
+                editMainCropWrapper,
+                editMainCropSelection,
+                mainCropState
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // GALLERY CROP MOVE
+    // ==========================================
+
+    editCropSelection.addEventListener(
+        'pointermove',
+        function (event) {
+
+            handleCropMove(
+                event,
+                editCropWrapper,
+                editCropSelection,
+                galleryCropState
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // POINTER UP
+    // ==========================================
+
+    function releaseCropPointer(
+        selection,
+        state,
+        event
+    ) {
+
+        if (
+            selection.hasPointerCapture &&
+            selection.hasPointerCapture(
+                event.pointerId
+            )
+        ) {
+
+            selection.releasePointerCapture(
+                event.pointerId
+            );
+
+        }
+
+        state.mode = null;
+
+    }
+
+
+    editMainCropSelection.addEventListener(
+        'pointerup',
+        function (event) {
+
+            releaseCropPointer(
+                editMainCropSelection,
+                mainCropState,
+                event
+            );
+
+        }
+    );
+
+
+    editCropSelection.addEventListener(
+        'pointerup',
+        function (event) {
+
+            releaseCropPointer(
+                editCropSelection,
+                galleryCropState,
+                event
+            );
+
+        }
+    );
+
+
+    editMainCropSelection.addEventListener(
+        'pointercancel',
+        function () {
+
+            mainCropState.mode = null;
+
+        }
+    );
+
+
+    editCropSelection.addEventListener(
+        'pointercancel',
+        function () {
+
+            galleryCropState.mode = null;
+
+        }
+    );
+
+
+    // ==========================================
+    // CREATE CROPPED FILE
+    // ==========================================
+
+    function createCroppedFile(
+        imageElement,
+        selection,
+        originalFile,
+        callback
+    ) {
+
+        const displayedWidth =
+            imageElement.clientWidth;
+
+        const displayedHeight =
+            imageElement.clientHeight;
+
+        const naturalWidth =
+            imageElement.naturalWidth;
+
+        const naturalHeight =
+            imageElement.naturalHeight;
+
+
+        if (
+            !displayedWidth ||
+            !displayedHeight ||
+            !naturalWidth ||
+            !naturalHeight
+        ) {
+
+            alert(
+                'Unable to read image dimensions.'
+            );
+
+            return;
+
+        }
+
+
+        const scaleX =
+            naturalWidth /
+            displayedWidth;
+
+        const scaleY =
+            naturalHeight /
+            displayedHeight;
+
+
+        const sourceX =
+            selection.left *
+            scaleX;
+
+        const sourceY =
+            selection.top *
+            scaleY;
+
+        const sourceWidth =
+            selection.width *
+            scaleX;
+
+        const sourceHeight =
+            selection.height *
+            scaleY;
+
+
+        const canvas =
+            document.createElement(
+                'canvas'
+            );
+
+
+        canvas.width =
+            OUTPUT_WIDTH;
+
+        canvas.height =
+            OUTPUT_HEIGHT;
+
+
+        const ctx =
+            canvas.getContext('2d');
+
+
+        if (!ctx) {
+
+            alert(
+                'Unable to process image.'
+            );
+
+            return;
+
+        }
+
+
+        ctx.imageSmoothingEnabled =
+            true;
+
+        ctx.imageSmoothingQuality =
+            'high';
+
+
+        ctx.drawImage(
+            imageElement,
+            sourceX,
+            sourceY,
+            sourceWidth,
+            sourceHeight,
+            0,
+            0,
+            OUTPUT_WIDTH,
+            OUTPUT_HEIGHT
+        );
+
+
+        canvas.toBlob(
+            function (blob) {
+
+                if (!blob) {
+
+                    alert(
+                        'Unable to crop image.'
+                    );
+
+                    return;
+
+                }
+
+
+                const originalName =
+                    originalFile.name.replace(
+                        /\.[^/.]+$/,
+                        ''
+                    );
+
+
+                const croppedFile =
+                    new File(
+                        [blob],
+                        originalName +
+                        '_cropped.jpg',
+                        {
+                            type: 'image/jpeg',
+                            lastModified:
+                                Date.now()
+                        }
+                    );
+
+
+                callback(
+                    croppedFile
+                );
+
+            },
+            'image/jpeg',
+            0.90
+        );
+
+    }
+
+
+    // ==========================================
+    // MAIN IMAGE CROP CONFIRM
+    // ==========================================
+
+    editMainCropConfirm.addEventListener(
+        'click',
+        function () {
+
+            if (!currentMainImageFile) {
+                return;
+            }
+
+
+            const selection =
+                getCropRect(
+                    editMainCropSelection
+                );
+
+
+            createCroppedFile(
+                editMainCropImage,
+                selection,
+                currentMainImageFile,
+                function (croppedFile) {
+
+                    selectedMainImage =
+                        croppedFile;
+
+
+                    const reader =
+                        new FileReader();
+
+
+                    reader.onload =
+                        function (event) {
+
+                            selectedMainImagePreviewImg.src =
+                                event.target.result;
+
+                            selectedMainImagePreview.style.display =
+                                'block';
+
+                        };
+
+
+                    reader.readAsDataURL(
+                        croppedFile
+                    );
+
+
+                    closeMainCrop();
+
+                }
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // GALLERY IMAGE SELECT
+    // ==========================================
+
+    editImageInput.addEventListener(
+        'change',
+        function () {
+
+            const file =
+                editImageInput.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            if (
+                getTotalImageCount() >= 5
+            ) {
+
+                alert(
+                    'You can have maximum 5 images.'
+                );
+
+                editImageInput.value =
+                    '';
+
+                return;
+
+            }
+
+
+            if (
+                !file.type ||
+                !file.type.startsWith('image/')
+            ) {
+
+                alert(
+                    'Please select a valid image file.'
+                );
+
+                editImageInput.value =
+                    '';
+
+                return;
+
+            }
+
+
+            openGalleryCrop(file);
+
+
+            editImageInput.value =
+                '';
+
+        }
+    );
+
+
+    // ==========================================
+    // GALLERY CROP CONFIRM
+    // ==========================================
+
+    editCropConfirm.addEventListener(
+        'click',
+        function () {
+
+            if (!currentGalleryImageFile) {
+                return;
+            }
+
+
+            if (
+                getTotalImageCount() >= 5
+            ) {
+
+                alert(
+                    'Maximum 5 images allowed.'
+                );
+
+                closeGalleryCrop();
+
+                return;
+
+            }
+
+
+            const selection =
+                getCropRect(
+                    editCropSelection
+                );
+
+
+            createCroppedFile(
+                editCropImage,
+                selection,
+                currentGalleryImageFile,
+                function (croppedFile) {
+
+                    editSelectedImages.push(
+                        croppedFile
+                    );
+
+
+                    updateEditImageCount();
+
+                    renderEditPreviews();
+
+                    closeGalleryCrop();
+
+                }
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // REMOVE NEW GALLERY IMAGE
+    // ==========================================
+
+    editPreviewBox.addEventListener(
+        'click',
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    '.edit-new-image-remove'
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            const index =
+                parseInt(
+                    button.dataset.index,
+                    10
+                );
+
+
+            if (
+                Number.isNaN(index)
+            ) {
+                return;
+            }
+
+
+            editSelectedImages.splice(
+                index,
+                1
+            );
+
+
+            updateEditImageCount();
+
+            renderEditPreviews();
+
+        }
+    );
+
+
+    // ==========================================
+    // REMOVE EXISTING GALLERY IMAGE
+    // ==========================================
+
+    editPropertyForm.addEventListener(
+        'click',
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    '.existing-image-remove'
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            const imageId =
+                button.dataset.imageId;
+
+
+            const input =
+                editPropertyForm.querySelector(
+                    `input[data-existing-input="${imageId}"]`
+                );
+
+
+            const card =
+                editPropertyForm.querySelector(
+                    `[data-gallery-image-id="${imageId}"]`
+                );
+
+
+            if (input) {
+                input.remove();
+            }
+
+
+            if (card) {
+                card.remove();
+            }
+
+
+            updateEditImageCount();
+
+        }
+    );
+
+
+    // ==========================================
+    // EDIT PROPERTY SUBMIT
+    // ==========================================
+
+    editPropertyForm.addEventListener(
+        'submit',
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            const totalImages =
+                getTotalImageCount();
+
+
+            if (
+                totalImages < 1
+            ) {
+
+                alert(
+                    'Please keep at least 1 property image.'
+                );
+
+                return;
+
+            }
+
+
+            if (
+                totalImages > 5
+            ) {
+
+                alert(
+                    'You can have maximum 5 property images.'
+                );
+
+                return;
+
+            }
+
+
+            const formData =
+                new FormData(
+                    editPropertyForm
+                );
+
+
+            // ======================================
+            // REMOVE ORIGINAL IMAGE INPUT DATA
+            // ======================================
+
+            formData.delete('images');
+
+            formData.delete('main_image');
+
+
+            // ======================================
+            // MAIN IMAGE
+            // ======================================
+
+            if (selectedMainImage) {
+
+                formData.append(
+                    'main_image',
+                    selectedMainImage
+                );
+
+            }
+
+
+            // ======================================
+            // NEW GALLERY IMAGES
+            // ======================================
+
+            editSelectedImages.forEach(
+                function (file) {
+
+                    formData.append(
+                        'images',
+                        file
+                    );
+
+                }
+            );
+
+
+            // ======================================
+            // SUBMIT BUTTON
+            // ======================================
+
+            const submitButton =
+                editPropertyForm.querySelector(
+                    'button[type="submit"]'
+                );
+
+
+            if (submitButton) {
+
+                submitButton.disabled =
+                    true;
+
+                submitButton.innerHTML =
+                    '<i class="fa fa-spinner fa-spin"></i> Updating...';
+
+            }
+
+
+            // ======================================
+            // AJAX SUBMIT
+            // ======================================
+
+            fetch(
+                editPropertyForm.action,
+                {
+                    method: 'POST',
+
+                    body: formData,
+
+                    headers: {
+                        'X-Requested-With':
+                            'XMLHttpRequest'
+                    }
+                }
+            )
+
+            .then(
+                function (response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Network response was not ok'
+                        );
+
+                    }
+
+                    return response.text();
+
+                }
+            )
+
+            .then(
+                function (html) {
+
+                    mainArea.innerHTML =
+                        html;
+
+                }
+            )
+
+            .catch(
+                function (error) {
+
+                    console.error(
+                        'Edit property error:',
+                        error
+                    );
+
+
+                    if (submitButton) {
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.innerHTML =
+                            'Update Property';
+
+                    }
+
+
+                    alert(
+                        'Property update nahi ho payi. Please try again.'
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // INITIAL COUNT
+    // ==========================================
+
+    updateEditImageCount();
+
+}
+                
+                
+                // ==========================================
+// ADD PROPERTY IMAGE UPLOAD + CROP
+// ==========================================
+
+const imageInput =
+    document.getElementById('property-images-input');
+
+const previewBox =
+    document.getElementById('selected-images-preview');
+
+const imageCount =
+    document.getElementById('image-count');
+
+const propertyForm =
+    document.getElementById('add-property-form');
+
+
+if (
+    !imageInput ||
+    !previewBox ||
+    !imageCount ||
+    !propertyForm
+) {
+    return;
+}
+
+
+if (imageInput.dataset.initialized === 'true') {
+    return;
+}
+
+imageInput.dataset.initialized = 'true';
+
+
+let selectedImages = [];
+let currentImageFile = null;
+
+
+/* ==========================================
+   COUNT
+   ========================================== */
+
+function updateImageCount() {
+
+    imageCount.textContent =
+        selectedImages.length + '/5';
+
+}
+
+
+/* ==========================================
+   PREVIEW
+   ========================================== */
+
+function renderPreviews() {
+
+    previewBox.innerHTML = '';
+
+
+    selectedImages.forEach(
+        function (file, index) {
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (event) {
+
+                    const wrapper =
+                        document.createElement('div');
+
+
+                    wrapper.style.position =
+                        'relative';
+
+                    wrapper.style.display =
+                        'inline-block';
+
+                    wrapper.style.width =
+                        '120px';
+
+                    wrapper.style.height =
+                        '90px';
+
+                    wrapper.style.marginRight =
+                        '10px';
+
+                    wrapper.style.marginBottom =
+                        '10px';
+
+                    wrapper.style.border =
+                        '1px solid #cbd5e1';
+
+                    wrapper.style.borderRadius =
+                        '8px';
+
+                    wrapper.style.overflow =
+                        'hidden';
+
+
+                    wrapper.innerHTML = `
+                        <img
+                            src="${event.target.result}"
+                            style="
+                                width:100%;
+                                height:100%;
+                                object-fit:cover;
+                                display:block;
+                            "
+                        >
+
+                        <button
+                            type="button"
+                            data-index="${index}"
+                            style="
+                                position:absolute;
+                                top:5px;
+                                right:5px;
+                                width:24px;
+                                height:24px;
+                                border:none;
+                                border-radius:50%;
+                                background:rgba(0,0,0,0.65);
+                                color:white;
+                                font-size:18px;
+                                line-height:20px;
+                                cursor:pointer;
+                            "
+                        >×</button>
+                    `;
+
+
+                    previewBox.appendChild(
+                        wrapper
+                    );
+
+                };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   CROP ELEMENTS
+   ========================================== */
+
+const imageCropModal =
+    document.getElementById(
+        'imageCropModal'
+    );
+
+const cropCanvasWrapper =
+    document.getElementById(
+        'cropCanvasWrapper'
+    );
+
+const cropImage =
+    document.getElementById(
+        'cropImage'
+    );
+
+const cropSelection =
+    document.getElementById(
+        'cropSelection'
+    );
+
+const cropCloseBtn =
+    document.getElementById(
+        'cropCloseBtn'
+    );
+
+const cropCancelBtn =
+    document.getElementById(
+        'cropCancelBtn'
+    );
+
+const cropConfirmBtn =
+    document.getElementById(
+        'cropConfirmBtn'
+    );
+
+
+if (
+    !imageCropModal ||
+    !cropCanvasWrapper ||
+    !cropImage ||
+    !cropSelection ||
+    !cropCloseBtn ||
+    !cropCancelBtn ||
+    !cropConfirmBtn
+) {
+
+    console.error(
+        'Crop elements not found.'
+    );
+
+    return;
+
+}
+
+
+/* ==========================================
+   CROP SETTINGS
+   ========================================== */
+
+const CROP_ASPECT_RATIO = 4 / 3;
+
+const OUTPUT_WIDTH = 1200;
+
+const OUTPUT_HEIGHT = 900;
+
+const MIN_CROP_WIDTH = 120;
+
+
+const cropState = {
+
+    mode: null,
+
+    startX: 0,
+
+    startY: 0,
+
+    startLeft: 0,
+
+    startTop: 0,
+
+    startWidth: 0,
+
+    startHeight: 0
+
+};
+
+
+/* ==========================================
+   GET CROP RECTANGLE
+   ========================================== */
+
+function getCropRect() {
+
+    return {
+
+        left:
+            parseFloat(
+                cropSelection.style.left
+            ) || 0,
+
+        top:
+            parseFloat(
+                cropSelection.style.top
+            ) || 0,
+
+        width:
+            parseFloat(
+                cropSelection.style.width
+            ) || 0,
+
+        height:
+            parseFloat(
+                cropSelection.style.height
+            ) || 0
+
+    };
+
+}
+
+
+/* ==========================================
+   SET CROP RECTANGLE
+   ========================================== */
+
+function setCropRect(
+    left,
+    top,
+    width
+) {
+
+    const wrapperWidth =
+        cropCanvasWrapper.clientWidth;
+
+    const wrapperHeight =
+        cropCanvasWrapper.clientHeight;
+
+
+    if (
+        !wrapperWidth ||
+        !wrapperHeight
+    ) {
+        return;
+    }
+
+
+    width =
+        Number(width) || 0;
+
+
+    let height =
+        width / CROP_ASPECT_RATIO;
+
+
+    const maxWidth =
+        Math.min(
+            wrapperWidth,
+            wrapperHeight *
+            CROP_ASPECT_RATIO
+        );
+
+
+    const minWidth =
+        Math.min(
+            MIN_CROP_WIDTH,
+            maxWidth
+        );
+
+
+    width =
+        Math.max(
+            minWidth,
+            Math.min(
+                width,
+                maxWidth
+            )
+        );
+
+
+    height =
+        width /
+        CROP_ASPECT_RATIO;
+
+
+    left =
+        Number(left) || 0;
+
+    top =
+        Number(top) || 0;
+
+
+    left =
+        Math.max(
+            0,
+            left
+        );
+
+    top =
+        Math.max(
+            0,
+            top
+        );
+
+
+    if (
+        left + width >
+        wrapperWidth
+    ) {
+
+        left =
+            wrapperWidth -
+            width;
+
+    }
+
+
+    if (
+        top + height >
+        wrapperHeight
+    ) {
+
+        top =
+            wrapperHeight -
+            height;
+
+    }
+
+
+    cropSelection.style.left =
+        left + 'px';
+
+    cropSelection.style.top =
+        top + 'px';
+
+    cropSelection.style.width =
+        width + 'px';
+
+    cropSelection.style.height =
+        height + 'px';
+
+}
+
+
+/* ==========================================
+   INITIAL CROP BOX
+   ========================================== */
+
+function initializeCropSelection() {
+
+    const wrapperWidth =
+        cropCanvasWrapper.clientWidth;
+
+    const wrapperHeight =
+        cropCanvasWrapper.clientHeight;
+
+
+    if (
+        !wrapperWidth ||
+        !wrapperHeight
+    ) {
+        return;
+    }
+
+
+    let cropWidth;
+
+
+    if (
+        wrapperWidth /
+        wrapperHeight >
+        CROP_ASPECT_RATIO
+    ) {
+
+        cropWidth =
+            wrapperHeight *
+            CROP_ASPECT_RATIO *
+            0.80;
+
+    } else {
+
+        cropWidth =
+            wrapperWidth *
+            0.80;
+
+    }
+
+
+    const maxWidth =
+        Math.min(
+            wrapperWidth,
+            wrapperHeight *
+            CROP_ASPECT_RATIO
+        );
+
+
+    cropWidth =
+        Math.min(
+            cropWidth,
+            maxWidth
+        );
+
+
+    const cropHeight =
+        cropWidth /
+        CROP_ASPECT_RATIO;
+
+
+    const left =
+        (
+            wrapperWidth -
+            cropWidth
+        ) / 2;
+
+
+    const top =
+        (
+            wrapperHeight -
+            cropHeight
+        ) / 2;
+
+
+    setCropRect(
+        left,
+        top,
+        cropWidth
+    );
+
+}
+
+
+/* ==========================================
+   OPEN CROP
+   ========================================== */
+
+function openCropPopup(file) {
+
+    currentImageFile = file;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function (event) {
+
+            cropImage.onload =
+                function () {
+
+                    imageCropModal.style.display =
+                        'flex';
+
+
+                    document.body.style.overflow =
+                        'hidden';
+
+
+                    requestAnimationFrame(
+                        function () {
+
+                            requestAnimationFrame(
+                                function () {
+
+                                    initializeCropSelection();
+
+                                }
+                            );
+
+                        }
+                    );
+
+                };
+
+
+            cropImage.src =
+                event.target.result;
+
+        };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* ==========================================
+   CLOSE CROP
+   ========================================== */
+
+function closeCropPopup() {
+
+    imageCropModal.style.display =
+        'none';
+
+
+    document.body.style.overflow =
+        '';
+
+
+    cropImage.src = '';
+
+    currentImageFile = null;
+
+    cropState.mode = null;
+
+}
+
+
+cropCloseBtn.addEventListener(
+    'click',
+    closeCropPopup
+);
+
+
+cropCancelBtn.addEventListener(
+    'click',
+    closeCropPopup
+);
+
+
+/* ==========================================
+   CROP MOVE / RESIZE
+   ========================================== */
+
+cropSelection.addEventListener(
+    'pointerdown',
+    function (event) {
+
+        event.preventDefault();
+
+
+        const handle =
+            event.target.closest(
+                '.crop-handle'
+            );
+
+
+        if (handle) {
+
+            if (
+                handle.classList.contains(
+                    'crop-handle-nw'
+                )
+            ) {
+
+                cropState.mode = 'nw';
+
+            }
+
+            else if (
+                handle.classList.contains(
+                    'crop-handle-ne'
+                )
+            ) {
+
+                cropState.mode = 'ne';
+
+            }
+
+            else if (
+                handle.classList.contains(
+                    'crop-handle-sw'
+                )
+            ) {
+
+                cropState.mode = 'sw';
+
+            }
+
+            else if (
+                handle.classList.contains(
+                    'crop-handle-se'
+                )
+            ) {
+
+                cropState.mode = 'se';
+
+            }
+
+        }
+
+        else {
+
+            cropState.mode = 'move';
+
+        }
+
+
+        const rect =
+            getCropRect();
+
+
+        cropState.startX =
+            event.clientX;
+
+        cropState.startY =
+            event.clientY;
+
+        cropState.startLeft =
+            rect.left;
+
+        cropState.startTop =
+            rect.top;
+
+        cropState.startWidth =
+            rect.width;
+
+        cropState.startHeight =
+            rect.height;
+
+
+        cropSelection.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+
+cropSelection.addEventListener(
+    'pointermove',
+    function (event) {
+
+        if (!cropState.mode) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        const wrapperWidth =
+            cropCanvasWrapper.clientWidth;
+
+        const wrapperHeight =
+            cropCanvasWrapper.clientHeight;
+
+
+        const dx =
+            event.clientX -
+            cropState.startX;
+
+        const dy =
+            event.clientY -
+            cropState.startY;
+
+
+        const startLeft =
+            cropState.startLeft;
+
+        const startTop =
+            cropState.startTop;
+
+        const startWidth =
+            cropState.startWidth;
+
+        const startHeight =
+            cropState.startHeight;
+
+
+        /* MOVE */
+
+        if (
+            cropState.mode === 'move'
+        ) {
+
+            let left =
+                startLeft + dx;
+
+            let top =
+                startTop + dy;
+
+
+            left =
+                Math.max(
+                    0,
+                    Math.min(
+                        left,
+                        wrapperWidth -
+                        startWidth
+                    )
+                );
+
+
+            top =
+                Math.max(
+                    0,
+                    Math.min(
+                        top,
+                        wrapperHeight -
+                        startHeight
+                    )
+                );
+
+
+            setCropRect(
+                left,
+                top,
+                startWidth
+            );
+
+
+            return;
+
+        }
+
+
+        /* RESIZE */
+
+        let newWidth =
+            startWidth;
+
+        let newLeft =
+            startLeft;
+
+        let newTop =
+            startTop;
+
+
+        if (
+            cropState.mode === 'se'
+        ) {
+
+            const deltaWidth =
+                Math.max(
+                    dx,
+                    dy *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newWidth =
+                startWidth +
+                deltaWidth;
+
+        }
+
+        else if (
+            cropState.mode === 'sw'
+        ) {
+
+            const deltaWidth =
+                Math.max(
+                    -dx,
+                    dy *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newWidth =
+                startWidth +
+                deltaWidth;
+
+
+            newLeft =
+                startLeft +
+                startWidth -
+                newWidth;
+
+        }
+
+        else if (
+            cropState.mode === 'ne'
+        ) {
+
+            const deltaWidth =
+                Math.max(
+                    dx,
+                    -dy *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newWidth =
+                startWidth +
+                deltaWidth;
+
+
+            newTop =
+                startTop +
+                startHeight -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+        else if (
+            cropState.mode === 'nw'
+        ) {
+
+            const deltaWidth =
+                Math.max(
+                    -dx,
+                    -dy *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newWidth =
+                startWidth +
+                deltaWidth;
+
+
+            newLeft =
+                startLeft +
+                startWidth -
+                newWidth;
+
+
+            newTop =
+                startTop +
+                startHeight -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+
+        const maxWidth =
+            Math.min(
+                wrapperWidth,
+                wrapperHeight *
+                CROP_ASPECT_RATIO
+            );
+
+
+        const minWidth =
+            Math.min(
+                MIN_CROP_WIDTH,
+                maxWidth
+            );
+
+
+        newWidth =
+            Math.max(
+                minWidth,
+                Math.min(
+                    newWidth,
+                    maxWidth
+                )
+            );
+
+
+        if (
+            cropState.mode === 'se'
+        ) {
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    wrapperWidth -
+                    startLeft
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    (
+                        wrapperHeight -
+                        startTop
+                    ) *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                startLeft;
+
+            newTop =
+                startTop;
+
+        }
+
+        else if (
+            cropState.mode === 'sw'
+        ) {
+
+            const right =
+                startLeft +
+                startWidth;
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    right
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    (
+                        wrapperHeight -
+                        startTop
+                    ) *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                right -
+                newWidth;
+
+            newTop =
+                startTop;
+
+        }
+
+        else if (
+            cropState.mode === 'ne'
+        ) {
+
+            const bottom =
+                startTop +
+                startHeight;
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    wrapperWidth -
+                    startLeft
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    bottom *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                startLeft;
+
+
+            newTop =
+                bottom -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+        else if (
+            cropState.mode === 'nw'
+        ) {
+
+            const right =
+                startLeft +
+                startWidth;
+
+
+            const bottom =
+                startTop +
+                startHeight;
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    right
+                );
+
+
+            newWidth =
+                Math.min(
+                    newWidth,
+                    bottom *
+                    CROP_ASPECT_RATIO
+                );
+
+
+            newLeft =
+                right -
+                newWidth;
+
+
+            newTop =
+                bottom -
+                (
+                    newWidth /
+                    CROP_ASPECT_RATIO
+                );
+
+        }
+
+
+        setCropRect(
+            newLeft,
+            newTop,
+            newWidth
+        );
+
+    }
+);
+
+
+cropSelection.addEventListener(
+    'pointerup',
+    function (event) {
+
+        if (
+            cropSelection.hasPointerCapture &&
+            cropSelection.hasPointerCapture(
+                event.pointerId
+            )
+        ) {
+
+            cropSelection.releasePointerCapture(
+                event.pointerId
+            );
+
+        }
+
+
+        cropState.mode = null;
+
+    }
+);
+
+
+cropSelection.addEventListener(
+    'pointercancel',
+    function () {
+
+        cropState.mode = null;
+
+    }
+);
+
+
+/* ==========================================
+   SELECT IMAGE
+   ========================================== */
+
+imageInput.addEventListener(
+    'change',
+    function () {
+
+        const file =
+            imageInput.files[0];
+
+
+        if (!file) {
+            return;
+        }
+
+
+        if (
+            selectedImages.length >= 5
+        ) {
+
+            alert(
+                'You can upload maximum 5 images.'
+            );
+
+            imageInput.value = '';
+
+            return;
+
+        }
+
+
+        if (
+            !file.type ||
+            !file.type.startsWith('image/')
+        ) {
+
+            alert(
+                'Please select a valid image file.'
+            );
+
+            imageInput.value = '';
+
+            return;
+
+        }
+
+
+        openCropPopup(file);
+
+
+        imageInput.value = '';
+
+    }
+);
+
+
+/* ==========================================
+   CROP & ADD
+   ========================================== */
+
+cropConfirmBtn.addEventListener(
+    'click',
+    function () {
+
+        if (!currentImageFile) {
+            return;
+        }
+
+
+        const selection =
+            getCropRect();
+
+
+        const displayedWidth =
+            cropImage.clientWidth;
+
+        const displayedHeight =
+            cropImage.clientHeight;
+
+
+        const naturalWidth =
+            cropImage.naturalWidth;
+
+        const naturalHeight =
+            cropImage.naturalHeight;
+
+
+        if (
+            !displayedWidth ||
+            !displayedHeight ||
+            !naturalWidth ||
+            !naturalHeight
+        ) {
+
+            alert(
+                'Unable to read image dimensions.'
+            );
+
+            return;
+
+        }
+
+
+        const scaleX =
+            naturalWidth /
+            displayedWidth;
+
+        const scaleY =
+            naturalHeight /
+            displayedHeight;
+
+
+        const sourceX =
+            selection.left *
+            scaleX;
+
+        const sourceY =
+            selection.top *
+            scaleY;
+
+        const sourceWidth =
+            selection.width *
+            scaleX;
+
+        const sourceHeight =
+            selection.height *
+            scaleY;
+
+
+        const canvas =
+            document.createElement(
+                'canvas'
+            );
+
+
+        canvas.width =
+            OUTPUT_WIDTH;
+
+        canvas.height =
+            OUTPUT_HEIGHT;
+
+
+        const ctx =
+            canvas.getContext('2d');
+
+
+        if (!ctx) {
+
+            alert(
+                'Unable to process image.'
+            );
+
+            return;
+
+        }
+
+
+        ctx.imageSmoothingEnabled =
+            true;
+
+        ctx.imageSmoothingQuality =
+            'high';
+
+
+        ctx.drawImage(
+            cropImage,
+            sourceX,
+            sourceY,
+            sourceWidth,
+            sourceHeight,
+            0,
+            0,
+            OUTPUT_WIDTH,
+            OUTPUT_HEIGHT
+        );
+
+
+        canvas.toBlob(
+            function (blob) {
+
+                if (!blob) {
+
+                    alert(
+                        'Unable to crop image.'
+                    );
+
+                    return;
+
+                }
+
+
+                const originalName =
+                    currentImageFile.name
+                        .replace(
+                            /\.[^/.]+$/,
+                            ''
+                        );
+
+
+                const croppedFile =
+                    new File(
+                        [blob],
+                        originalName +
+                        '_cropped.jpg',
+                        {
+                            type: 'image/jpeg',
+                            lastModified:
+                                Date.now()
+                        }
+                    );
+
+
+                selectedImages.push(
+                    croppedFile
+                );
+
+
+                updateImageCount();
+
+                renderPreviews();
+
+                closeCropPopup();
+
+            },
+            'image/jpeg',
+            0.90
+        );
+
+    }
+);
+
+
+/* ==========================================
+   FORM SUBMIT
+   ========================================== */
+
+propertyForm.addEventListener(
+    'submit',
+    function (event) {
+
+        event.preventDefault();
+
+
+        if (
+            selectedImages.length < 1
+        ) {
+
+            alert(
+                'Please upload at least 1 property image.'
+            );
+
+            return;
+
+        }
+
+
+        if (
+            selectedImages.length > 5
+        ) {
+
+            alert(
+                'You can upload maximum 5 images.'
+            );
+
+            return;
+
+        }
+
+
+        const formData =
+            new FormData(propertyForm);
+
+
+        formData.delete('images');
+
+
+        selectedImages.forEach(
+            function (file) {
+
+                formData.append(
+                    'images',
+                    file
+                );
+
+            }
+        );
+
+
+        fetch(
+            propertyForm.action,
+            {
+                method: 'POST',
+
+                body: formData,
+
+                headers: {
+                    'X-Requested-With':
+                        'XMLHttpRequest'
+                }
+            }
+        )
+        .then(
+            function (response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Network response was not ok'
+                    );
+
+                }
+
+                return response.text();
+
+            }
+        )
+        .then(
+            function (html) {
+
+                mainArea.innerHTML =
+                    html;
+
+            }
+        )
+        .catch(
+            function (error) {
+
+                console.error(error);
+
+                alert(
+                    'Property save nahi ho payi. Please try again.'
+                );
+
+            }
+        );
+
+    }
+);
+
+
+updateImageCount();
+
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mainArea.innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to load content.</div>';
+            });
+        });
+
+        // 3. Global AJAX Form submit listener
+        document.addEventListener('submit', function(e) {
+            const form = e.target.closest('.ajax-form');
+            if (!form) return;
+
+            e.preventDefault();
+            const url = form.getAttribute('action') || window.location.href;
+            const formData = new FormData(form);
+
+            mainArea.innerHTML = '<div style="text-align:center; padding:50px; color:#555;"><i class="fa fa-spinner fa-spin fa-2x"></i><p>Saving...</p></div>';
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
+            .then(html => {
+                mainArea.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mainArea.innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to save data.</div>';
+            });
+        });
+    });
+
+
+function getCookie(name) {
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+}
+
+//Schedule Agent
+document.addEventListener('change', function(e) {
+
+    const select = e.target.closest('.schedule-agent-select');
+
+    if (!select) return;
+
+    const scheduleId = select.dataset.scheduleId;
+    const agentId = select.value;
+
+    fetch(
+        "{% url 'assign_schedule_agent' 0 %}"
+        .replace('/0/', '/' + scheduleId + '/'),
+        {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                agent_id: agentId
+            })
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.success) {
+
+            Swal.fire({
+                title: 'Agent Assigned Successfully!',
+                text: data.agent_name + ' has been assigned.',
+                icon: 'success',
+                confirmButtonColor: '#17a2b8'
+            });
+
+        } else {
+
+            Swal.fire({
+                title: 'Assignment Failed',
+                text: data.message,
+                icon: 'error'
+            });
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error(error);
+
+        Swal.fire({
+            title: 'Error',
+            text: 'Something went wrong.',
+            icon: 'error'
+        });
+
+    });
+
+});
+
+
+/* =================================================
+   SCHEDULING - EDIT DATE & TIME
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const editButton =
+        e.target.closest('.schedule-edit-btn');
+
+    if (!editButton) {
+        return;
+    }
+
+    const row =
+        editButton.closest('.schedule-row');
+
+    if (!row) {
+        return;
+    }
+
+    const view =
+        row.querySelector('.schedule-datetime-view');
+
+    const edit =
+        row.querySelector('.schedule-datetime-edit');
+
+    if (view && edit) {
+        view.style.display = 'none';
+        edit.style.display = 'block';
+    }
+});
+
+
+/* =================================================
+   SCHEDULING - SAVE DATE & TIME
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const saveButton = e.target.closest('.save-schedule-date');
+
+    if (!saveButton) return;
+
+    const row = saveButton.closest('.schedule-row');
+
+    const date = row.querySelector('.schedule-date-input').value;
+    const time = row.querySelector('.schedule-time-input').value;
+    const id = saveButton.dataset.id;
+
+    fetch(`/dashboard/scheduling/update-date-time/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `visit_date=${date}&visit_time=${time}`
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        const view = row.querySelector('.schedule-datetime-view');
+        const edit = row.querySelector('.schedule-datetime-edit');
+
+        view.innerHTML = `
+            <strong>${data.date}</strong><br>
+            <small>
+                <i class="fa fa-clock"></i>
+                ${data.time}
+            </small>
+        `;
+
+        view.style.display = 'block';
+        edit.style.display = 'none';
+
+    })
+    .catch(error => {
+        console.error('Save Error:', error);
+    });
+
+});
+
+/* =================================================
+   SCHEDULING - DELETE
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const deleteButton = e.target.closest('.schedule-delete-btn');
+
+    if (!deleteButton) return;
+
+    const row = deleteButton.closest('.schedule-row');
+    const id = deleteButton.dataset.id;
+
+    if (!confirm('Are you sure you want to delete this visit?')) {
+        return;
+    }
+
+    fetch(`/dashboard/scheduling/delete/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        row.remove();
+
+    })
+    .catch(error => {
+        console.error('Delete Error:', error);
+    });
+
+});
+
+//Scheduling Modal open 
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.schedule-view-btn');
+    if (!btn) return;
+
+    document.getElementById('detailCustomerName').textContent = btn.dataset.name || '—';
+    document.getElementById('detailCustomerEmail').textContent = btn.dataset.email || '—';
+    document.getElementById('detailCustomerPhone').textContent = btn.dataset.phone || '—';
+    document.getElementById('detailProperty').textContent = btn.dataset.property || '—';
+    document.getElementById('detailVisitDate').textContent = btn.dataset.date || '—';
+    document.getElementById('detailVisitTime').textContent = btn.dataset.time || '—';
+    document.getElementById('detailCustomerMessage').textContent = btn.dataset.message || 'No message provided.';
+
+    document.getElementById('scheduleDetailsModal').style.display = 'flex';
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('#closeScheduleDetails, #closeScheduleDetailsBottom')) {
+        document.getElementById('scheduleDetailsModal').style.display = 'none';
+    }
+});
+
+/* =================================================
+   CHANGE PASSWORD - AJAX SUBMIT
+   ================================================= */
+
+document.addEventListener("submit", function (e) {
+
+    const form = e.target.closest("#changePasswordForm");
+
+    if (!form) {
+        return;
+    }
+
+    e.preventDefault();
+
+    const button = form.querySelector("#changePasswordBtn");
+
+    if (!button) {
+        return;
+    }
+
+    const formData = new FormData(form);
+
+    button.disabled = true;
+    button.innerHTML =
+        '<i class="fa fa-spinner fa-spin"></i> Updating...';
+
+    fetch(form.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => {
+
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.message || "Password update failed.");
+            });
+        }
+
+        return response.json();
+    })
+    .then(data => {
+
+        button.disabled = false;
+        button.innerHTML =
+            '<i class="fa fa-key"></i> Update Password';
+
+        if (data.status === "success") {
+
+            Swal.fire({
+                title: "Success!",
+                text: data.message,
+                icon: "success",
+                confirmButtonColor: "#28a745",
+                confirmButtonText: "OK",
+                allowOutsideClick: false
+            }).then(() => {
+
+                form.reset();
+
+            });
+
+        } else {
+
+            Swal.fire({
+                title: "Error!",
+                text: data.message,
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "OK",
+                allowOutsideClick: false
+            });
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error("Password change error:", error);
+
+        button.disabled = false;
+        button.innerHTML =
+            '<i class="fa fa-key"></i> Update Password';
+
+        Swal.fire({
+            title: "Error!",
+            text: error.message || "Something went wrong. Please try again.",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK"
+        });
+
+    });
+
+});
+
+
+/* =================================================
+   ENQUIRY VIEW MODAL
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const viewButton = e.target.closest('.btn-view');
+
+    if (!viewButton) {
+        return;
+    }
+
+    const modal = document.getElementById('adminEnquiryViewModal');
+
+    if (!modal) {
+        return;
+    }
+
+    document.getElementById('modalName').textContent =
+        viewButton.dataset.name || '';
+
+    document.getElementById('modalEmail').textContent =
+        viewButton.dataset.email || '';
+
+    document.getElementById('modalPhone').textContent =
+        viewButton.dataset.phone || '';
+
+    document.getElementById('modalProperty').textContent =
+        viewButton.dataset.property || '';
+
+    document.getElementById('modalMessage').textContent =
+    viewButton.dataset.message || 'No message provided.';
+
+    document.getElementById('modalDate').textContent =
+        viewButton.dataset.date || '';
+
+    document.getElementById('modalStatus').textContent =
+    viewButton.dataset.status || 'Unread';
+
+    modal.dataset.enquiryId = viewButton.dataset.id;
+
+    modal.style.display = 'flex';
+});
+
+
+function closeEnquiryModal() {
+
+    const modal = document.getElementById('adminEnquiryViewModal');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeReplyModal() {
+
+    const replyModal =
+        document.getElementById('adminEnquiryReplyModal');
+
+    if (replyModal) {
+        replyModal.style.display = 'none';
+    }
+
+}
+
+document.addEventListener('click', function (e) {
+
+    const modal = document.getElementById('adminEnquiryViewModal');
+
+    if (!modal) {
+        return;
+    }
+
+    if (e.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+
+
+/* =================================================
+   ENQUIRY STATUS - MARK AS READ / REPLIED
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    /* ---------- MARK AS READ ---------- */
+
+    const readButton = e.target.closest('.read-btn');
+
+    if (readButton) {
+
+        const modal = document.getElementById('adminEnquiryViewModal');
+
+        if (!modal) return;
+
+        const enquiryId = modal.dataset.enquiryId;
+
+        if (!enquiryId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Enquiry ID not found.',
+                icon: 'error'
+            });
+            return;
+        }
+
+        readButton.disabled = true;
+        readButton.innerHTML =
+            '<i class="fa fa-spinner fa-spin"></i> Updating...';
+
+        fetch(`/dashboard/lead/mark-read/${enquiryId}/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.success) {
+
+                // First close enquiry modal
+                closeEnquiryModal();
+
+                // Then show success popup
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Enquiry marked as Read.',
+                    icon: 'success',
+                    confirmButtonColor: '#198754'
+                }).then(() => {
+
+                    const leadLink = document.querySelector(
+                        '.nav-link-ajax[href*="/leads/"]'
+                    );
+
+                    if (leadLink) {
+                        leadLink.click();
+                    }
+
+                });
+
+            } else {
+
+                readButton.disabled = false;
+                readButton.innerHTML = 'Mark as Read';
+
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Unable to update enquiry.',
+                    icon: 'error'
+                });
+
+            }
+
+        })
+        .catch(error => {
+
+            console.error('Mark Read Error:', error);
+
+            readButton.disabled = false;
+            readButton.innerHTML = 'Mark as Read';
+
+            Swal.fire({
+                title: 'Error',
+                text: 'Something went wrong.',
+                icon: 'error'
+            });
+
+        });
+
+        return;
+    }
+
+
+    /* ---------- MARK AS REPLIED ---------- */
+
+    const repliedButton = e.target.closest('.replied-btn');
+
+        if (repliedButton) {
+
+            const modal = document.getElementById('adminEnquiryViewModal');
+            const replyModal = document.getElementById('adminEnquiryReplyModal');
+
+            if (!modal || !replyModal) {
+                return;
+            }
+
+            const enquiryId = modal.dataset.enquiryId;
+
+            if (!enquiryId) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Enquiry ID not found.',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            // Get customer details from View Modal
+            const customerName =
+                document.getElementById('modalName')?.textContent || '';
+
+            const customerEmail =
+                document.getElementById('modalEmail')?.textContent || '';
+
+            // Put customer email into Reply Modal
+            document.getElementById('replyEmail').value = customerEmail;
+
+            // Optional professional default message
+            document.getElementById('replyMessage').value =
+        `Dear ${customerName},
+
+        Thank you for contacting us regarding your property enquiry.
+
+        We have received your enquiry and would be happy to assist you with the required information.
+
+        Please let us know a convenient time to discuss your requirement.
+
+        Regards,
+        Real Estate Management Team`;
+
+            // Close View Modal
+            closeEnquiryModal();
+
+            // Open Reply Modal
+            replyModal.style.display = 'flex';
+
+            return;
+        }
+
+});
+
+
+/* =================================================
+   ENQUIRY - SEND REPLY
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const sendButton = e.target.closest('.send-reply-btn');
+
+    if (!sendButton) {
+        return;
+    }
+
+    const replyModal =
+        document.getElementById('adminEnquiryReplyModal');
+
+    const viewModal =
+        document.getElementById('adminEnquiryViewModal');
+
+    if (!replyModal) {
+        console.error('Reply modal not found');
+        return;
+    }
+
+    const enquiryId =
+        viewModal?.dataset.enquiryId;
+
+    if (!enquiryId) {
+
+        Swal.fire({
+            title: 'Error',
+            text: 'Enquiry ID not found.',
+            icon: 'error'
+        });
+
+        return;
+    }
+
+    const subject =
+        document.getElementById('replySubject').value.trim();
+
+    const message =
+        document.getElementById('replyMessage').value.trim();
+
+    if (!subject) {
+
+        Swal.fire({
+            title: 'Error',
+            text: 'Please enter a subject.',
+            icon: 'warning'
+        });
+
+        return;
+    }
+
+    if (!message) {
+
+        Swal.fire({
+            title: 'Error',
+            text: 'Please write a reply message.',
+            icon: 'warning'
+        });
+
+        return;
+    }
+
+    sendButton.disabled = true;
+
+    sendButton.innerHTML =
+        '<i class="fa fa-spinner fa-spin"></i> Sending...';
+
+    fetch(`/dashboard/lead/mark-replied/${enquiryId}/`, {
+
+        method: 'POST',
+
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+            subject: subject,
+            message: message
+        })
+
+    })
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            closeReplyModal();
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'Reply marked as sent successfully.',
+                icon: 'success',
+                confirmButtonColor: '#198754'
+            }).then(() => {
+
+                const leadLink =
+                    document.querySelector(
+                        '.nav-link-ajax[href*="/leads/"]'
+                    );
+
+                if (leadLink) {
+                    leadLink.click();
+                }
+
+            });
+
+        } else {
+
+            sendButton.disabled = false;
+
+            sendButton.innerHTML =
+                '<i class="fa fa-paper-plane"></i> Send Reply';
+
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Unable to process reply.',
+                icon: 'error'
+            });
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error('Send Reply Error:', error);
+
+        sendButton.disabled = false;
+
+        sendButton.innerHTML =
+            '<i class="fa fa-paper-plane"></i> Send Reply';
+
+        Swal.fire({
+            title: 'Error',
+            text: 'Something went wrong.',
+            icon: 'error'
+        });
+
+    });
+
+});
+
+
+
+// Booking View Modal
+document.addEventListener('click', function (e) {
+
+    const btn = e.target.closest('.booking-view-btn');
+    if (!btn) return;
+
+    const modal = document.getElementById('adminBookingViewModal');
+    if (!modal) return;
+
+    const d = btn.dataset;
+
+    document.getElementById('modalBookingId').textContent = d.id || '-';
+    document.getElementById('modalBookingDate').textContent = d.bookingDate || '-';
+    document.getElementById('modalRequestDate').textContent = d.requestDate || '-';
+    document.getElementById('modalBookingStatus').textContent = d.status || '-';
+
+    document.getElementById('modalCustomerName').textContent = d.customerName || '-';
+    document.getElementById('modalCustomerEmail').textContent = d.customerEmail || '-';
+    document.getElementById('modalCustomerPhone').textContent = d.customerPhone || '-';
+
+    document.getElementById('modalPropertyName').textContent = d.propertyName || '-';
+    document.getElementById('modalPropertyLocation').textContent = d.propertyLocation || '-';
+    document.getElementById('modalPropertyCity').textContent = d.propertyCity || '-';
+    document.getElementById('modalPropertyCategory').textContent = d.propertyCategory || '-';
+    document.getElementById('modalPropertyType').textContent = d.propertyType || '-';
+    document.getElementById('modalPropertyPrice').textContent = d.propertyPrice ? '₹ ' + d.propertyPrice : '-';
+    document.getElementById('modalPropertyArea').textContent = d.propertyArea || '-';
+    document.getElementById('modalPropertyBedrooms').textContent = d.propertyBedrooms || '0';
+    document.getElementById('modalPropertyBathrooms').textContent = d.propertyBathrooms || '0';
+    document.getElementById('modalPropertyDescription').textContent = d.propertyDescription || '-';
+
+    const img = document.getElementById('modalPropertyImage');
+
+    if (d.propertyImage) {
+        img.src = d.propertyImage;
+        img.style.display = 'block';
+    } else {
+        img.style.display = 'none';
+    }
+
+    modal.style.display = 'flex';
+});
+
+function closeBookingModal() {
+    const modal = document.getElementById('adminBookingViewModal');
+    if (modal) modal.style.display = 'none';
+}
+
+
+// ==========================================
+// BOOKING STATUS UPDATE
+// ==========================================
+
+document.addEventListener('change', function (e) {
+
+    const select = e.target.closest('.booking-status-select');
+
+    if (!select) return;
+
+    const bookingId = select.dataset.bookingId;
+    const newStatus = select.value;
+    const oldStatus = select.dataset.currentStatus;
+
+    const csrfToken = getCookie('csrftoken');
+
+    console.log('-----------------------------');
+    console.log('BOOKING STATUS UPDATE');
+    console.log('Booking ID:', bookingId);
+    console.log('Old Status:', oldStatus);
+    console.log('New Status:', newStatus);
+    console.log('CSRF Token:', csrfToken);
+    console.log('-----------------------------');
+
+    if (!bookingId) {
+
+        console.error('Booking ID not found.');
+
+        select.value = oldStatus;
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Booking ID not found.'
+        });
+
+        return;
+    }
+
+    if (!csrfToken) {
+
+        console.error('CSRF token not found.');
+
+        select.value = oldStatus;
+
+        Swal.fire({
+            icon: 'error',
+            title: 'CSRF Error',
+            text: 'CSRF token not found. Please refresh the page.'
+        });
+
+        return;
+    }
+
+    select.disabled = true;
+
+    fetch(
+        "{% url 'update_booking_status' 0 %}"
+        .replace('/0/', '/' + bookingId + '/'),
+        {
+            method: 'POST',
+
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+
+            body: new URLSearchParams({
+                status: newStatus
+            })
+        }
+    )
+
+    .then(async response => {
+
+        console.log('HTTP Status:', response.status);
+
+        const text = await response.text();
+
+        console.log('Server Response:', text);
+
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch (error) {
+
+            throw new Error(
+                'Server returned invalid response. HTTP Status: ' +
+                response.status
+            );
+        }
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message || 'Status update failed.'
+            );
+        }
+
+        return data;
+    })
+
+    .then(data => {
+
+        console.log('Parsed Data:', data);
+
+        if (data.success) {
+
+            select.dataset.currentStatus = data.status;
+
+            select.className =
+                'booking-status-select status-' +
+                data.status.toLowerCase();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Status Updated',
+                text: data.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+        } else {
+
+            select.value = oldStatus;
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: data.message || 'Unable to update booking status.'
+            });
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error('Booking status error:', error);
+
+        select.value = oldStatus;
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Unable to update booking status.'
+        });
+
+    })
+
+    .finally(() => {
+
+        select.disabled = false;
+
+    });
+
+});
+
+
+// BOOKING DELETE
+document.addEventListener('click', function(e) {
+
+    const btn = e.target.closest('.booking-delete-btn');
+    if (!btn) return;
+
+    const bookingId = btn.dataset.bookingId;
+
+    Swal.fire({
+        title: 'Delete Booking?',
+        text: 'This booking will be permanently deleted.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete',
+        confirmButtonColor: '#dc3545'
+    }).then(result => {
+
+        if (!result.isConfirmed) return;
+
+        fetch(
+            "{% url 'delete_booking' 0 %}".replace('/0/', '/' + bookingId + '/'),
+            {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.success) {
+
+                btn.closest('tr').remove();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted',
+                    text: data.message,
+                    timer: 1200,
+                    showConfirmButton: false
+                });
+
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+
+        })
+        .catch(() => {
+            Swal.fire(
+                'Error',
+                'Unable to delete booking.',
+                'error'
+            );
+        });
+
+    });
+
+});
+
+
+
+
+function openAgentModal(agentId) {
+    fetch("{% url 'agent_details_ajax' 0 %}".replace('/0/', '/' + agentId + '/'))
+        .then(response => response.json())
+        .then(data => {
+
+            document.getElementById('modalName').textContent = data.name || '-';
+            document.getElementById('modalFatherName').textContent = data.father_name || '-';
+            document.getElementById('modalRole').textContent = data.role || '-';
+            document.getElementById('modalExperience').textContent = data.experience || '-';
+            document.getElementById('modalEmail').textContent = data.email || '-';
+            document.getElementById('modalPhone').textContent = data.phone || '-';
+            document.getElementById('modalStatus').textContent =
+                data.is_active ? 'Active' : 'Inactive';
+
+            const buttons = document.querySelectorAll(
+                '#agentModal .agent-documents button'
+            );
+
+            buttons[0].onclick = () => {
+                if (data.aadhaar_url) {
+                    window.open(data.aadhaar_url, '_blank');
+                }
+            };
+
+            buttons[1].onclick = () => {
+                if (data.pan_url) {
+                    window.open(data.pan_url, '_blank');
+                }
+            };
+
+            document.getElementById('agentModal').style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('Agent details error:', error);
+        });
+}
+
+function closeAgentModal() {
+    const modal = document.getElementById('agentModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+
+
+function openProjectModal(
+    id,
+    title,
+    location,
+    category,
+    status,
+    possession,
+    description,
+    amenities,
+    imageUrl
+) {
+
+    document.getElementById('modalProjectId').textContent = '#' + id;
+
+    document.getElementById('modalProjectTitle').textContent = title;
+    document.getElementById('modalProjectTitleValue').textContent = title;
+
+    document.getElementById('modalProjectLocation').textContent =
+        location || 'Not Available';
+
+    document.getElementById('modalProjectCategory').textContent =
+        category || 'Not Available';
+
+    document.getElementById('modalProjectStatus').textContent =
+        status || 'Not Available';
+
+    document.getElementById('modalProjectPossession').textContent =
+        possession || 'Not Available';
+
+    document.getElementById('modalProjectAmenities').textContent =
+        amenities || 'Not Available';
+
+    document.getElementById('modalProjectDescription').textContent =
+        description || 'No description available.';
+
+    const image = document.getElementById('modalProjectImage');
+    const noImage = document.getElementById('noProjectImage');
+
+    if (imageUrl) {
+
+        image.src = imageUrl;
+        image.style.display = 'block';
+        noImage.style.display = 'none';
+
+    } else {
+
+        image.src = '';
+        image.style.display = 'none';
+        noImage.style.display = 'flex';
+
+    }
+
+    const modal = document.getElementById('projectViewModal');
+
+    modal.style.display = 'flex';
+
+    document.body.style.overflow = 'hidden';
+}
+
+
+function closeProjectModal() {
+
+    const modal = document.getElementById('projectViewModal');
+
+    modal.style.display = 'none';
+
+    document.body.style.overflow = '';
+}
+
+
+document.addEventListener('click', function(event) {
+
+    const modal = document.getElementById('projectViewModal');
+
+    if (!modal) {
+        return;
+    }
+
+    if (event.target === modal) {
+        closeProjectModal();
+    }
+
+});
+
+
+document.addEventListener('keydown', function(event) {
+
+    if (event.key === 'Escape') {
+
+        const modal = document.getElementById('projectViewModal');
+
+        if (modal && modal.style.display === 'flex') {
+            closeProjectModal();
+        }
+
+    }
+
+});
+
+
+/* =========================================================
+   PROPERTY VIEW MODAL
+   ========================================================= */
+
+document.addEventListener("click", function (e) {
+
+    const viewButton = e.target.closest(".property-view-btn");
+
+    if (!viewButton) {
+        return;
+    }
+
+    const modal = document.getElementById("propertyViewModal");
+
+    if (!modal) {
+        console.error("Property View Modal not found.");
+        return;
+    }
+
+
+    /* =====================================================
+       GET PROPERTY DATA
+       ===================================================== */
+
+    const propertyId = viewButton.dataset.id || "";
+    const title = viewButton.dataset.title || "";
+    const category = viewButton.dataset.category || "";
+    const price = viewButton.dataset.price || "";
+    const location = viewButton.dataset.location || "";
+    const city = viewButton.dataset.city || "";
+    const status = viewButton.dataset.status || "";
+    const bedrooms = viewButton.dataset.bedrooms || "";
+    const description = viewButton.dataset.description || "";
+    const featured = viewButton.dataset.featured || "";
+    const approved = viewButton.dataset.approved || "";
+    const image = viewButton.dataset.image || "";
+
+
+    /* =====================================================
+       FILL PROPERTY DETAILS
+       ===================================================== */
+
+    document.getElementById("modalPropertyId").textContent =
+        propertyId ? "#" + propertyId : "-";
+
+    document.getElementById("modalPropertyTitle").textContent =
+        title || "Property Details";
+
+    document.getElementById("modalPropertyTitleValue").textContent =
+        title || "-";
+
+    document.getElementById("modalPropertyCategory").textContent =
+        category || "-";
+
+    document.getElementById("modalPropertyPrice").textContent =
+        price ? "₹" + price : "-";
+
+    document.getElementById("modalPropertyLocation").textContent =
+        location || "-";
+
+    document.getElementById("modalPropertyCity").textContent =
+        city || "-";
+
+    document.getElementById("modalPropertyStatus").textContent =
+        status || "-";
+
+    document.getElementById("modalPropertyBedrooms").textContent =
+        bedrooms || "-";
+
+    document.getElementById("modalPropertyFeatured").textContent =
+        featured === "true" ? "Yes" : "No";
+
+    document.getElementById("modalPropertyApproval").textContent =
+        approved === "true" ? "Approved" : "Pending";
+
+    document.getElementById("modalPropertyDescription").textContent =
+        description || "No description available.";
+
+
+    /* =====================================================
+       PROPERTY IMAGE
+       ===================================================== */
+
+    const modalImage =
+        document.getElementById("modalPropertyImage");
+
+    const noImage =
+        document.getElementById("noPropertyImage");
+
+
+    if (image) {
+
+        modalImage.src = image;
+
+        modalImage.style.display = "block";
+
+        noImage.style.display = "none";
+
+    } else {
+
+        modalImage.src = "";
+
+        modalImage.style.display = "none";
+
+        noImage.style.display = "flex";
+
+    }
+
+
+    /* =====================================================
+       SHOW MODAL
+       ===================================================== */
+
+    modal.style.display = "flex";
+
+});
+
+
+/* =========================================================
+   CLOSE PROPERTY MODAL
+   ========================================================= */
+
+document.addEventListener("click", function (e) {
+
+    const closeButton =
+        e.target.closest("#closePropertyModal");
+
+    if (closeButton) {
+
+        const modal =
+            document.getElementById("propertyViewModal");
+
+        if (modal) {
+            modal.style.display = "none";
+        }
+
+    }
+
+});
+
+
+/* =========================================================
+   CLOSE WHEN CLICKING OUTSIDE MODAL
+   ========================================================= */
+
+document.addEventListener("click", function (e) {
+
+    const modal =
+        document.getElementById("propertyViewModal");
+
+    if (!modal) {
+        return;
+    }
+
+    if (e.target === modal) {
+
+        modal.style.display = "none";
+
+    }
+
+});
+
+
+/* =========================================================
+   CLOSE WITH ESCAPE KEY
+   ========================================================= */
+
+document.addEventListener("keydown", function (e) {
+
+    if (e.key === "Escape") {
+
+        const modal =
+            document.getElementById("propertyViewModal");
+
+        if (modal) {
+
+            modal.style.display = "none";
+
+        }
+
+    }
+
+});
+
+
+// ==================== BLOG VIEW MODAL ====================
+
+document.addEventListener('click', function (e) {
+
+    const viewBtn = e.target.closest('.blog-view-btn');
+
+    if (!viewBtn) return;
+
+    const modal = document.getElementById('blogViewModal');
+
+    if (!modal) {
+        console.error('Blog View Modal not found.');
+        return;
+    }
+
+    // Get modal elements
+    const title = document.getElementById('blogModalTitle');
+    const category = document.getElementById('blogModalCategory');
+    const date = document.getElementById('blogModalDate');
+    const excerpt = document.getElementById('blogModalExcerpt');
+    const content = document.getElementById('blogModalContent');
+    const image = document.getElementById('blogModalImage');
+    const noImage = document.getElementById('noBlogImage');
+    const tagsContainer = document.getElementById('blogModalTags');
+
+    // Get blog data from button
+    const blogTitle = viewBtn.dataset.title || '';
+    const blogCategory = viewBtn.dataset.category || '';
+    const blogDate = viewBtn.dataset.date || '';
+    const blogExcerpt = viewBtn.dataset.excerpt || '';
+    const blogContent = viewBtn.dataset.content || '';
+    const blogImage = viewBtn.dataset.image || '';
+    const blogTags = viewBtn.dataset.tags || '';
+
+    // Set modal content
+    if (title) {
+        title.textContent = blogTitle;
+    }
+
+    if (category) {
+        category.textContent = blogCategory;
+    }
+
+    if (date) {
+        date.textContent = blogDate;
+    }
+
+    if (excerpt) {
+        excerpt.textContent = blogExcerpt;
+    }
+
+    if (content) {
+        content.textContent = blogContent;
+    }
+
+    // ==================== BLOG TAGS ====================
+
+    if (tagsContainer) {
+
+        tagsContainer.innerHTML = '';
+
+        if (blogTags.trim() !== '') {
+
+            blogTags.split(',').forEach(function(tag) {
+
+                const span = document.createElement('span');
+
+                span.className = 'tag';
+
+                span.textContent = tag.trim();
+
+                tagsContainer.appendChild(span);
+
+            });
+
+        } else {
+
+            const noTags = document.createElement('span');
+
+            noTags.className = 'no-tags';
+
+            noTags.textContent = 'No Tags';
+
+            tagsContainer.appendChild(noTags);
+
+        }
+    }
+
+    // ==================== BLOG IMAGE ====================
+
+    if (image && noImage) {
+
+        if (blogImage) {
+
+            image.src = blogImage;
+            image.alt = blogTitle || 'Blog Image';
+
+            image.style.display = 'block';
+            noImage.style.display = 'none';
+
+        } else {
+
+            image.removeAttribute('src');
+
+            image.style.display = 'none';
+            noImage.style.display = 'flex';
+
+        }
+    }
+
+    // ==================== SHOW MODAL ====================
+
+    modal.style.display = 'flex';
+
+    document.body.style.overflow = 'hidden';
+
+});
+
+
+// ==================== CLOSE BLOG VIEW MODAL ====================
+
+document.addEventListener('click', function (e) {
+
+    const closeBtn = e.target.closest('#closeBlogViewModal');
+
+    if (closeBtn) {
+
+        const modal = document.getElementById('blogViewModal');
+
+        if (modal) {
+
+            modal.style.display = 'none';
+
+            document.body.style.overflow = '';
+
+        }
+
+        return;
+    }
+
+    // Close when clicking outside modal
+    if (e.target.id === 'blogViewModal') {
+
+        e.target.style.display = 'none';
+
+        document.body.style.overflow = '';
+
+    }
+
+});
+
+
+// ==================== CLOSE BLOG MODAL WITH ESC ====================
+
+document.addEventListener('keydown', function (e) {
+
+    if (e.key === 'Escape') {
+
+        const modal = document.getElementById('blogViewModal');
+
+        if (modal) {
+
+            modal.style.display = 'none';
+
+            document.body.style.overflow = '';
+
+        }
+
+    }
+
+});
+
+
+
+// ======================================================
+// SITE VISIT SUMMARY CARDS
+// Only ONE section will stay open at a time
+// ======================================================
+
+document.addEventListener('click', function (e) {
+
+    // --------------------------------------------------
+    // Detect Site Visit Summary Card
+    // --------------------------------------------------
+    const card = e.target.closest('.visit-summary-card');
+
+    if (!card) {
+        return;
+    }
+
+    e.preventDefault();
+
+    // Card ke href se target section ID milegi
+    const targetId = card.getAttribute('href');
+
+    if (!targetId) {
+        return;
+    }
+
+    const targetSection = document.querySelector(targetId);
+
+    if (!targetSection) {
+        console.error('Site Visit section not found:', targetId);
+        return;
+    }
+
+
+    // --------------------------------------------------
+    // CLOSE ALL OTHER OPEN SECTIONS
+    // --------------------------------------------------
+
+    document.querySelectorAll('.visit-detail-section').forEach(function (section) {
+
+        if (section !== targetSection) {
+            section.style.display = 'none';
+        }
+
+    });
+
+
+    // --------------------------------------------------
+    // OPEN SELECTED SECTION
+    // --------------------------------------------------
+
+    targetSection.style.display = 'block';
+
+
+    // --------------------------------------------------
+    // SMOOTH SCROLL TO SELECTED SECTION
+    // --------------------------------------------------
+
+    setTimeout(function () {
+
+        targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+    }, 50);
+
+});
+
+
+// ======================================================
+// COMMON CLOSE FUNCTION
+// ======================================================
+
+window.closeVisitSection = function (sectionId) {
+
+    const section = document.getElementById(sectionId);
+
+    if (!section) {
+        console.error('Section not found:', sectionId);
+        return;
+    }
+
+    // Section close
+    section.style.display = 'none';
+
+
+    // Page ko top par le jao
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
+};
+
+
+// ======================================================
+// OPTIONAL: CLOSE ALL SITE VISIT SECTIONS
+// ======================================================
+
+window.closeAllVisitSections = function () {
+
+    document.querySelectorAll('.visit-detail-section').forEach(function (section) {
+
+        section.style.display = 'none';
+
+    });
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
+};
+    
+</script>
+
+
+
+{{ property_types_data|json_script:"property-types-data" }}
+
+</body>
+</html>

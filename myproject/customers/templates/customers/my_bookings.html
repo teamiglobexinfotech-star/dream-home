@@ -1,0 +1,592 @@
+
+{% load static %}
+
+<div style="max-width:1200px; margin:0 auto;">
+
+    <!-- Header -->
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+    ">
+
+        <div>
+            <h2 style="
+                margin:0;
+                font-size:22px;
+                font-weight:600;
+                color:#0f172a;
+            ">
+                <i class="fa-solid fa-bookmark"></i>
+                My Bookings
+            </h2>
+
+            <p style="
+                margin:5px 0 0;
+                color:#64748b;
+                font-size:13px;
+            ">
+                View and track your property bookings
+            </p>
+        </div>
+
+        <button
+            type="button"
+            onclick="location.reload()"
+            style="
+                background:#ffffff;
+                color:#334155;
+                border:1px solid #cbd5e1;
+                padding:7px 14px;
+                border-radius:6px;
+                font-size:13px;
+                font-weight:500;
+                cursor:pointer;
+            "
+        >
+            ← Back to Dashboard
+        </button>
+
+    </div>
+
+
+    <!-- Booking Cards -->
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+        gap:20px;
+    ">
+
+        {% for booking in bookings %}
+
+        <div style="
+            background:#ffffff;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+            overflow:hidden;
+            box-shadow:0 1px 3px rgba(0,0,0,0.05);
+        ">
+
+            <!-- Property Image -->
+            <div style="
+                position:relative;
+                height:180px;
+                background:#f1f5f9;
+            ">
+
+                {% if booking.property.image %}
+
+                    <img
+                        src="{{ booking.property.image.url }}"
+                        alt="{{ booking.property.title }}"
+                        style="
+                            width:100%;
+                            height:180px;
+                            object-fit:cover;
+                            display:block;
+                        "
+                    >
+
+                {% else %}
+
+                    <div style="
+                        height:180px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:#94a3b8;
+                        font-size:14px;
+                    ">
+                        <i class="fa-regular fa-image"
+                           style="margin-right:6px;"></i>
+                        No Image Available
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Property Type -->
+                <span style="
+                    position:absolute;
+                    top:12px;
+                    left:12px;
+                    background:#2563eb;
+                    color:#ffffff;
+                    padding:5px 10px;
+                    border-radius:5px;
+                    font-size:11px;
+                    font-weight:600;
+                ">
+                    For {{ booking.property.status }}
+                </span>
+
+            </div>
+
+
+            <!-- Card Body -->
+            <div style="padding:16px;">
+
+                <!-- Property Title -->
+                <h3 style="
+                    margin:0 0 7px;
+                    font-size:17px;
+                    font-weight:600;
+                    color:#0f172a;
+                ">
+                    {{ booking.property.title }}
+                </h3>
+
+
+                <!-- Location -->
+                <p style="
+                    margin:0 0 8px;
+                    color:#64748b;
+                    font-size:13px;
+                ">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ booking.property.location }},
+                    {{ booking.property.city }}
+                </p>
+
+
+                <!-- Price -->
+                <p style="
+                    margin:0 0 12px;
+                    color:#2563eb;
+                    font-size:16px;
+                    font-weight:700;
+                ">
+                    ₹ {{ booking.property.formatted_price }}
+                </p>
+
+
+                <!-- Booking Date -->
+                <div style="
+                    border-top:1px solid #e2e8f0;
+                    padding-top:10px;
+                ">
+
+                    <div style="
+                        font-size:12px;
+                        color:#64748b;
+                        margin-bottom:5px;
+                    ">
+                        <i class="fa-regular fa-calendar"></i>
+                        Booking Date
+                    </div>
+
+                    <div style="
+                        font-size:13px;
+                        color:#334155;
+                        font-weight:500;
+                    ">
+                        {{ booking.created_at|date:"d M Y, h:i A" }}
+                    </div>
+
+                </div>
+
+
+                <!-- Booking Status -->
+                <div style="
+                    margin-top:12px;
+                    padding:9px 10px;
+                    border-radius:6px;
+                    background:#f8fafc;
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                ">
+
+                    <span style="
+                        font-size:12px;
+                        color:#64748b;
+                    ">
+                        Booking Status
+                    </span>
+
+                    <strong style="
+                        font-size:12px;
+                        color:#334155;
+                    ">
+                        {{ booking.status }}
+                    </strong>
+
+                </div>
+
+
+                <!-- View Booking Button -->
+                <button
+                    type="button"
+                    class="customer-booking-view-btn"
+
+                    data-id="{{ booking.id }}"
+                    data-date="{{ booking.created_at|date:'d M Y, h:i A' }}"
+                    data-status="{{ booking.status }}"
+
+                    data-property-name="{{ booking.property.title|escape }}"
+                    data-property-location="{{ booking.property.location|escape }}"
+                    data-property-city="{{ booking.property.city|escape }}"
+                    data-property-type="{{ booking.property.status|escape }}"
+                    data-property-price="{{ booking.property.formatted_price|escape }}"
+                    data-property-area="{{ booking.property.area|default:'-' }}"
+                    data-property-bedrooms="{{ booking.property.bedrooms|default:'-' }}"
+                    data-property-bathrooms="{{ booking.property.bathrooms|default:'-' }}"
+
+                    data-property-description="{{ booking.property.description|default:'No description available.'|escapejs }}"
+
+                    data-property-image="{% if booking.property.image %}{{ booking.property.image.url }}{% endif %}"
+
+                    style="
+                        width:100%;
+                        margin-top:12px;
+                        padding:9px;
+                        border:1px solid #2563eb;
+                        background:#ffffff;
+                        color:#2563eb;
+                        border-radius:6px;
+                        font-size:13px;
+                        font-weight:600;
+                        cursor:pointer;
+                    "
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View Booking
+                </button>
+
+            </div>
+
+        </div>
+
+
+        {% empty %}
+
+        <!-- Empty State -->
+        <div style="
+            grid-column:1 / -1;
+            text-align:center;
+            padding:55px 20px;
+            background:#ffffff;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+        ">
+
+            <div style="
+                font-size:36px;
+                color:#94a3b8;
+                margin-bottom:15px;
+            ">
+                <i class="fa-solid fa-bookmark"></i>
+            </div>
+
+            <p style="
+                color:#475569;
+                font-size:16px;
+                margin:0 0 15px;
+                font-weight:500;
+            ">
+                You haven't booked any properties yet.
+            </p>
+
+            <a
+                href="{% url 'properties' %}"
+                style="
+                    display:inline-block;
+                    background:#2563eb;
+                    color:#ffffff;
+                    padding:10px 20px;
+                    border-radius:6px;
+                    text-decoration:none;
+                    font-size:13px;
+                    font-weight:500;
+                "
+            >
+                Browse Properties
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     BOOKING DETAILS MODAL
+===================================================== -->
+
+<div id="bookingDetailsModal" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,0.55);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+">
+
+    <div style="
+        width:100%;
+        max-width:620px;
+        background:#ffffff;
+        border-radius:10px;
+        box-shadow:0 15px 40px rgba(0,0,0,0.18);
+        overflow:hidden;
+    ">
+
+
+        <!-- Modal Header -->
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:12px 15px;
+            border-bottom:1px solid #e2e8f0;
+        ">
+
+            <strong style="
+                font-size:16px;
+                font-weight:600;
+                color:#0f172a;
+            ">
+                Booking Details
+            </strong>
+
+
+            <button
+                type="button"
+                onclick="closeBookingModal()"
+                aria-label="Close"
+                style="
+                    border:0;
+                    background:#f1f5f9;
+                    color:#475569;
+                    width:29px;
+                    height:29px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-size:18px;
+                    line-height:29px;
+                "
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- Modal Body -->
+        <div style="padding:14px;">
+
+
+            <!-- Property Image -->
+            <img
+                id="bookingModalImage"
+                alt="Property"
+                style="
+                    width:100%;
+                    height:145px;
+                    object-fit:cover;
+                    border-radius:8px;
+                    display:none;
+                    margin-bottom:10px;
+                "
+            >
+
+
+            <!-- Property Name + Status -->
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:10px;
+                margin-bottom:3px;
+            ">
+
+                <h3
+                    id="bookingModalName"
+                    style="
+                        margin:0;
+                        font-size:18px;
+                        font-weight:600;
+                        color:#0f172a;
+                    "
+                ></h3>
+
+
+                <span
+                    id="bookingModalStatus"
+                    style="
+                        background:#eff6ff;
+                        color:#2563eb;
+                        padding:4px 9px;
+                        border-radius:15px;
+                        font-size:11px;
+                        font-weight:600;
+                        white-space:nowrap;
+                    "
+                ></span>
+
+            </div>
+
+
+            <!-- Location -->
+            <p
+                id="bookingModalLocation"
+                style="
+                    margin:4px 0 6px;
+                    color:#64748b;
+                    font-size:12px;
+                "
+            ></p>
+
+
+            <!-- Price -->
+            <div
+                id="bookingModalPrice"
+                style="
+                    color:#2563eb;
+                    font-size:17px;
+                    font-weight:700;
+                    margin-bottom:10px;
+                "
+            ></div>
+
+
+            <!-- Property Details -->
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(4,1fr);
+                gap:7px;
+                margin-bottom:10px;
+            ">
+
+                <div class="booking-modal-info">
+                    <small>Type</small>
+                    <strong id="bookingModalType">-</strong>
+                </div>
+
+
+                <div class="booking-modal-info">
+                    <small>Area</small>
+                    <strong id="bookingModalArea">-</strong>
+                </div>
+
+
+                <div class="booking-modal-info">
+                    <small>Bedrooms</small>
+                    <strong id="bookingModalBedrooms">-</strong>
+                </div>
+
+
+                <div class="booking-modal-info">
+                    <small>Bathrooms</small>
+                    <strong id="bookingModalBathrooms">-</strong>
+                </div>
+
+            </div>
+
+
+            <!-- Booking Information -->
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                border-top:1px solid #e2e8f0;
+                padding-top:9px;
+                color:#475569;
+                font-size:12px;
+                gap:10px;
+            ">
+
+                <span style="white-space:nowrap;">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="bookingModalDate"></span>
+                </span>
+
+
+                <span style="white-space:nowrap;">
+                    Booking ID:
+                    #<span id="bookingModalId"></span>
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MODAL CSS
+===================================================== -->
+
+<style>
+
+.booking-modal-info {
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:6px;
+    padding:7px 5px;
+    text-align:center;
+    min-width:0;
+}
+
+.booking-modal-info small {
+    display:block;
+    color:#64748b;
+    font-size:10px;
+    margin-bottom:2px;
+}
+
+.booking-modal-info strong {
+    display:block;
+    color:#334155;
+    font-size:12px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+/* Mobile */
+@media (max-width:600px) {
+
+    #bookingDetailsModal {
+        padding:10px !important;
+    }
+
+    #bookingDetailsModal > div {
+        max-width:100% !important;
+    }
+
+    #bookingModalImage {
+        height:120px !important;
+    }
+
+    #bookingModalName {
+        font-size:16px !important;
+    }
+
+    #bookingDetailsModal .booking-modal-info {
+        padding:7px 3px;
+    }
+
+    #bookingDetailsModal .booking-modal-info strong {
+        font-size:11px;
+    }
+
+    #bookingDetailsModal > div > div:last-child {
+        padding:12px !important;
+    }
+}
+
+</style>
+

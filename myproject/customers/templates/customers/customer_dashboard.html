@@ -1,0 +1,667 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamHome - Real Estate Portal Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- External CSS link -->
+    <link rel="stylesheet" href="{% static 'dashboard/customer_dashboard.css' %}">
+</head>
+<body>
+
+    <!-- Sidebar Wireframe -->
+    <aside class="sidebar">
+        <div class="brand-box">
+            <i class="fa-solid fa-house-chimney"></i> 
+            <div class="brand-text">
+                <span class="brand-title">DreamHome</span>
+                <span class="brand-subtitle">Real Estate Portal</span>
+            </div>
+        </div>
+
+        <li class="search-menu-li" style="padding: 10px 15px;">
+            <div style="display: flex; align-items: center; width: 100%;">
+                <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8; font-size: 14px; margin-right: 10px;"></i>
+                <input type="text" id="sidebarSearchInput" placeholder="Search menu..." style="background: transparent; border: none; color: #1e293b; outline: none; width: 100%; font-size: 14px; font-family: inherit;">
+            </div>
+        </li>
+        
+        <div class="sidebar-category">MAIN</div>
+        <ul class="nav-links">
+            <li class="active"><a href="{% url 'customer_dashboard' %}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="#" onclick="loadSavedPropertiesAjax(); return false;"><i class="fa-solid fa-heart"></i> Saved Properties</a></li>
+            <li><a href="#" id="enquiryMenuLink"><i class="fa-solid fa-clipboard-question"></i> My Enquiry</a></li>
+            <li><a href="#" id="siteVisitMenuLink"><i class="fa-solid fa-calendar-check"></i> Site Visits</a></li>
+            <li><a href="#" id="bookingMenuLink"><i class="fa-solid fa-bookmark"></i> My Bookings</a></li>
+            <li><a href="#" style="opacity: 0.6; cursor: not-allowed; display: flex; justify-content: space-between; align-items: center;" onclick="return false;"><span><i class="fa-solid fa-wallet"></i> Payments</span> <span style="font-size: 9px; background: #e0f2fe; color: #0369a1; padding: 2px 5px; border-radius: 4px; font-weight: 600;">Soon</span></a></li>
+            <li><a href="#" style="opacity: 0.6; cursor: not-allowed; display: flex; justify-content: space-between; align-items: center;" onclick="return false;"><span><i class="fa-solid fa-file-lines"></i> Documents</span> <span style="font-size: 9px; background: #e0f2fe; color: #0369a1; padding: 2px 5px; border-radius: 4px; font-weight: 600;">Soon</span></a></li>
+            <li><a href="#" onclick="event.preventDefault(); loadSupportAjax();"><i class="fa-solid fa-headset"></i> Support</a></li>
+        </ul>
+
+        <div class="sidebar-category">ACCOUNT</div>
+        <ul class="nav-links">
+            <li>
+                <a href="#" id="profileMenuLink" data-url="{% url 'customer_profile' %}">
+                    <i class="fa-solid fa-user"></i> My Profile
+                </a>
+            </li>
+            <li>
+                <a href="#" id="changepasswordMenuLink" data-url="{% url 'change_password' %}">
+                    <i class="fa-solid fa-lock"></i> Change Password
+                </a>
+            </li>
+            <li>
+                <form action="{% url 'logout' %}" method="POST" id="logoutForm" style="margin: 0; display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; font: inherit; display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 15px; text-align: left; text-decoration: none;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+
+        <!-- Sidebar Promo Box -->
+        <div class="sidebar-promo">
+            <div class="promo-content">
+                <h4>Find Your<br>Dream Home</h4>
+                <p>Thousands of properties just for you.</p>
+                <button class="btn-explore" onclick="alert('Exploring properties...')">Explore Properties <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Section -->
+    <main class="main-content">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <div class="nav-left"></div>
+            <div class="nav-right">
+                <div class="nav-icon-badge" id="bellIcon" style="cursor: pointer; position: relative;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge-count" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; display: none;">
+                        {{ notif_count }}
+                    </span>
+
+                    <!-- Notification Dropdown -->
+                    <div id="notificationDropdown" style="display: none; position: absolute; right: 0; top: 35px; width: 300px; background: white; border: 1px solid #e5e7eb; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-radius: 8px; z-index: 1000; overflow: hidden;">
+                        <div style="padding: 12px 15px; border-bottom: 1px solid #f3f4f6; font-weight: 600; font-size: 14px; color: #1f2937;">Notifications</div>
+                        <div id="notificationListContainer" style="max-height: 250px; overflow-y: auto;">
+                            <!-- Notifications yahan dynamic load hongi -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- <div class="user-profile">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="{{ user.full_name }}">
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="name">{{ user.full_name }}</div>
+                        <div class="role">Premium Member</div>
+                    </div>
+                </div> -->
+
+                <div class="user-profile" id="userProfileDropdown">
+
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="{{ user.full_name }}">
+                    {% endif %}
+
+                    <div class="user-info">
+                        <div class="name">
+                            {{ user.full_name }}
+                            <i class="fa-solid fa-chevron-down profile-arrow"></i>
+                        </div>
+                        <div class="role">Premium Member</div>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                        <!-- My Profile -->
+    <a href="#" onclick="event.preventDefault(); loadProfileView();">
+        <i class="fa-solid fa-user"></i>
+        <span>My Profile</span>
+    </a>
+
+                        <a href="{% url 'home' %}">
+                            <i class="fa-solid fa-house"></i>
+                            <span>Back to Home</span>
+                        </a>
+
+                        <form action="{% url 'logout' %}" method="POST" id="topLogoutForm">
+                            {% csrf_token %}
+                            <button type="submit">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+        </header>
+
+        <!-- Dashboard Scrollable Body -->
+        <div class="dashboard-body">
+            
+            <!-- DYNAMIC CONTENT WRAPPER START -->
+            <div id="dashboard-dynamic-content">
+
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+                    <h1>Welcome back, {{ user.full_name }} 👋</h1>
+                    <p>Let's find your perfect property today.</p>
+                </div>
+
+                <!-- Top Stats Cards Grid -->
+                <div class="stats-grid-dream">
+                    <!-- Saved Properties -->
+                    <div class="stat-box" onclick="loadSavedPropertiesAjax();" style="cursor: pointer;">
+                        <div class="stat-icon-bg purple"><i class="fa-solid fa-heart"></i></div>
+                        <div class="stat-data">
+                            <h4>Saved Properties</h4>
+                            <h2>{{ saved_properties_count }}</h2>
+                            <a href="#" onclick="loadSavedPropertiesAjax(); return false;" style="text-decoration: none; color: #2563eb; display: inline-block; font-size: 13px; font-weight: 500; cursor: pointer;">View all saved</a>
+                        </div>
+                    </div>
+
+                    <!-- My Bookings -->
+                    <div class="stat-box" onclick="loadMyBookings();" style="cursor: pointer;">
+                        <div class="stat-icon-bg blue"><i class="fa-solid fa-book-bookmark"></i></div>
+                        <div class="stat-data">
+                            <h4>My Bookings</h4>
+                            <h2>{{ bookings_count }}</h2>
+                            <a href="#" onclick="event.preventDefault(); loadMyBookings();" style="text-decoration: none; color: #2563eb; display: inline-block; font-size: 13px; font-weight: 500; cursor: pointer;">View all bookings</a>
+                        </div>
+                    </div>
+
+                    <!-- My Enquiries -->
+                    <div class="stat-box" onclick="loadMyEnquiries();" style="cursor: pointer;">
+                        <div class="stat-icon-bg green"><i class="fa-solid fa-comments"></i></div>
+                        <div class="stat-data">
+                            <h4>My Enquiries</h4>
+                            <h2>{{ enquiries_count }}</h2>
+                            <span>View enquiries</span>
+                        </div>
+                    </div>
+
+                    <!-- Site Visit Requests -->
+                    <div class="stat-box" onclick="loadMySiteVisits();" style="cursor: pointer;">
+                        <div class="stat-icon-bg orange"><i class="fa-solid fa-calendar-days"></i></div>
+                        <div class="stat-data">
+                            <h4>Site Visit Requests</h4>
+                            <h2>{{ site_visits_count }}</h2>
+                            <span>View visits</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Payments -->
+                    <div class="stat-box">
+                        <div class="stat-icon-bg emerald"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <div class="stat-data">
+                            <h4>Total Payments</h4>
+                            <h2 style="font-size: 16px; color: #0369a1; margin: 4px 0;">Coming Soon</h2>
+                            <span style="color: #9ca3af; font-size: 11px;">Will be soon</span>
+                        </div>
+                    </div>
+
+                    <!-- Documents -->
+                    <div class="stat-box">
+                        <div class="stat-icon-bg red"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="stat-data">
+                            <h4>Documents</h4>
+                            <h2 style="font-size: 16px; color: #0369a1; margin: 4px 0;">Coming Soon</h2>
+                            <span style="color: #9ca3af; font-size: 11px;">Will be soon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 1: Saved Properties & Upcoming Site Visits -->
+                <div class="grid-row-2">
+                    <!-- Saved Properties Card -->
+                    <div class="card-section">
+                        <div class="section-header">
+                            <h3>Saved Properties</h3>
+                            <a href="#" onclick="loadSavedPropertiesAjax(); return false;" class="view-all">View All</a>
+                        </div>
+                        <div class="property-cards-row">
+                            {% for item in dash_saved_props|slice:":2" %}
+                                <div class="prop-card">
+                                    <div class="prop-img">
+                                        <img src="{{ item.property.image.url }}" alt="Property">
+                                        <span class="tag-sale">{{ item.property.status|default:"For Sale" }}</span>
+                                        <i class="fa-solid fa-heart fav-active"></i>
+                                    </div>
+                                    <div class="prop-details">
+                                        <h4>{{ item.property.title }}</h4>
+                                        <p class="prop-type">{{ item.property.property_type }}</p>
+                                        <p class="prop-loc"><i class="fa-solid fa-location-dot"></i> {{ item.property.location }}</p>
+                                        <div class="prop-price">₹ {{ item.property.price }}</div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p style="padding: 15px; color: #64748b; font-size: 14px;">No saved properties found.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Site Visits Card -->
+                    <div class="card-section">
+                            <div class="section-header">
+                                <h3>Upcoming Site Visits</h3>
+                            </div>
+                            <ul class="visit-list">
+                                {% for visit in upcoming_visits|slice:":3" %}
+                                <li>
+                                    <!-- Agar Enquiry model me property ka image relation hai toh visit.property.image use karein, warna default placeholder -->
+                                    <img src="{% if visit.property and visit.property.image %}{{ visit.property.image.url }}{% else %}https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=80&h=80&fit=crop{% endif %}" alt="Visit">
+                                    <div class="visit-info">
+                                        <h4>{% if visit.property %}{{ visit.property.title }}{% else %}{{ visit.property_type|default:"Property Visit" }}{% endif %}</h4>
+                                        <p>{% if visit.property %}{{ visit.property.get_property_type_display }}{% else %}Site Inspection{% endif %}</p>
+                                        <div class="visit-meta">
+                                            <span><i class="fa-regular fa-calendar"></i> {{ visit.visit_date|date:"d M Y" }}</span>
+                                            <span><i class="fa-regular fa-clock"></i> {{ visit.visit_date|date:"h:i A" }}</span>
+                                        </div>
+                                        <p class="visit-loc"><i class="fa-solid fa-location-dot"></i> {% if visit.property %}{{ visit.property.location }}{% else %}{{ visit.phone }}{% endif %}</p>
+                                    </div>
+                                </li>
+                                {% empty %}
+                                <li style="padding: 15px; text-align: center; color: #777;">
+                                    <p>No upcoming site visits scheduled.</p>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                <!-- Row 2: My Bookings, Recent Enquiries & Payment Summary -->
+                <div class="grid-row-3">
+                    <!-- My Bookings Table -->
+                    <div class="card-section">
+                        <div class="section-header">
+                            <h3>My Bookings</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Booking ID</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in customer_bookings|slice:":3" %}
+                                <tr>
+                                    <td>
+                                        <strong>{% if booking.property %}{{ booking.property.title }}{% else %}Property #{{ booking.id }}{% endif %}</strong><br>
+                                        <small>{% if booking.property %}{{ booking.property.get_property_type_display }}{% else %}Booking Item{% endif %}</small>
+                                    </td>
+                                    <td>BK-{{ booking.created_at.year|default:"2026" }}-{{ booking.id|stringformat:"04d" }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if booking.status == 'Confirmed' or booking.status == 'Completed' %}badge-success
+                                            {% elif booking.status == 'Pending' %}badge-warning
+                                            {% else %}badge-info{% endif %}">
+                                            {{ booking.status }}
+                                        </span>
+                                    </td>
+                                    <td>₹ {{ booking.amount|default:"0" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 15px; color: #777;">
+                                        No bookings found.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Payment Summary Chart Box -->
+                    <div class="card-section">
+                        <div class="section-header">
+                            <h3>Payment Summary</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="payment-summary-content">
+                            <div class="pay-stats">
+                                <p>Paid Amount: <strong>₹ 18,75,000</strong></p>
+                                <p>Pending Amount: <strong style="color: #e11d48;">₹ 2,25,000</strong></p>
+                            </div>
+                            <div class="donut-chart-mock">
+                                <div class="donut-inner">
+                                    <span>Total</span>
+                                    <strong>₹ 21,00,000</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Tip -->
+                <div class="dashboard-footer-tip">
+                    <p><i class="fa-solid fa-lightbulb"></i> <strong>Tip:</strong> Save properties, compare and schedule site visits to make the best decision.</p>
+                    <p>&copy; 2026 DreamHome Real Estate Portal. All rights reserved.</p>
+                </div>
+
+            </div>
+            <!-- DYNAMIC CONTENT WRAPPER END -->
+
+        </div>
+    </main>
+
+<script>
+    const SUPPORT_URL = "{% url 'customer_support' %}";
+
+    document.getElementById('sidebarSearchInput').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let navLinksList = document.querySelectorAll('.nav-links li');
+
+        navLinksList.forEach(function(li) {
+            if (!li.querySelector('input')) {
+                let text = li.textContent || li.innerText;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    li.style.display = ""; 
+                } else {
+                    li.style.display = "none"; 
+                }
+            }
+        });
+    });
+
+    function loadSavedPropertiesAjax() {
+        fetch("{% url 'ajax_all_saved_properties' %}")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("dashboard-dynamic-content").innerHTML = data.html;
+            })
+            .catch(error => console.error('Error loading saved properties:', error));
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener('click', function(e) {
+            let profileLink = e.target.closest('#profileMenuLink');
+            
+            if (profileLink) {
+                e.preventDefault();
+                let profileUrl = profileLink.getAttribute('data-url');
+                
+                if (!profileUrl) return;
+                
+                fetch(profileUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    let contentArea = document.getElementById('dashboard-dynamic-content');
+                    if (contentArea) {
+                        contentArea.innerHTML = html;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading profile:', error);
+                });
+            }
+        });
+    });
+
+    function loadProfileView() {
+        fetch("{% url 'customer_profile' %}", {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('dashboard-dynamic-content').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function loadProfileEditForm() {
+        fetch("{% url 'ajax_customer_profile_edit' %}", {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('dashboard-dynamic-content').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    document.getElementById('changepasswordMenuLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        let url = this.getAttribute('data-url');
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('dashboard-dynamic-content').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const bellIcon = document.getElementById('bellIcon');
+        const dropdown = document.getElementById('notificationDropdown');
+        const notifListContainer = document.getElementById('notificationListContainer');
+        
+        loadNotifications();
+
+        if (bellIcon && dropdown) {
+            bellIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                } else {
+                    dropdown.style.display = 'block';
+                    loadNotifications();
+                }
+            });
+
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        if (notifListContainer) {
+            notifListContainer.addEventListener('click', function(e) {
+                const btn = e.target.closest('.mark-read-btn');
+                if (btn) {
+                    const notifId = btn.getAttribute('data-id');
+                    markAsRead(notifId);
+                }
+            });
+        }
+
+        document.addEventListener('click', function() {
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
+
+    function loadNotifications() {
+        fetch("{% url 'fetch_customer_notifications_ajax' %}", {
+            headers: {
+                'x-requested-with': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.querySelector('.badge-count');
+            if (badge) {
+                badge.innerText = data.notif_count;
+                badge.style.display = (data.notif_count === 0) ? 'none' : 'inline-block';
+            }
+            
+            const notifListContainer = document.getElementById('notificationListContainer');
+            if (notifListContainer) {
+                if (data.notifications && data.notifications.length > 0) {
+                    let html = '';
+                    data.notifications.forEach(n => {
+                        html += `
+                            <div class="notification-item" style="padding: 10px 15px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="flex-grow: 1; padding-right: 10px;">
+                                    <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 2px;">${n.title}</div>
+                                    <p style="margin: 0; font-size: 11px; color: #6b7280; line-height: 1.4;">${n.message}...</p>
+                                </div>
+                                <button type="button" class="mark-read-btn" data-id="${n.id}" style="background: #10b981; color: white; border: none; padding: 4px 8px; font-size: 10px; border-radius: 4px; cursor: pointer; white-space: nowrap;">Read</button>
+                            </div>
+                        `;
+                    });
+                    notifListContainer.innerHTML = html;
+                } else {
+                    notifListContainer.innerHTML = '<p style="text-align: center; color: #9ca3af; padding: 15px; font-size: 12px; margin: 0;">No new notifications</p>';
+                }
+            }
+        })
+        .catch(error => console.error("Error loading notifications:", error));
+    }
+
+    function markAsRead(notifId) {
+        let formData = new FormData();
+        formData.append('notif_id', notifId);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch("{% url 'mark_customer_ajax_read' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'x-requested-with': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadNotifications();
+            } else {
+                console.error("Could not mark as read");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+//Change Password
+document.addEventListener('submit', function(e) {
+    const form = e.target.closest('#ajaxPasswordForm');
+
+    if (!form) return;
+
+    e.preventDefault();
+
+    const submitBtn = form.querySelector('#pwdSubmitBtn');
+    const alertBox = form.querySelector('#inlinePasswordAlert');
+
+    const formData = new FormData(form);
+
+    submitBtn.innerText = "Updating...";
+    submitBtn.disabled = true;
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        alertBox.style.display = "block";
+
+        if (data.success) {
+
+    alertBox.style.display = "none";
+
+    form.reset();
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: data.message,
+        confirmButtonText: 'OK'
+    });
+
+    } else {
+
+            alertBox.style.background = "#fee2e2";
+            alertBox.style.color = "#991b1b";
+            alertBox.style.border = "1px solid #fecaca";
+            alertBox.innerText = data.message;
+        }
+
+        submitBtn.innerText = "Update Password";
+        submitBtn.disabled = false;
+
+    })
+    .catch(error => {
+
+        console.error('Password change error:', error);
+
+        alertBox.style.display = "block";
+        alertBox.style.background = "#fee2e2";
+        alertBox.style.color = "#991b1b";
+        alertBox.style.border = "1px solid #fecaca";
+        alertBox.innerText = "Something went wrong. Please try again.";
+
+        submitBtn.innerText = "Update Password";
+        submitBtn.disabled = false;
+    });
+});
+
+
+document.addEventListener('submit', function(e) {
+
+    const logoutForm = e.target.closest('#logoutForm, #topLogoutForm');
+
+    if (!logoutForm) return;
+
+    e.preventDefault();
+
+    Swal.fire({
+        title: 'Logout?',
+        text: 'Are you sure you want to logout?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#2563eb',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Yes, Logout',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            logoutForm.submit();
+        }
+
+    });
+
+});
+
+
+</script>
+
+<!-- External JavaScript File Link -->
+<script src="{% static 'dashboard/customer_dashboard.js' %}"></script>
+
+</body>
+</html>

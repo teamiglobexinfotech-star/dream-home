@@ -1,0 +1,48 @@
+<div class="space-y-6">
+    <div class="card" style="padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">Edit Profile</h3>
+            <a href="{% url 'agent_own_profile' %}" class="ajax-link" style="background: #6b7280; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 14px; text-decoration: none;">Cancel</a>
+        </div>
+
+        <form method="POST" action="{% url 'agent_own_profile' %}?edit=true" enctype="multipart/form-data" style="background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            {% csrf_token %}
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Full Name</label>
+                    <input type="text" name="full_name" value="{{ user_obj.full_name }}" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #1f2937; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Email Address</label>
+                    <input type="email" name="email" value="{{ user_obj.email }}" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #1f2937; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Mobile Number</label>
+                    <input type="text" name="mobile_number" value="{{ user_obj.mobile_number }}" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #1f2937; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Designation</label>
+                    <input type="text" name="designation" value="{{ user_obj.designation|default:'' }}" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #1f2937; box-sizing: border-box;">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Office Address</label>
+                    <input type="text" name="office_address" value="{{ user_obj.office_address|default:'' }}" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #1f2937; box-sizing: border-box;">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Profile Image</label>
+                    <input type="file" name="profile_image" style="font-size: 14px; color: #4b5563;">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Bio</label>
+                    <textarea name="bio" rows="3" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #1f2937; box-sizing: border-box;">{{ user_obj.bio|default:'' }}</textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                <a href="{% url 'agent_own_profile' %}" class="ajax-link" style="background: #6b7280; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">Cancel</a>
+                <button type="submit" style="background: #10b981; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 14px;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>

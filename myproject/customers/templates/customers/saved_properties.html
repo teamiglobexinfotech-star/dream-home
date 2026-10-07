@@ -1,0 +1,53 @@
+{% load static %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <h2 style="margin: 0; font-size: 24px; color: #1e293b;">❤️ My Saved Properties</h2>
+    <button onclick="location.reload();" style="text-decoration: none; background: #e2e8f0; color: #334155; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </button>
+</div>
+
+<!-- Grid container jo cards ko proper rows aur columns mein set karega -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+    {% for item in saved_items %}
+    <div style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+        
+        <!-- Card Image Wrapper -->
+        <div style="position: relative; width: 100%; height: 200px; background: #f1f5f9;">
+            <span style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; font-size: 12px; border-radius: 4px; z-index: 2;">
+                For {{ item.property.status|default:"Sale" }}
+            </span>
+            
+            <!-- Remove/Toggle Save Button -->
+            <a href="{% url 'toggle_save_property' item.property.id %}" title="Remove" style="position: absolute; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9); color: #ef4444; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 2;">
+                <i class="fa-solid fa-heart"></i>
+            </a>
+
+            <!-- Image fix: height 100% aur object-fit cover se image kharab nahi hogi -->
+            {% if item.property.image %}
+                <img src="{{ item.property.image.url }}" alt="{{ item.property.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop" alt="Property" style="width: 100%; height: 100%; object-fit: cover;">
+            {% endif %}
+        </div>
+
+        <!-- Card Body Details -->
+        <div style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
+            <div>
+                <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b; font-weight: 600;">{{ item.property.title }}</h3>
+                <p style="margin: 0 0 10px 0; font-size: 13px; color: #64748b;">📍 {{ item.property.location }}{% if item.property.city %}, {{ item.property.city }}{% endif %}</p>
+            </div>
+            <div>
+                <p style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: #2563eb;">₹ {{ item.property.formatted_price|default:item.property.price }}</p>
+                <a href="#" style="text-align: center; display: block; text-decoration: none; color: #fff; background: #ff5a3c; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 500;">View Details</a>
+            </div>
+        </div>
+
+    </div>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+        <p style="color: #64748b; font-size: 16px; margin: 0 0 15px 0;">You haven't saved any properties yet!</p>
+        <a href="#" style="display: inline-block; background: #2563eb; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px;">Browse Properties</a>
+    </div>
+    {% endfor %}
+</div>

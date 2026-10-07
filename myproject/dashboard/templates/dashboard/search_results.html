@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <!-- Yahan apni CSS link karein -->
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result-section { margin-bottom: 30px; }
+        .result-item { padding: 10px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <h2>Search Results for "{{ query }}"</h2>
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+    <hr>
+
+    <div class="result-section">
+        <h4>Properties ({{ properties|length }})</h4>
+        {% for prop in properties %}
+            <div class="result-item"><strong>{{ prop.title }}</strong> - ₹{{ prop.price }}</div>
+        {% empty %} <p>No properties found.</p> {% endfor %}
+    </div>
+
+    <div class="result-section">
+        <h4>Leads ({{ leads|length }})</h4>
+        {% for lead in leads %}
+            <div class="result-item"><strong>{{ lead.name }}</strong> - {{ lead.email }}</div>
+        {% empty %} <p>No leads found.</p> {% endfor %}
+    </div>
+
+    <div class="result-section">
+        <h4>Customers ({{ customers|length }})</h4>
+        {% for cust in customers %}
+            <div class="result-item"><strong>{{ cust.full_name }}</strong> - {{ cust.email }}</div>
+        {% empty %} <p>No customers found.</p> {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Dream Properties</title>
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'website/script.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+    {% include 'website/header.html' %}
+
+    <!-- {% if messages %}
+    {% for message in messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Success!",
+                    text: "{{ message|escapejs }}",
+                    icon: "success",
+                    confirmButtonColor: "#ff6600",
+                    confirmButtonText: "Great!"
+                });
+            });
+        </script>
+    {% endfor %}
+{% endif %} -->
+
+
+        {% if messages %}
+    {% for message in messages %}
+        {% if 'contact' in message.tags %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Success!",
+                    text: "{{ message|escapejs }}",
+                    icon: "success",
+                    confirmButtonColor: "#ff6600",
+                    confirmButtonText: "Great!"
+                });
+            });
+        </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+
+    <!-- Hero Banner -->
+    <section class="page-hero-banner contact-hero" style="background: linear-gradient(to right, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.2)), url('{% static "images/properties/villa6.png" %}') no-repeat center center/cover;">
+        <div class="hero-banner-content">
+            <h1>Contact Us</h1>
+            <p><a href="{% url 'home' %}">Home</a> <span>/</span> Contact Us</p>
+            <p class="banner-subtext">We are here to help you find the perfect property.<br>Get in touch with us today!</p>
+        </div>
+    </section>
+
+    <!-- Contact Main Section -->
+    <div class="contact-page-container">
+        
+        <!-- Left: Send Us a Message Form -->
+        <div class="contact-form-box">
+            <h2>Send Us a Message</h2>
+            
+            
+
+            <form method="POST" action="{% url 'contact' %}" id="contactForm">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        {{ form.full_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number *</label>
+                        {{ form.mobile_number }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label>Subject *</label>
+                        {{ form.subject }}
+                    </div>
+                </div>
+
+                <div class="form-group-full">
+                    <label>Message *</label>
+                    {{ form.message }}
+                </div>
+
+                <button type="submit" class="contact-submit-btn">Send Message</button>
+                <p class="form-security-text"><i class="fa-solid fa-shield-halved"></i> Your information is safe with us. We never share your data.</p>
+            </form>
+        </div>
+
+        <!-- Right: Contact Information & Map -->
+        <div class="contact-info-box">
+            <h2>Contact Information</h2>
+            
+            <div class="contact-info-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <div>
+                    <h4>Company Address</h4>
+                    <p>Dream Properties Pvt. Ltd.<br>123, Park Street, Gomti Nagar,<br>Lucknow, Uttar Pradesh - 226010</p>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <i class="fa-solid fa-phone"></i>
+                <div>
+                    <h4>Phone Number</h4>
+                    <p>+91 98765 43210<br>+91 12345 67890</p>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <i class="fa-solid fa-envelope"></i>
+                <div>
+                    <h4>Email Address</h4>
+                    <p>info@dreamproperties.com<br>support@dreamproperties.com</p>
+                </div>
+            </div>
+
+            <!-- Map Mockup / Embed -->
+            <div class="contact-map-box">
+                <iframe src="https://www.google.com/maps/embed?pb=..." width="100%" height="180" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA Section -->
+    <section class="projects-cta-box contact-page-cta">
+        <div class="container cta-flex">
+            <div class="cta-left-content">
+                <div class="cta-icon-circle"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <h2>Need Help Finding the Right Property?</h2>
+                    <p>Our experts are ready to assist you in finding your dream property.</p>
+                </div>
+            </div>
+            <div class="cta-right-buttons">
+                <a href="{% url 'contact' %}" class="btn-primary">Talk to Our Expert <i class="fa-solid fa-phone"></i></a>
+                <a href="#" class="btn-outline btn-schedule-visit"><i class="fa-regular fa-calendar"></i> Schedule a Visit</a>
+            </div>
+        </div>
+    </section>
+
+    {% include 'website/footer.html' %}
+</body>
+</html>

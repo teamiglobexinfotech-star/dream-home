@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        .container { max-width: 650px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; border: none; cursor: pointer; }
+        .btn-edit { background: #007bff; }
+        .btn-back { background: #6c757d; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 14px; }
+        .profile-value { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; box-sizing: border-box; color: #333; min-height: 20px; }
+        .profile-pic-container { text-align: center; margin-bottom: 20px; }
+        .profile-pic { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #007bff; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2><i class="fa fa-user-circle"></i> Admin Profile</h2>
+            <div>
+                <!-- Yahan URL tag aur nav-link-ajax class add kar di gayi hai -->
+                <a href="{% url 'edit_admin_profile' %}" class="btn btn-edit nav-link-ajax"><i class="fa fa-pen"></i> Edit Profile</a>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-back "><i class="fa fa-arrow-left"></i> Back</a>
+            </div>
+        </div>
+        
+        <div class="profile-pic-container">
+            {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="profile-pic">
+            {% else %}
+                <div style="width: 90px; height: 90px; border-radius: 50%; background: #e9ecef; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; border: 3px solid #007bff; color: #6c757d; font-size: 36px;">
+                    <i class="fa fa-user"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <div class="profile-value">{{ user.full_name }}</div>
+        </div>
+        
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="profile-value">{{ user.email }}</div>
+        </div>
+        
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <div class="profile-value">{{ user.mobile_number|default:'Not Provided' }}</div>
+        </div>
+
+        <div class="form-group">
+            <label>Designation / Role Title</label>
+            <div class="profile-value">{{ user.designation|default:'Not Provided' }}</div>
+        </div>
+
+        <div class="form-group">
+            <label>Bio / About Me</label>
+            <div class="profile-value" style="height: auto;">{{ user.bio|default:'Not Provided' }}</div>
+        </div>
+
+        <div class="form-group">
+            <label>Office Address</label>
+            <div class="profile-value">{{ user.office_address|default:'Not Provided' }}</div>
+        </div>
+    </div>
+</body>
+</html>

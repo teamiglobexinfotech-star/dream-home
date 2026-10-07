@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Enquiry Management</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #28a745;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+        }
+
+
+        /* View Button */
+        .btn-view {
+            background: #0d6efd;
+            padding: 5px 10px;
+            color: white;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Enquiry Modal */
+        .enquiry-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .enquiry-modal-box {
+            background: white;
+            width: 500px;
+            max-width: 90%;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+        }
+
+        .enquiry-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .enquiry-modal-header h3 {
+            margin: 0;
+            color: #1f3b5b;
+        }
+
+        .enquiry-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .enquiry-detail {
+            margin-bottom: 12px;
+        }
+
+        .enquiry-detail strong {
+            display: inline-block;
+            width: 110px;
+        }
+
+        .enquiry-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .enquiry-action-btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .read-btn {
+            background: #198754;
+        }
+
+        .replied-btn {
+            background: #0d6efd;
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+        }
+
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-unread {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-read {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-replied {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+
+        .reply-modal-box {
+            width: 600px;
+            max-width: 92%;
+        }
+
+        #replyMessage {
+            min-height: 150px;
+        }
+
+        #replyMessage:focus,
+        #replySubject:focus {
+            outline: none;
+            border-color: #0d6efd;
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>Enquiry Management</h2>
+
+        <a href="{% url 'admin_dashboard' %}"
+           class="btn btn-back">
+            <i class="fa fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- <a href="{% url 'add_lead' %}"
+       class="btn btn-add nav-link-ajax">
+        <i class="fa fa-plus"></i>
+        Add New Enquiry
+    </a> -->
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Subject/Property</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for lead in leads %}
+
+        <tr>
+
+            <td>{{ forloop.counter }}</td>
+
+            <td>{{ lead.name }}</td>
+
+            <td>{{ lead.email }}</td>
+
+            <td>{{ lead.phone }}</td>
+
+            <td>
+                {% if lead.property %}
+                    {{ lead.property.title }}
+                {% elif lead.subject %}
+                    {{ lead.subject }}
+                {% else %}
+                    {{ lead.property_type|default:"Property Enquiry" }}
+                {% endif %}
+            </td>
+
+            <td>
+                {{ lead.created_at|date:"d M Y, H:i" }}
+            </td>
+
+            <td>
+    {% if lead.status == 'Unread' %}
+        <span class="status-badge status-unread">Unread</span>
+
+    {% elif lead.status == 'Read' %}
+        <span class="status-badge status-read">Read</span>
+
+    {% elif lead.status == 'Replied' %}
+        <span class="status-badge status-replied">Replied</span>
+    {% endif %}
+</td>
+
+            <td>
+
+                <!-- <a href="{% url 'edit_lead' lead.pk %}"
+                   class="btn nav-link-ajax"
+                   style="
+                       background: #ffc107;
+                       padding: 5px 10px;
+                       color: black;
+                       border-radius: 3px;
+                       text-decoration: none;
+                       font-size: 12px;
+                   ">
+                    <i class="fa fa-pen"></i>
+                    Edit
+                </a> -->
+
+
+                <button type="button"
+        class="btn-view"
+        data-id="{{ lead.pk }}"
+        data-name="{{ lead.name|escapejs }}"
+        data-email="{{ lead.email|escapejs }}"
+        data-phone="{{ lead.phone|escapejs }}"
+        data-property="{% if lead.property %}{{ lead.property.title|escapejs }}{% elif lead.subject %}{{ lead.subject|escapejs }}{% else %}{{ lead.property_type|default:'Property Enquiry'|escapejs }}{% endif %}"
+        data-message="{{ lead.message|default:''|escapejs }}"
+        data-date="{{ lead.created_at|date:'d M Y, H:i' }}"
+        data-status="{{ lead.status|escapejs }}">
+    <i class="fa fa-eye"></i>
+    View
+</button>
+
+                <a href="{% url 'delete_lead' lead.pk %}"
+                   class="btn nav-link-ajax"
+                   style="
+                       background: #dc3545;
+                       padding: 5px 10px;
+                       color: white;
+                       border-radius: 3px;
+                       text-decoration: none;
+                       font-size: 12px;
+                   "
+                   onclick="return confirm('Kya aap is enquiry ko delete karna chahte hain?');">
+                    <i class="fa fa-trash"></i>
+                    Delete
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% empty %}
+
+        <tr>
+            <td colspan="8"
+                style="text-align: center; color: #777;">
+                No enquiries found.
+            </td>
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<!-- View -->
+<div id="adminEnquiryViewModal" class="enquiry-modal">
+
+    <div class="enquiry-modal-box">
+
+        <div class="enquiry-modal-header">
+            <h3>Enquiry Details</h3>
+
+            <span class="enquiry-close" onclick="closeEnquiryModal()">
+                &times;
+            </span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Name:</strong>
+            <span id="modalName"></span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Email:</strong>
+            <span id="modalEmail"></span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Phone:</strong>
+            <span id="modalPhone"></span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Subject / Property:</strong>
+            <span id="modalProperty"></span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Date:</strong>
+            <span id="modalDate"></span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Message:</strong>
+            <span id="modalMessage"></span>
+        </div>
+
+        <div class="enquiry-detail">
+            <strong>Status:</strong>
+            <span id="modalStatus"></span>
+        </div>
+
+
+                
+
+
+        <div class="enquiry-actions">
+            <button type="button" class="enquiry-action-btn read-btn">
+                Mark as Read
+            </button>
+
+            <button type="button" class="enquiry-action-btn replied-btn">
+                <i class="fa fa-reply"></i>
+                Reply to Customer
+            </button>
+
+            <button type="button"
+                    class="enquiry-action-btn cancel-btn"
+                    onclick="closeEnquiryModal()">
+                Close
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Reply Modal -->
+        <div id="adminEnquiryReplyModal" class="enquiry-modal">
+
+            <div class="enquiry-modal-box reply-modal-box">
+
+                <div class="enquiry-modal-header">
+                    <h3>
+                        <i class="fa fa-reply"></i>
+                        Reply to Customer
+                    </h3>
+
+                    <span class="enquiry-close"
+                        onclick="closeReplyModal()">
+                        &times;
+                    </span>
+                </div>
+
+
+                <!-- To -->
+                <div style="margin-bottom: 15px;">
+
+                    <label style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: 600;
+                        color: #333;
+                    ">
+                        To
+                    </label>
+
+                    <input type="email"
+                        id="replyEmail"
+                        readonly
+                        style="
+                            width: 100%;
+                            padding: 10px;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            box-sizing: border-box;
+                            background: #f5f5f5;
+                            font-family: inherit;
+                            font-size: 14px;
+                        ">
+
+                </div>
+
+
+                <!-- Subject -->
+                <div style="margin-bottom: 15px;">
+
+                    <label style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: 600;
+                        color: #333;
+                    ">
+                        Subject
+                    </label>
+
+                    <input type="text"
+                        id="replySubject"
+                        value="Re: Your Property Enquiry"
+                        style="
+                            width: 100%;
+                            padding: 10px;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            box-sizing: border-box;
+                            font-family: inherit;
+                            font-size: 14px;
+                        ">
+
+                </div>
+
+
+                <!-- Message -->
+                <div style="margin-bottom: 15px;">
+
+                    <label style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: 600;
+                        color: #333;
+                    ">
+                        Message
+                    </label>
+
+                    <textarea id="replyMessage"
+                            rows="7"
+                            placeholder="Write your reply to the customer..."
+                            style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid #ddd;
+                                border-radius: 5px;
+                                resize: vertical;
+                                box-sizing: border-box;
+                                font-family: inherit;
+                                font-size: 14px;
+                            "></textarea>
+
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="enquiry-actions"
+                    style="justify-content: flex-end;">
+
+                    <button type="button"
+                            class="enquiry-action-btn cancel-btn"
+                            onclick="closeReplyModal()">
+                        Cancel
+                    </button>
+
+                    <button type="button"
+                            class="enquiry-action-btn send-reply-btn"
+                            style="background: #198754;">
+
+                        <i class="fa fa-paper-plane"></i>
+                        Send Reply
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+</body>
+</html>

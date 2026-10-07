@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Booking Management</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================== */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+        }
+
+
+        /* =========================
+           ACTION BUTTONS
+        ========================== */
+
+        .booking-view-btn {
+            background: #0d6efd;
+            padding: 5px 10px;
+            color: white;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .booking-view-btn:hover {
+            background: #0b5ed7;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            padding: 5px 10px;
+            color: white;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-delete:hover {
+            background: #bb2d3b;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================== */
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-completed {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+
+        /* =========================
+           BOOKING STATUS SELECT
+        ========================== */
+
+        .booking-status-select {
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            min-width: 115px;
+        }
+
+        .booking-status-select:focus {
+            border-color: #0d6efd;
+        }
+
+        .booking-status-select.status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .booking-status-select.status-confirmed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .booking-status-select.status-completed {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .booking-status-select.status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .booking-status-select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+
+        /* =========================
+           BOOKING MODAL
+        ========================== */
+
+        .booking-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .booking-modal-box {
+            background: white;
+            width: 650px;
+            max-width: 94%;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+
+
+        /* =========================
+           MODAL HEADER
+        ========================== */
+
+        .booking-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .booking-modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #1f3b5b;
+        }
+
+        .booking-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .booking-close:hover {
+            color: #000;
+        }
+
+
+        /* =========================
+           TOP INFORMATION
+        ========================== */
+
+        .booking-top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .booking-section {
+            border: 1px solid #e5e5e5;
+            border-radius: 7px;
+            padding: 12px;
+        }
+
+        .booking-section-title {
+            margin: 0 0 9px 0;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #eee;
+            color: #1f3b5b;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           DETAILS
+        ========================== */
+
+        .booking-detail {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .booking-detail strong {
+            width: 85px;
+            min-width: 85px;
+            color: #555;
+        }
+
+        .booking-detail span {
+            color: #222;
+            word-break: break-word;
+        }
+
+
+        /* =========================
+           PROPERTY SECTION
+        ========================== */
+
+        .property-section {
+            border: 1px solid #e5e5e5;
+            border-radius: 7px;
+            padding: 12px;
+        }
+
+        .property-image-box {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .property-image {
+            width: 180px;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 7px;
+            display: inline-block;
+        }
+
+        .property-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 18px;
+        }
+
+        .property-description {
+            margin-top: 7px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.35;
+        }
+
+
+        /* =========================
+           MODAL ACTIONS
+        ========================== */
+
+        .booking-actions {
+            margin-top: 14px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .booking-action-btn {
+            border: none;
+            padding: 7px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-size: 13px;
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+        }
+
+        .cancel-btn:hover {
+            background: #5a6268;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 650px) {
+
+            .booking-top-grid,
+            .property-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-modal-box {
+                width: 94%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="header">
+
+        <h2>
+            Booking Management
+        </h2>
+
+        <a href="{% url 'admin_dashboard' %}"
+           class="btn btn-back">
+
+            <i class="fa fa-arrow-left"></i>
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         BOOKING TABLE
+    ========================== -->
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+
+                <th>Customer Name</th>
+
+                <th>Email</th>
+
+                <th>Property Details</th>
+
+                <th>Booking Date</th>
+
+                <th>Request Date</th>
+
+                <th>Status</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        {% for booking in bookings %}
+
+        <tr>
+
+            <!-- Serial Number -->
+
+            <td>
+                {{ forloop.counter }}
+            </td>
+
+
+            <!-- Customer Name -->
+
+            <td>
+                {{ booking.user.full_name|default:"Unknown Customer" }}
+            </td>
+
+
+            <!-- Email -->
+
+            <td>
+                {{ booking.user.email|default:"-" }}
+            </td>
+
+
+            <!-- Property -->
+
+            <td>
+                {{ booking.property.title }}
+            </td>
+
+
+            <!-- Booking Date -->
+
+            <td>
+                {{ booking.booking_date|date:"d M Y" }}
+            </td>
+
+            <!-- Request Date -->
+            <td>
+                {{ booking.created_at|date:"d M Y, H\:i" }}
+            </td>
+
+
+            <!-- STATUS -->
+
+            <td>
+
+                <select
+                    class="booking-status-select status-{{ booking.status|lower }}"
+                    data-booking-id="{{ booking.id }}"
+                    data-current-status="{{ booking.status }}"
+                >
+
+                    <option value="Pending"
+                        {% if booking.status == 'Pending' %}selected{% endif %}>
+                        Pending
+                    </option>
+
+                    <option value="Confirmed"
+                        {% if booking.status == 'Confirmed' %}selected{% endif %}>
+                        Confirmed
+                    </option>
+
+                    <option value="Completed"
+                        {% if booking.status == 'Completed' %}selected{% endif %}>
+                        Completed
+                    </option>
+
+                    <option value="Cancelled"
+                        {% if booking.status == 'Cancelled' %}selected{% endif %}>
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </td>
+
+
+            <!-- ACTIONS -->
+
+            <td>
+
+                <!-- VIEW BUTTON -->
+
+                <button
+                    type="button"
+                    class="booking-view-btn"
+
+                    data-id="{{ booking.id }}"
+
+                    data-booking-date="{{ booking.booking_date|date:'d M Y' }}"
+                    data-request-date="{{ booking.created_at|date:'d M Y, H\:i' }}"
+
+                    data-status="{{ booking.status }}"
+
+                    data-customer-name="{{ booking.user.full_name|default:'Unknown Customer' }}"
+
+                    data-customer-email="{{ booking.user.email|default:'-' }}"
+
+                    data-customer-phone="{{ booking.user.mobile_number|default:'-' }}"
+
+                    data-property-name="{{ booking.property.title }}"
+
+                    data-property-location="{{ booking.property.location }}"
+
+                    data-property-city="{{ booking.property.city }}"
+
+                    data-property-category="{{ booking.property.category.name }}"
+
+                    data-property-type="{{ booking.property.status }}"
+
+                    data-property-price="{{ booking.property.formatted_price }}"
+
+                    data-property-area="{{ booking.property.area }}"
+
+                    data-property-bedrooms="{{ booking.property.bedrooms }}"
+
+                    data-property-bathrooms="{{ booking.property.bathrooms }}"
+
+                    data-property-description="{{ booking.property.description|escapejs }}"
+
+                    data-property-image="{% if booking.property.image %}{{ booking.property.image.url }}{% endif %}"
+                >
+
+                    <i class="fa fa-eye"></i>
+
+                    View
+
+                </button>
+
+
+                <!-- DELETE BUTTON -->
+
+                <button
+                    type="button"
+                    class="btn-delete booking-delete-btn"
+                    data-booking-id="{{ booking.id }}">
+                    <i class="fa fa-trash"></i>
+                    Delete
+                </button>
+
+            </td>
+
+        </tr>
+
+
+        {% empty %}
+
+        <tr>
+
+            <td colspan="8"
+                style="text-align: center; color: #777;">
+
+                Abhi tak koi booking nahi aayi hai.
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- =====================================================
+     BOOKING VIEW MODAL
+===================================================== -->
+
+<div id="adminBookingViewModal"
+     class="booking-modal">
+
+
+    <div class="booking-modal-box">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="booking-modal-header">
+
+            <h3>
+                Booking Details
+            </h3>
+
+            <span
+                class="booking-close"
+                onclick="closeBookingModal()">
+
+                &times;
+
+            </span>
+
+        </div>
+
+
+        <!-- =========================
+             BOOKING + CUSTOMER
+        ========================== -->
+
+        <div class="booking-top-grid">
+
+
+            <!-- BOOKING INFORMATION -->
+
+            <div class="booking-section">
+
+                <h4 class="booking-section-title">
+                    Booking Information
+                </h4>
+
+
+                <div class="booking-detail">
+
+                    <strong>ID:</strong>
+
+                    <span id="modalBookingId">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+                    <strong>Booking Date:</strong>
+                    <span id="modalBookingDate">
+                        -
+                    </span>
+                </div>
+
+                <div class="booking-detail">
+                    <strong>Request Date:</strong>
+                    <span id="modalRequestDate">
+                        -
+                    </span>
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Status:</strong>
+
+                    <span id="modalBookingStatus">
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CUSTOMER INFORMATION -->
+
+            <div class="booking-section">
+
+                <h4 class="booking-section-title">
+                    Customer Information
+                </h4>
+
+
+                <div class="booking-detail">
+
+                    <strong>Name:</strong>
+
+                    <span id="modalCustomerName">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Email:</strong>
+
+                    <span id="modalCustomerEmail">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Phone:</strong>
+
+                    <span id="modalCustomerPhone">
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             PROPERTY INFORMATION
+        ========================== -->
+
+        <div class="property-section">
+
+
+            <h4 class="booking-section-title">
+
+                Property Information
+
+            </h4>
+
+
+            <!-- CENTER IMAGE -->
+
+            <div class="property-image-box">
+
+                <img
+                    id="modalPropertyImage"
+                    class="property-image"
+                    src=""
+                    alt="Property Image"
+                    style="display:none;"
+                >
+
+            </div>
+
+
+            <!-- PROPERTY DETAILS -->
+
+            <div class="property-details-grid">
+
+
+                <div class="booking-detail">
+
+                    <strong>Property:</strong>
+
+                    <span id="modalPropertyName">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Location:</strong>
+
+                    <span id="modalPropertyLocation">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>City:</strong>
+
+                    <span id="modalPropertyCity">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Category:</strong>
+
+                    <span id="modalPropertyCategory">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Type:</strong>
+
+                    <span id="modalPropertyType">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Price:</strong>
+
+                    <span id="modalPropertyPrice">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Area:</strong>
+
+                    <span id="modalPropertyArea">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="booking-detail">
+
+                    <strong>Bed/Bath:</strong>
+
+                    <span>
+
+                        <span id="modalPropertyBedrooms">
+                            0
+                        </span>
+
+                        /
+
+                        <span id="modalPropertyBathrooms">
+                            0
+                        </span>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="property-description">
+
+                <strong>Description:</strong>
+
+                <span id="modalPropertyDescription">
+                    -
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================
+             MODAL ACTION
+        ========================== -->
+
+        <div class="booking-actions">
+
+            <button
+                type="button"
+                class="booking-action-btn cancel-btn"
+                onclick="closeBookingModal()">
+
+                Close
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

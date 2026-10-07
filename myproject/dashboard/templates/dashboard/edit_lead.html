@@ -1,0 +1,154 @@
+<div class="edit-lead-container">
+    <!-- Header with Title and Back to Dashboard Button -->
+    <div class="edit-lead-header">
+        <h2>📋 Edit Lead / Enquiry</h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn-back-dashboard">
+            <i class="fa fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <form method="POST" action="{% url 'edit_lead' lead.pk %}" class="ajax-form">
+        {% csrf_token %}
+        
+        <p class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ lead.name }}" required>
+        </p>
+
+        <p class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ lead.email }}">
+        </p>
+
+        <p class="form-group">
+            <label>Phone</label>
+            <input type="text" name="phone" value="{{ lead.phone }}">
+        </p>
+
+        <p class="form-group">
+            <label>Message</label>
+            <textarea name="message" rows="4">{{ lead.message }}</textarea>
+        </p>
+        
+        <div class="btn-container">
+            <button type="submit" class="btn-success-custom">Update Lead</button>
+            <a href="{% url 'lead_list' %}" class="btn-secondary-custom nav-link-ajax">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Scoped CSS - Yeh sirf isi Lead Edit page par kaam karegi */
+    .edit-lead-container {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .edit-lead-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 12px;
+        margin-bottom: 25px;
+    }
+
+    .edit-lead-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 24px;
+    }
+
+    .btn-back-dashboard {
+        background-color: #17a2b8;
+        color: white;
+        padding: 8px 14px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-back-dashboard:hover {
+        background-color: #138496;
+    }
+
+    .edit-lead-container .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .edit-lead-container label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #555555;
+    }
+
+    .edit-lead-container input[type="text"],
+    .edit-lead-container input[type="email"],
+    .edit-lead-container textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .edit-lead-container input:focus,
+    .edit-lead-container textarea:focus {
+        border-color: #28a745;
+        outline: none;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+    }
+
+    .edit-lead-container .btn-container {
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .edit-lead-container .btn-success-custom {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .edit-lead-container .btn-success-custom:hover {
+        background-color: #218838;
+    }
+
+    .edit-lead-container .btn-secondary-custom {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 15px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        transition: background 0.2s;
+    }
+
+    .edit-lead-container .btn-secondary-custom:hover {
+        background-color: #5a6268;
+    }
+</style>

@@ -1,0 +1,49 @@
+<div class="space-y-6">
+    <div class="card" style="padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">My Profile</h3>
+            <a href="{% url 'agent_own_profile' %}?edit=true" class="ajax-link" style="background: #2563eb; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 14px; text-decoration: none;">Edit Profile</a>
+        </div>
+
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            
+            <!-- Profile Image Display if available -->
+            {% if user_obj.profile_image %}
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+                <img src="{{ user_obj.profile_image.url }}" alt="Profile Image" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 1px solid #d1d5db;">
+                <div>
+                    <h4 style="margin: 0; font-size: 16px; color: #1f2937;">{{ user_obj.full_name }}</h4>
+                    <p style="margin: 2px 0 0 0; font-size: 13px; color: #6b7280;">{{ user_obj.role|title }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Full Name</label>
+                    <input type="text" value="{{ user_obj.full_name }}" disabled style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #e5e7eb; color: #6b7280; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Email Address</label>
+                    <input type="email" value="{{ user_obj.email }}" disabled style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #f3f4f6; color: #6b7280; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Mobile Number</label>
+                    <input type="text" value="{{ user_obj.mobile_number }}" disabled style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #f3f4f6; color: #6b7280; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Designation</label>
+                    <input type="text" value="{{ user_obj.designation|default:'N/A' }}" disabled style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #f3f4f6; color: #6b7280; box-sizing: border-box;">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Office Address</label>
+                    <input type="text" value="{{ user_obj.office_address|default:'N/A' }}" disabled style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #f3f4f6; color: #6b7280; box-sizing: border-box;">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Bio</label>
+                    <textarea disabled style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #f3f4f6; color: #6b7280; box-sizing: border-box;" rows="2">{{ user_obj.bio|default:'No bio added yet.' }}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

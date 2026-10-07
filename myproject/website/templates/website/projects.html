@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Projects | DreamHome</title>
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'website/script.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- 1. Header / Navbar Include -->
+    {% include 'website/header.html' %}
+
+    <section class="page-hero-banner" style="background: linear-gradient(to right, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.65) 50%, rgba(15, 23, 42, 0.2) 100%), url('{% static "images/properties/building2.png" %}') no-repeat center center/cover;">
+        <div class="hero-banner-content">
+            <h1>Our Projects</h1>
+            <p><a href="{% url 'home' %}">Home</a> <span>/</span> Projects</p>
+            <p class="banner-subtext">Discover our thoughtfully planned residential and commercial projects built for a better tomorrow.</p>
+        </div>
+    </section>
+
+    <!-- Main Content Area (Full Width without Sidebar) -->
+    <main class="projects-content-area">
+
+        <!-- Ongoing Projects Section -->
+        <div class="project-category-block">
+            <div class="category-header-flex">
+                <h2><i class="fa-solid fa-building-circle-arrow-right"></i> Ongoing Projects</h2>
+               
+            </div>
+
+            <div class="projects-grid-theme">
+                {% for proj in ongoing_projects %}
+                <div class="theme-project-card" 
+                     data-title="{{ proj.title }}" 
+                     data-location="{{ proj.location }}" 
+                     data-description="{{ proj.description }}" 
+                     data-image="{% if proj.image %}{{ proj.image.url }}{% endif %}" 
+                     data-status="Under Construction" 
+                     data-possession="{{ proj.possession_or_completion }}">
+                    
+                    <div class="card-img-box">
+                        {% if proj.image %}
+                            <img src="{{ proj.image.url }}" alt="{{ proj.title }}">
+                        {% endif %}
+                        <span class="theme-badge ongoing">Ongoing</span>
+                    </div>
+                    <div class="card-details-box">
+                        <h3>{{ proj.title }}</h3>
+                        <p class="card-loc"><i class="fa-solid fa-location-dot"></i> {{ proj.location }}</p>
+                        <p class="card-desc">{{ proj.description }}</p>
+                        <div class="card-amenities">
+                            {% for amenity in proj.get_amenities_list %}
+                                <span><i class="fa-solid fa-check"></i> {{ amenity }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer-info">
+                            <span>Status: <b>Under Construction</b></span>
+                            <span>Possession: <b>{{ proj.possession_or_completion }}</b></span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="grid-column: span 3; color: #64748b; font-size: 14px;">No ongoing projects added yet from admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Upcoming Projects Section -->
+        <div class="project-category-block">
+            <div class="category-header-flex">
+                <h2><i class="fa-solid fa-business-time"></i> Upcoming Projects</h2>
+                
+            </div>
+
+            <div class="projects-grid-theme">
+                {% for proj in upcoming_projects %}
+                <div class="theme-project-card" 
+                     data-title="{{ proj.title }}" 
+                     data-location="{{ proj.location }}" 
+                     data-description="{{ proj.description }}" 
+                     data-image="{% if proj.image %}{{ proj.image.url }}{% endif %}" 
+                     data-status="Upcoming" 
+                     data-possession="{{ proj.possession_or_completion }}">
+                    
+                    <div class="card-img-box">
+                        {% if proj.image %}
+                            <img src="{{ proj.image.url }}" alt="{{ proj.title }}">
+                        {% endif %}
+                        <span class="theme-badge upcoming">Upcoming</span>
+                    </div>
+                    <div class="card-details-box">
+                        <h3>{{ proj.title }}</h3>
+                        <p class="card-loc"><i class="fa-solid fa-location-dot"></i> {{ proj.location }}</p>
+                        <p class="card-desc">{{ proj.description }}</p>
+                        <div class="card-amenities">
+                            {% for amenity in proj.get_amenities_list %}
+                                <span><i class="fa-solid fa-check"></i> {{ amenity }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer-info">
+                            <span>Status: <b>Upcoming</b></span>
+                            <span>Possession: <b>{{ proj.possession_or_completion }}</b></span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="grid-column: span 3; color: #64748b; font-size: 14px;">No upcoming projects added yet from admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Completed Projects Section -->
+        <div class="project-category-block">
+            <div class="category-header-flex">
+                <h2><i class="fa-solid fa-circle-check"></i> Completed Projects</h2>
+                
+            </div>
+
+            <div class="projects-grid-theme">
+                {% for proj in completed_projects %}
+                <div class="theme-project-card" 
+                     data-title="{{ proj.title }}" 
+                     data-location="{{ proj.location }}" 
+                     data-description="{{ proj.description }}" 
+                     data-image="{% if proj.image %}{{ proj.image.url }}{% endif %}" 
+                     data-status="Completed" 
+                     data-possession="{{ proj.possession_or_completion }}">
+                    
+                    <div class="card-img-box">
+                        {% if proj.image %}
+                            <img src="{{ proj.image.url }}" alt="{{ proj.title }}">
+                        {% endif %}
+                        <span class="theme-badge completed">Completed</span>
+                    </div>
+                    <div class="card-details-box">
+                        <h3>{{ proj.title }}</h3>
+                        <p class="card-loc"><i class="fa-solid fa-location-dot"></i> {{ proj.location }}</p>
+                        <p class="card-desc">{{ proj.description }}</p>
+                        <div class="card-amenities">
+                            {% for amenity in proj.get_amenities_list %}
+                                <span><i class="fa-solid fa-check"></i> {{ amenity }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer-info">
+                            <span>Status: <b>Completed</b></span>
+                            <span>Completed On: <b>{{ proj.possession_or_completion }}</b></span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="grid-column: span 3; color: #64748b; font-size: 14px;">No completed projects added yet from admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 4. Bottom CTA Section -->
+    <section class="projects-cta-box projects-page-cta">
+        <div class="container cta-flex">
+            <div class="cta-left-content">
+                <div class="cta-icon-circle"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <h2>Have Questions About Our Projects?</h2>
+                    <p>Our experts are here to help you find the perfect property.</p>
+                </div>
+            </div>
+            <div class="cta-right-buttons">
+                <a href="{% url 'contact' %}" class="btn-green-call"><i class="fa-solid fa-phone"></i> Contact Us</a>
+                <a href="#" class="btn-schedule-visit btn-dark-visit">Schedule a Visit </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Detail Popup Modal HTML Structure -->
+    <div id="projectModal" class="project-modal-overlay" style="display: none;">
+        <div class="project-modal-content">
+            <span class="modal-close-btn" onclick="closeProjectModal()">&times;</span>
+            <div class="modal-body-flex">
+                <img id="modalImg" src="" alt="Project Image" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px;">
+                <h2 id="modalTitle" style="margin-top: 15px; font-size: 22px; color: #0f172a;"></h2>
+                <p style="color: #64748b; margin: 5px 0;"><i class="fa-solid fa-location-dot"></i> <span id="modalLocText"></span></p>
+                <p id="modalDesc" style="margin: 10px 0; font-size: 14px; color: #334155;"></p>
+
+                <a href="tel:+9190156789034"
+                    id="projectPageRequestCallBtn"
+                    class="project-page-request-call-btn">
+                        <i class="fa-solid fa-phone"></i> Request a Call
+                </a>
+
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                    <span>Status: <b id="modalStatus"></b></span>
+                    <span>Possession: <b id="modalPossession"></b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Footer Include -->
+    {% include 'website/footer.html' %}
+
+</body>
+</html>

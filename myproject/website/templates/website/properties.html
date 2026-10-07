@@ -1,0 +1,873 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties - DreamHome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+   {% include 'website/header.html' %}
+
+    <!-- Hero Banner with Top Search Filter -->
+    <section class="hero-banner">
+        <div class="hero-content">
+            <h1>Find Your Dream Property</h1>
+            <p>Explore villas, apartments, and houses for sale or rent</p>
+
+            <form method="GET" action="{% url 'properties' %}" class="top-search-box">
+                <div class="search-field">
+                    <label>Keyword / Location</label>
+                    <input type="text" name="search" placeholder="e.g. Bangalore, Lucknow" value="{{ request.GET.search|default:'' }}">
+                </div>
+
+                <div class="search-field">
+                    <label>Purpose</label>
+                    <select name="status">
+                        <option value="all">All Purpose</option>
+                        <option value="Sale" {% if request.GET.status == 'Sale' %}selected{% endif %}>For Sale</option>
+                        <option value="Rent" {% if request.GET.status == 'Rent' %}selected{% endif %}>For Rent</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>Bedrooms</label>
+                    <select name="bedrooms">
+                        <option value="">Any BHK</option>
+                        <option value="1" {% if request.GET.bedrooms == '1' %}selected{% endif %}>1 BHK</option>
+                        <option value="2" {% if request.GET.bedrooms == '2' %}selected{% endif %}>2 BHK</option>
+                        <option value="3" {% if request.GET.bedrooms == '3' %}selected{% endif %}>3 BHK</option>
+                        <option value="4" {% if request.GET.bedrooms == '4' %}selected{% endif %}>4+ BHK</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="main-search-btn">🔍 Search</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <div class="properties-page-wrapper">
+        <div class="main-properties-container">
+            
+            <!-- Sidebar Filter -->
+            <aside class="sidebar-filter">
+                <form method="GET" action="{% url 'properties' %}" id="sidebarFilterForm">
+                    <div class="filter-header">
+                        <h3>Filter By</h3>
+                        <a href="{% url 'properties' %}" class="clear-btn">Clear All</a>
+                    </div>
+
+                    <!-- Hidden fields to retain top search parameters when toggling sidebar -->
+                    {% if request.GET.search %}
+                        <input type="hidden" name="search" value="{{ request.GET.search }}">
+                    {% endif %}
+
+                    <!-- Property Type Filter -->
+                    <div class="filter-section filter-type-options">
+                        <h4 class="filter-title">Property Type</h4>
+                        {% for cat in all_categories %}
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="category_filter" value="{{ cat.id }}" 
+                                   {% if cat.id in selected_categories %}checked{% endif %}> 
+                            {{ cat.name }}
+                        </label>
+                        {% empty %}
+                        <p style="font-size:12px; color:#94a3b8;">No Categories Available</p>
+                        {% endfor %}
+                    </div>
+ 
+                    <!-- Price Range Filter -->
+                    <div class="filter-section filter-price-options">
+                        <h4 class="filter-title">Price Range</h4>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="text" name="min_price" placeholder="e.g. 1 Crore" value="{{ request.GET.min_price|default:'' }}" class="sidebar-select" style="padding: 8px; width: 100%;">
+                            <span style="color: #64748b;">-</span>
+                            <input type="text" name="max_price" placeholder="e.g. 2 Crore" value="{{ request.GET.max_price|default:'' }}" class="sidebar-select" style="padding: 8px; width: 100%;">
+                        </div>
+                        <small style="color: #64748b; font-size: 11px; margin-top: 4px; display: block;">
+                            Ex: Type "10 Lakh", "50 Lakh", "1 Crore", or numbers
+                        </small>
+                    </div>
+
+                    <!-- Bedrooms Filter -->
+                    <div class="filter-section filter-bedroom-options">
+                        <h4 class="filter-title">Bedrooms</h4>
+                        <select name="bedrooms" class="sidebar-select">
+                            <option value="">Any BHK</option>
+                            <option value="1" {% if request.GET.bedrooms == '1' %}selected{% endif %}>1 BHK</option>
+                            <option value="2" {% if request.GET.bedrooms == '2' %}selected{% endif %}>2 BHK</option>
+                            <option value="3" {% if request.GET.bedrooms == '3' %}selected{% endif %}>3 BHK</option>
+                            <option value="4" {% if request.GET.bedrooms == '4' %}selected{% endif %}>4+ BHK</option>
+                        </select>
+                    </div>
+
+                    <!-- Sidebar Submit Button -->
+                    <button type="submit" class="btn-solid" style="width: 100%; margin-top: 15px; background-color: #ff5a3c; border: none; padding: 10px; color: #fff; font-weight: 600; border-radius: 6px; cursor: pointer;">
+                        Apply Filter
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Property Results Grid -->
+            <main class="property-results">
+                <div class="properties-grid">
+                    {% for item in properties %}
+                    <!-- <div class="property-card {% if item.id in booked_property_ids %}property-booked{% endif %}" 
+                         data-title="{{ item.title }}"
+                         data-location="{{ item.location }}, {{ item.city }}"
+                         data-price="₹ {{ item.formatted_price }}"
+                         data-beds="{{ item.bedrooms }} Beds"
+                         data-baths="{{ item.bathrooms }} Baths"
+                         data-area="{{ item.area }} Sq.Ft."> -->
+
+                         <div class="property-card properties-page-card {% if item.id in booked_property_ids %}property-booked{% endif %}"
+     data-property-id="{{ item.id }}"
+     data-title="{{ item.title }}"
+     data-location="{{ item.location }}, {{ item.city }}"
+     data-price="{{ item.formatted_price }}"
+     data-beds="{{ item.bedrooms }}"
+     data-baths="{{ item.bathrooms }}"
+     data-area="{{ item.area }}"
+     data-description="{{ item.description|default:''|escape }}"
+     data-category="{% if item.category %}{{ item.category.name }}{% endif %}"
+     data-status="{{ item.status }}"
+     data-main="{% if item.image %}{{ item.image.url }}{% endif %}"
+     data-booked="{% if item.id in booked_property_ids %}true{% else %}false{% endif %}">
+
+     <script type="application/json" id="property-gallery-{{ item.id }}">
+[
+    {% for gallery_image in item.images.all %}
+        "{{ gallery_image.image.url|escapejs }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+
+
+                        <div class="card-img">
+                            <span class="badge {% if item.status == 'Sale' %}for-sale{% else %}for-rent{% endif %}">
+                                For {{ item.status }}
+                            </span>
+
+                            {% if item.id in booked_property_ids %}
+                            <span style="
+                                position:absolute;
+                                top:10px;
+                                left:10px;
+                                z-index:5;
+                                background:#334155;
+                                color:#fff;
+                                padding:6px 10px;
+                                border-radius:5px;
+                                font-size:11px;
+                                font-weight:600;
+                            ">
+                                <i class="fa-solid fa-lock"></i> BOOKED
+                            </span>
+                        {% endif %}
+
+                            <!-- Top Right Wishlist Button -->
+   <a href="{% url 'toggle_save_property' item.id %}" class="btn-save-property" data-property-id="{{ item.id }}" data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}" data-role="{{ request.user.role|default:'' }}" title="Save Property" style="position: absolute; top: 8px; right: 8px; background: rgba(255, 255, 255, 0.9); color: #ef4444; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.15); transition: 0.2s;">
+        {% if item.id in saved_property_ids %}
+    <i class="fa-solid fa-heart"></i>
+{% else %}
+    <i class="fa-regular fa-heart"></i>
+{% endif %}
+    </a>
+                            <img src="{% if item.image %}{{ item.image.url }}{% endif %}" alt="{{ item.title }}">
+                        </div>
+
+                        <div class="card-body">
+                            {% if item.category %}
+                            <div style="margin-bottom: 6px;">
+                                <span style="background-color: #e2e8f0; color: #334155; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; display: inline-block; text-transform: uppercase;">
+                                    🏷️ {{ item.category.name }}
+                                </span>
+                            </div>
+                            {% endif %}
+
+                            <h3 class="card-title">{{ item.title }}</h3>
+                            <p class="card-location">📍 {{ item.location }}, {{ item.city }}</p>
+                            <p class="card-price">₹ {{ item.formatted_price }}</p>
+
+                            <div class="card-specs">
+                                <span>
+                                    <i class="fa-solid fa-bed"></i>
+                                    {{ item.bedrooms }} Beds
+                                </span>
+
+                                <span>
+                                    <i class="fa-solid fa-bath"></i>
+                                    {{ item.bathrooms }} Baths
+                                </span>
+
+                                <span>
+                                    <i class="fa-solid fa-ruler-combined"></i>
+                                    {{ item.area }} Sq.Ft.
+                                </span>
+                            </div>
+
+                            <!-- <button class="view-details-btn">View Details</button>
+
+{% if item.id in booked_property_ids %}
+
+    <button type="button"
+        disabled
+        style="
+            display:block;
+            width:100%;
+            margin-top:8px;
+            background:#94a3b8;
+            color:#fff;
+            padding:8px;
+            border:0;
+            border-radius:6px;
+            font-size:13px;
+            font-weight:500;
+            cursor:not-allowed;
+        ">
+        <i class="fa-solid fa-lock"></i> Property Booked
+    </button>
+
+{% else %}
+
+    <button type="button"
+        class="book-property-btn"
+        data-property-id="{{ item.id }}"
+        data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+        data-role="{{ request.user.role|default:'' }}"
+        style="
+            display:block;
+            width:100%;
+            margin-top:8px;
+            background:#059669;
+            color:#fff;
+            padding:8px;
+            border:0;
+            border-radius:6px;
+            font-size:13px;
+            font-weight:500;
+            cursor:pointer;
+        ">
+        📅 Book Property
+    </button>
+
+{% endif %} -->
+
+                            
+
+
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0;">No properties found matching your search criteria.</p>
+                    {% endfor %}
+                </div>
+            </main>
+
+        </div> <!-- main-properties-container END -->
+    </div> <!-- properties-page-wrapper END -->
+
+    <!-- Modal Popup -->
+    <!-- <div id="propertyPopupModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="closePopupBtn" class="modal-close">&times;</span>
+            <h2 id="modalTitle" style="margin-top:0; font-size:20px;"></h2>
+            <p id="modalLocation" style="color:#64748b; font-size:14px;"></p>
+            <h3 id="modalPrice" style="color:#2563eb; margin:10px 0;"></h3>
+            <div style="display:flex; justify-content:space-between; background:#f8fafc; padding:12px; border-radius:8px; font-size:13px; margin-top:15px; border:1px solid #e2e8f0;">
+                <span id="modalBeds"></span>
+                <span id="modalBaths"></span>
+                <span id="modalArea"></span>
+            </div>
+        </div>
+    </div> -->
+
+<!-- Property Detail Modal -->
+<div id="propertyPopupModal" class="modal-overlay">
+
+    <div class="modal-box property-detail-modal">
+
+        <!-- Close Button -->
+        <span id="closePopupBtn" class="modal-close">&times;</span>
+
+        <div class="property-modal-grid">
+
+            <!-- LEFT: Property Gallery -->
+            <div class="property-modal-gallery">
+
+                <div id="modalSliderTrack" class="modal-slider-track">
+                    <!-- Images will be loaded by JavaScript -->
+                </div>
+
+                <button type="button"
+                        id="modalPrevBtn"
+                        class="modal-slider-btn modal-prev-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <button type="button"
+                        id="modalNextBtn"
+                        class="modal-slider-btn modal-next-btn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+            </div>
+
+
+            <!-- RIGHT: Property Information -->
+            <!-- RIGHT: Property Information -->
+<div class="property-modal-content">
+
+    <!-- Top Status -->
+    <div class="modal-property-top">
+
+        <div class="modal-property-status-group">
+            <span id="modalPropertyCategory" class="modal-property-label">
+                Property
+            </span>
+
+            <span class="modal-property-status">
+                <span class="modal-status-dot"></span>
+                <span id="modalPropertyStatus">For Sale</span>
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- Property Title -->
+    <h2 id="modalTitle" class="modal-property-title">
+    </h2>
+
+
+    <!-- Location -->
+    <p id="modalLocation" class="modal-property-location">
+        <i class="fa-solid fa-location-dot"></i>
+        <span></span>
+    </p>
+
+
+    <!-- Price Card -->
+    <div class="modal-property-price-card">
+
+        <h3 id="modalPrice" class="modal-property-price">
+        </h3>
+
+        <span class="modal-premium-badge">
+            <i class="fa-solid fa-crown"></i>
+            Premium Property
+        </span>
+
+    </div>
+
+
+    <!-- Property Specs -->
+    <div class="modal-property-specs">
+
+        <!-- Beds -->
+        <div class="modal-spec-item">
+
+            <i class="fa-solid fa-bed"></i>
+
+            <span id="modalBeds" class="modal-spec-value">
+            </span>
+
+            <small>
+                Spacious Bedrooms
+            </small>
+
+        </div>
+
+
+        <!-- Baths -->
+        <div class="modal-spec-item">
+
+            <i class="fa-solid fa-bath"></i>
+
+            <span id="modalBaths" class="modal-spec-value">
+            </span>
+
+            <small>
+                Modern Bathrooms
+            </small>
+
+        </div>
+
+
+        <!-- Area -->
+        <div class="modal-spec-item">
+
+            <i class="fa-solid fa-house"></i>
+
+            <span id="modalArea" class="modal-spec-value">
+            </span>
+
+            <small>
+                Built-up Area
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <!-- Description -->
+    <div class="modal-property-description">
+
+        <div class="modal-description-heading">
+
+            <div>
+                <h4>
+                    About this Property
+                </h4>
+
+                <span class="modal-heading-line"></span>
+            </div>
+
+            <span class="modal-description-tag">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Modern · Spacious · Premium
+            </span>
+
+        </div>
+
+
+        <p id="modalDesc">
+        </p>
+
+    </div>
+
+
+    <!-- Feature Badges -->
+    <div class="modal-property-features">
+
+        <div class="modal-feature-item">
+            <span class="modal-feature-icon">
+                <i class="fa-solid fa-location-dot"></i>
+            </span>
+
+            <span>
+                Prime Location
+            </span>
+        </div>
+
+
+        <div class="modal-feature-item">
+            <span class="modal-feature-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </span>
+
+            <span>
+                Secure Community
+            </span>
+        </div>
+
+
+        <div class="modal-feature-item">
+            <span class="modal-feature-icon">
+                <i class="fa-solid fa-leaf"></i>
+            </span>
+
+            <span>
+                Green Surroundings
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- Action Buttons -->
+    <div class="property-modal-actions">
+
+        <button
+            type="button"
+            id="modalEnquiryBtn"
+            class="modal-enquiry-btn"
+            data-property-id=""
+        >
+            <i class="fa-solid fa-paper-plane"></i>
+
+            <span>
+                Enquiry Now
+            </span>
+
+            <i class="fa-solid fa-arrow-right modal-button-arrow"></i>
+        </button>
+
+
+        <button
+            type="button"
+            id="modalBookPropertyBtn"
+            class="modal-book-btn"
+            data-property-id=""
+        >
+            <i class="fa-solid fa-calendar-check"></i>
+
+            <span>
+                Book Property
+            </span>
+
+            <i class="fa-solid fa-arrow-right modal-button-arrow"></i>
+        </button>
+
+    </div>
+
+</div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Login Popup -->
+<div id="loginPopupModal" class="modal-overlay">
+    <div class="modal-box" style="max-width:400px;">
+
+        <span id="closeLoginPopup" class="modal-close">&times;</span>
+
+        <h2 style="margin-top:0;">Login to Continue</h2>
+        <p style="color:#64748b; font-size:14px;">
+            Please login to book this property.
+        </p>
+
+        <form id="popupLoginForm" data-login-url="{% url 'popup_login' %}">
+
+            <input type="text"
+                   id="loginIdentifier"
+                   name="username_or_mobile"
+                   placeholder="Email or Mobile Number"
+                   required
+                   style="width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:6px;">
+
+            <input type="password"
+                   id="loginPassword"
+                   name="password"
+                   placeholder="Password"
+                   required
+                   style="width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:6px;">
+
+            <input type="hidden"
+                   name="login_role"
+                   value="customer">
+
+            <button type="submit"
+                    style="width:100%; margin-top:10px; background:#2563eb; color:white; padding:10px; border:0; border-radius:6px; cursor:pointer;">
+                Login
+            </button>
+
+        </form>
+
+        <p id="loginError"
+           style="color:#dc2626; font-size:13px; margin-top:10px;">
+        </p>
+
+    </div>
+</div>
+
+
+<!-- Booking Confirmation Popup -->
+<!-- Booking Popup Modal -->
+<div id="bookingPopupModal" class="modal-overlay">
+
+    <div class="modal-box" style="max-width:440px; max-height:90vh; overflow-y:auto;">
+
+        <!-- Close -->
+        <span id="closeBookingPopup" class="modal-close">&times;</span>
+
+        <h2 style="margin-top:0; color:#1e293b;">
+            Book Property
+        </h2>
+
+        <p style="color:#64748b; font-size:14px; margin-bottom:20px;">
+            Please review your property and customer details before booking.
+        </p>
+
+
+        <!-- ========================= -->
+        <!-- PROPERTY DETAILS -->
+        <!-- ========================= -->
+
+        <div style="
+            background:#f8fafc;
+            padding:15px;
+            border-radius:10px;
+            margin-bottom:20px;
+            border:1px solid #e2e8f0;
+        ">
+
+            <h3 id="bookingPropertyName"
+                style="
+                    margin:0 0 8px 0;
+                    color:#1e293b;
+                    font-size:18px;
+                ">
+                -
+            </h3>
+
+            <p id="bookingPropertyLocation"
+               style="
+                    margin:5px 0;
+                    color:#64748b;
+                    font-size:14px;
+               ">
+                📍 -
+            </p>
+
+            <p id="bookingPropertyPrice"
+               style="
+                    margin:5px 0 0 0;
+                    color:#2563eb;
+                    font-size:16px;
+                    font-weight:600;
+               ">
+                ₹ -
+            </p>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- BOOKING FORM -->
+        <!-- ========================= -->
+
+        <form id="bookingConfirmationForm"
+
+              data-customer-name="{{ request.user.full_name|default:''|escapejs }}"
+
+              data-customer-email="{{ request.user.email|default:''|escapejs }}"
+
+              data-customer-mobile="{{ request.user.mobile_number|default:''|escapejs }}">
+
+            <!-- Customer Name -->
+            <div style="margin-bottom:15px;">
+
+                <label for="bookingCustomerName"
+                       style="
+                            display:block;
+                            margin-bottom:6px;
+                            font-weight:600;
+                            color:#334155;
+                       ">
+                    Customer Name
+                </label>
+
+                <input
+                    type="text"
+                    id="bookingCustomerName"
+                    name="customer_name"
+                    readonly
+                    required
+                    style="
+                        width:100%;
+                        padding:11px 12px;
+                        border:1px solid #cbd5e1;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        background:#f8fafc;
+                        color:#334155;
+                    "
+                >
+
+            </div>
+
+
+            <!-- Customer Email -->
+            <div style="margin-bottom:15px;">
+
+                <label for="bookingCustomerEmail"
+                       style="
+                            display:block;
+                            margin-bottom:6px;
+                            font-weight:600;
+                            color:#334155;
+                       ">
+                    Customer Email
+                </label>
+
+                <input
+                    type="email"
+                    id="bookingCustomerEmail"
+                    name="customer_email"
+                    readonly
+                    required
+                    style="
+                        width:100%;
+                        padding:11px 12px;
+                        border:1px solid #cbd5e1;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        background:#f8fafc;
+                        color:#334155;
+                    "
+                >
+
+            </div>
+
+
+            <!-- Customer Phone -->
+            <div style="margin-bottom:15px;">
+
+                <label for="bookingCustomerMobile"
+                       style="
+                            display:block;
+                            margin-bottom:6px;
+                            font-weight:600;
+                            color:#334155;
+                       ">
+                    Phone Number
+                </label>
+
+                <input
+                    type="text"
+                    id="bookingCustomerMobile"
+                    name="mobile_number"
+                    readonly
+                    required
+                    maxlength="15"
+                    style="
+                        width:100%;
+                        padding:11px 12px;
+                        border:1px solid #cbd5e1;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        background:#f8fafc;
+                        color:#334155;
+                    "
+                >
+
+            </div>
+
+
+            <!-- Booking Date -->
+            <div style="margin-bottom:15px;">
+
+                <label for="bookingDate"
+                       style="
+                            display:block;
+                            margin-bottom:6px;
+                            font-weight:600;
+                            color:#334155;
+                       ">
+                    Booking Date
+                </label>
+
+                <input
+                    type="date"
+                    id="bookingDate"
+                    name="booking_date"
+                    required
+                    style="
+                        width:100%;
+                        padding:11px 12px;
+                        border:1px solid #cbd5e1;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        background:#fff;
+                        color:#334155;
+                    "
+                >
+
+            </div>
+
+
+            <!-- Optional Message -->
+            <div style="margin-bottom:20px;">
+
+                <label for="bookingMessage"
+                       style="
+                            display:block;
+                            margin-bottom:6px;
+                            font-weight:600;
+                            color:#334155;
+                       ">
+                    Message / Note
+                    <span style="
+                        color:#94a3b8;
+                        font-weight:400;
+                        font-size:13px;
+                    ">
+                        (Optional)
+                    </span>
+                </label>
+
+                <textarea
+                    id="bookingMessage"
+                    name="message"
+                    rows="3"
+                    placeholder="Write any additional message..."
+                    style="
+                        width:100%;
+                        padding:11px 12px;
+                        border:1px solid #cbd5e1;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        resize:vertical;
+                        color:#334155;
+                    "
+                ></textarea>
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div style="
+                display:flex;
+                gap:10px;
+                justify-content:flex-end;
+            ">
+
+                <button
+                    type="button"
+                    id="cancelBookingBtn"
+                    style="
+                        padding:11px 20px;
+                        border:none;
+                        border-radius:8px;
+                        background:#e2e8f0;
+                        color:#334155;
+                        cursor:pointer;
+                        font-weight:600;
+                    ">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="confirmBookingBtn"
+                    style="
+                        padding:11px 20px;
+                        border:none;
+                        border-radius:8px;
+                        background:#2563eb;
+                        color:#fff;
+                        cursor:pointer;
+                        font-weight:600;
+                    ">
+                    Book Now
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+    
+    <script src="{% static 'website/script.js' %}"></script>
+
+
+    {% include 'website/footer.html' %}
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP - Hume Properties</title>
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+</head>
+
+<body>
+
+{% include 'website/header.html' %}
+
+<div class="login-page-scope">
+    <div class="login-wrapper" style="justify-content: center;">
+
+        <div class="login-card" style="max-width: 500px; width: 100%;">
+            <div class="login-form-side" style="width: 100%;">
+
+                <h2>Verify OTP</h2>
+
+                <p class="subtitle">
+                    Enter the 6-digit OTP sent to your registered email.
+                </p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="
+                            padding: 12px;
+                            margin-bottom: 15px;
+                            border-radius: 8px;
+                            background: #fee2e2;
+                            color: #991b1b;
+                        ">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" action="{% url 'verify_otp' %}">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label>Enter OTP</label>
+
+                        <input
+                            type="text"
+                            name="otp"
+                            maxlength="6"
+                            pattern="[0-9]{6}"
+                            inputmode="numeric"
+                            placeholder="Enter 6-digit OTP"
+                            required
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                        style="width: 100%; margin-top: 15px;"
+                    >
+                        Verify OTP
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% include 'website/footer.html' %}
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<div class="card-section" style="max-width: 750px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; font-family: inherit;">
+    
+    <!-- Top Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+        <h3 style="margin: 0; font-size: 18px; color: #1e293b; font-weight: 650;">Edit Profile</h3>
+        <button onclick="loadProfileView()" style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-arrow-left"></i> Cancel / View Profile
+        </button>
+    </div>
+
+    <!-- Success Alert Box -->
+    <div id="profileAlert" style="display: none; padding: 10px 15px; margin-bottom: 15px; border-radius: 6px; font-size: 13px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;"></div>
+
+    <!-- Profile Update Form -->
+    <form id="ajaxProfileForm" method="POST" action="{% url 'customer_profile' %}" enctype="multipart/form-data" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+        {% csrf_token %}
+        
+        <!-- Profile Picture Section -->
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #fff; padding: 12px 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div>
+                {% if user.profile_image %}
+                    <img id="profileImagePreview" src="{{ user.profile_image.url }}" alt="Profile Picture" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1;">
+                {% else %}
+                    <div id="profileImagePreview" style="width: 60px; height: 60px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: 600; font-size: 18px;">
+                        {{ user.full_name|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Change Profile Picture</label>
+                <input type="file" name="profile_image" accept="image/*" style="font-size: 12px; color: #64748b;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Full Name</label>
+                <input type="text" name="full_name" value="{{ user.full_name }}" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Email (Read-only)</label>
+                <input type="email" value="{{ user.email }}" disabled style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #f1f5f9; color: #64748b; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Mobile Number</label>
+                <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Office Address</label>
+                <input type="text" name="office_address" value="{{ user.office_address|default:'' }}" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Bio / Description</label>
+            <textarea name="bio" rows="2.5" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; resize: vertical; box-sizing: border-box;">{{ user.bio|default:'' }}</textarea>
+        </div>
+
+        <button type="submit" id="submitBtn" style="background: #2563eb; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">Save Changes</button>
+    </form>
+</div>
+
+<!-- Clean AJAX Submission Handler Script -->
+<script>
+    if (typeof profileSubmitHandlerAttached === 'undefined') {
+        var profileSubmitHandlerAttached = true;
+        document.addEventListener('submit', function(e) {
+            if (e.target && e.target.id === 'ajaxProfileForm') {
+                e.preventDefault();
+                
+                let form = e.target;
+                let formData = new FormData(form);
+                let submitBtn = document.getElementById('submitBtn');
+                submitBtn.innerText = "Saving...";
+                submitBtn.disabled = true;
+
+                let targetUrl = form.action || "{% url 'customer_profile' %}";
+
+                fetch(targetUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // Server se render hokar aaya naya profile view yahan inject hoga
+                    document.getElementById('dashboard-dynamic-content').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitBtn.innerText = "Save Changes";
+                    submitBtn.disabled = false;
+                });
+            }
+        });
+    }
+</script>

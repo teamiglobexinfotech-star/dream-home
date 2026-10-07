@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        .container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; }
+        .btn-back { background: #6c757d; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: middle; }
+        th { background: #343a40; color: white; }
+        .agent-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+
+        .agent-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.agent-modal-content {
+    background: white;
+    width: 500px;
+    max-width: 90%;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.agent-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.agent-modal-header button {
+    border: none;
+    background: none;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.agent-info p {
+    margin: 10px 0;
+}
+
+.agent-documents {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.document-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.document-row button {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Agent Management</h2>
+            <div>
+                <a href="{% url 'add_agent' %}" class="btn nav-link-ajax" style="background: #28a745; margin-right: 10px;"><i class="fa fa-plus"></i> Add New Agent</a>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Experience</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agent in agents %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        {% if agent.image %}
+                            <img src="{{ agent.image.url }}" class="agent-img" alt="{{ agent.name }}">
+                        {% else %}
+                            <i class="fa fa-user-circle fa-2x" style="color: #ccc;"></i>
+                        {% endif %}
+                    </td>
+                    <td><b>{{ agent.name }}</b></td>
+                    <td>{{ agent.role }}</td>
+                    <td>{{ agent.experience }}</td>
+                    <td>{{ agent.email }}</td>
+                    <td>{{ agent.phone }}</td>
+
+                    <td>
+                        {% if agent.is_active %}
+                            <span style="color: #28a745; font-weight: 600;">
+                                ● Active
+                            </span>
+                            <br>
+                            <a href="{% url 'toggle_agent_status' agent.pk %}"
+                            class="btn nav-link-ajax"
+                            style="background: #dc3545; padding: 4px 8px; font-size: 11px; margin-top: 5px;">
+                                Deactivate
+                            </a>
+                        {% else %}
+                            <span style="color: #dc3545; font-weight: 600;">
+                                ● Inactive
+                            </span>
+                            <br>
+                            <a href="{% url 'toggle_agent_status' agent.pk %}"
+                            class="btn nav-link-ajax"
+                            style="background: #28a745; padding: 4px 8px; font-size: 11px; margin-top: 5px;">
+                                Activate
+                            </a>
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+        class="btn"
+        data-agent-id="{{ agent.pk }}"
+        onclick="openAgentModal(this.dataset.agentId)"
+        style="background: #17a2b8; padding: 5px 10px; color: white; border-radius: 3px; font-size: 12px; border: none; cursor: pointer;">
+    <i class="fa fa-eye"></i> View
+</button>
+
+                        <a href="{% url 'edit_agent' agent.pk %}" class="btn nav-link-ajax" style="background: #ffc107; padding: 5px 10px; color: black; border-radius: 3px; font-size: 12px;"><i class="fa fa-pen"></i> Edit</a>
+                        <a href="{% url 'delete_agent' agent.pk %}" class="btn nav-link" style="background: #dc3545; padding: 5px 10px; color: white; border-radius: 3px; font-size: 12px;" onclick="return confirm('Kya aap is agent ko delete karna chahte hain?');"><i class="fa fa-trash"></i> Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align: center; color: #777;">No agents found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+<!-- Agent Details Modal -->
+<div id="agentModal" class="agent-modal">
+    <div class="agent-modal-content">
+
+        <div class="agent-modal-header">
+            <h3>Agent Details</h3>
+            <button type="button" onclick="closeAgentModal()">&times;</button>
+        </div>
+
+        <div class="agent-details">
+            <div class="agent-info">
+                <p><strong>Name:</strong> <span id="modalName"></span></p>
+                <p><strong>Father Name:</strong> <span id="modalFatherName"></span></p>
+                <p><strong>Role:</strong> <span id="modalRole"></span></p>
+                <p><strong>Experience:</strong> <span id="modalExperience"></span></p>
+                <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+                <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+            </div>
+
+            <div class="agent-documents">
+                <h4>Documents</h4>
+
+                <div class="document-row">
+                    <span>Aadhaar Card</span>
+                    <button type="button">View</button>
+                </div>
+
+                <div class="document-row">
+                    <span>PAN Card</span>
+                    <button type="button">View</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+</body>
+</html>

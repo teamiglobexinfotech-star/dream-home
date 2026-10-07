@@ -1,0 +1,366 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>About Us | DreamHome</title>
+
+<link rel="stylesheet"
+href="{% static 'website/style.css' %}">
+<script src="{% static 'website/script.js' %}" defer></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+
+</head>
+
+<body>
+    
+  {% include 'website/header.html' %}
+
+{% load static %}
+<!-- Hero Section Start -->
+    <section class="hero-section" style="background-image: url('{% static "images/properties/house8.png" %}');">
+        <!-- Dark Overlay taaki text clear dikhe -->
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <h1>About Us</h1>
+            <p class="breadcrumb">
+                Home <span class="breadcrumb-separator">&gt;</span> About Us
+            </p>
+            <p class="hero-desc">
+                At DreamHome, we help you find the perfect property that fits your lifestyle and budget. With years of experience in the real estate industry, we ensure trusted and transparent deals.
+            </p>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+
+<!-- Our Story Section Start -->
+<section class="our-story-section">
+  <div class="story-container">
+    
+    <!-- Left Side Content -->
+    <div class="story-left">
+      <span class="sub-heading">OUR STORY</span>
+      <h2>Building Trust<br>Delivering Dreams</h2>
+      <p>
+        DreamHome was founded with a simple mission – to make real estate buying, selling, and renting easy, transparent, and reliable. We believe in building long-term relationships with our clients by offering the best properties and exceptional service.
+      </p>
+      <a href="#" class="btn-know-more">Know More About Us</a>
+    </div>
+    
+    <!-- Right Side Image with Inline URL and Floating Experience Card -->
+    <div class="story-right">
+      <div class="story-image-box" style="background-image: url('{% static "images/properties/building1.png" %}');">
+        <!-- Floating Experience Card -->
+        <div class="experience-badge">
+          <div class="exp-icon"><i class="fa-solid fa-building"></i></div>
+          <div class="exp-text">
+            <h3>15+</h3>
+            <p>Years of Experience</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- Our Story Section End -->
+
+<!-- Our Vision & Mission Section Start -->
+<section class="vision-mission-section">
+  <div class="vm-container">
+    
+    <!-- Section Heading -->
+    <div class="vm-heading-wrapper">
+      <h2 class="section-title">Our Vision & Mission</h2>
+      <div class="title-underline"></div>
+    </div>
+
+    <!-- Cards Wrapper -->
+    <div class="vm-cards-wrapper">
+      
+      <!-- Vision Card -->
+      <div class="vm-card">
+        <div class="vm-icon-box icon-vision">
+          <!-- Aap yahan FontAwesome ya SVG icon laga sakte hain, abhi ke liye icon jaisa look diya hai -->
+          <i class="fa-solid fa-bullseye"></i>
+        </div>
+        <div class="vm-content">
+          <h3 class="title-vision">Our Vision</h3>
+          <p>To be the most trusted real estate brand, recognized for transparency, innovation, and customer satisfaction.</p>
+        </div>
+      </div>
+
+      <!-- Mission Card -->
+      <div class="vm-card">
+        <div class="vm-icon-box icon-mission">
+          <!-- Aap yahan FontAwesome ya SVG icon laga sakte hain -->
+          <i class="fa-solid fa-mountain"></i>
+        </div>
+        <div class="vm-content">
+          <h3 class="title-mission">Our Mission</h3>
+          <p>To provide exceptional real estate solutions that help our clients achieve their dream of owning the perfect property.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<!-- Our Vision & Mission Section End -->
+
+<!-- Our Company in Numbers Section Start -->
+<section class="company-stats-section">
+  <div class="stats-outer-container">
+    <div class="stats-heading-wrapper">
+      <h2 class="section-title">Our Company in Numbers</h2>
+      <div class="title-underline"></div>
+    </div>
+
+    <div class="stats-container">
+      <!-- Stat 1: Properties Listed (Blue) -->
+      <div class="stat-item">
+        <div class="stat-icon icon-blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#2563eb"><path d="M3 9.5L12 2l9 7.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/></svg>
+        </div>
+        <h3>2500+</h3>
+        <p>Properties Listed</p>
+      </div>
+
+      <!-- Stat 2: Happy Clients (Orange) -->
+      <div class="stat-item">
+        <div class="stat-icon icon-orange">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#f97316"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <h3>1800+</h3>
+        <p>Happy Clients</p>
+      </div>
+
+      <!-- Stat 3: Projects Completed (Green) -->
+      <div class="stat-item">
+        <div class="stat-icon icon-green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#16a34a"><path d="M3 21h18v-2H3v2zM3 8v8h4V8H3zm6 0v8h4V8H9zm6 0v8h4V8h-4zM3 5h18V3H3v2z"/></svg>
+        </div>
+        <h3>120+</h3>
+        <p>Projects Completed</p>
+      </div>
+
+      <!-- Stat 4: Expert Agents (Purple) -->
+      <div class="stat-item">
+        <div class="stat-icon icon-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#9333ea"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+        </div>
+        <h3>75+</h3>
+        <p>Expert Agents</p>
+      </div>
+
+      <!-- Stat 5: Cities Covered (Red) -->
+      <div class="stat-item">
+        <div class="stat-icon icon-red">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#dc2626"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </div>
+        <h3>25+</h3>
+        <p>Cities Covered</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Our Team Section Start -->
+<section class="our-team-section">
+  <div class="team-container">
+    
+    <!-- Section Heading -->
+    <div class="team-heading-wrapper">
+      <h2 class="section-title">Our Team</h2>
+      <div class="title-underline"></div>
+    </div>
+
+    <!-- Team Grid Cards -->
+    <div class="team-grid">
+      
+      <!-- Team Member 1 -->
+      <div class="team-card">
+        <div class="team-img-box">
+          <img src="{% static 'images/properties/team1.png' %}" alt="Neha Sharma">
+        </div>
+        <div class="team-info">
+          <h3>Neha Sharma</h3>
+          <p class="team-role">Founder & CEO</p>
+          <div class="team-socials">
+            <a href="#" title="Call"><i class="fa-solid fa-phone"></i></a>
+            <a href="#" title="Email"><i class="fa-solid fa-envelope"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Member 2 -->
+      <div class="team-card">
+        <div class="team-img-box">
+          <img src="{% static 'images/properties/team3.png' %}" alt="Anjali Verma">
+        </div>
+        <div class="team-info">
+          <h3>Anjali Verma</h3>
+          <p class="team-role">Managing Director</p>
+          <div class="team-socials">
+            <a href="#" title="Call"><i class="fa-solid fa-phone"></i></a>
+            <a href="#" title="Email"><i class="fa-solid fa-envelope"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Member 3 -->
+      <div class="team-card">
+        <div class="team-img-box">
+          <img src="{% static 'images/properties/team2.png' %}" alt="Vikram Joshi">
+        </div>
+        <div class="team-info">
+          <h3>Vikram Joshi</h3>
+          <p class="team-role">Head of Sales</p>
+          <div class="team-socials">
+            <a href="#" title="Call"><i class="fa-solid fa-phone"></i></a>
+            <a href="#" title="Email"><i class="fa-solid fa-envelope"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Member 4 -->
+      <div class="team-card">
+        <div class="team-img-box">
+          <img src="{% static 'images/properties/team4.png' %}" alt="Rahul Singh">
+        </div>
+        <div class="team-info">
+          <h3>Rahul Singh</h3>
+          <p class="team-role">Customer Relations</p>
+          <div class="team-socials">
+            <a href="#" title="Call"><i class="fa-solid fa-phone"></i></a>
+            <a href="#" title="Email"><i class="fa-solid fa-envelope"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<!-- Our Team Section End -->
+
+<!-- Why Choose Us Section Start -->
+<section class="why-choose-section">
+  <div class="choose-container">
+    
+    <!-- Section Heading -->
+    <div class="choose-heading-wrapper">
+      <h2 class="section-title">Why Choose Us</h2>
+      <div class="title-underline"></div>
+    </div>
+
+    <!-- 6 Cards in a Single Row Grid -->
+    <div class="choose-grid">
+      
+      <!-- Card 1: Trusted & Verified -->
+      <div class="choose-card">
+        <div class="choose-icon icon-blue">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3>Trusted & Verified</h3>
+        <p>All properties are verified for a safe and secure deal.</p>
+      </div>
+
+      <!-- Card 2: Best Price Guarantee -->
+      <div class="choose-card">
+        <div class="choose-icon icon-orange">
+          <i class="fa-solid fa-award"></i>
+        </div>
+        <h3>Best Price Guarantee</h3>
+        <p>We ensure you get the best value for your investment.</p>
+      </div>
+
+      <!-- Card 3: Legal Support -->
+      <div class="choose-card">
+        <div class="choose-icon icon-green">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <h3>Legal Support</h3>
+        <p>Complete legal assistance for a hassle-free process.</p>
+      </div>
+
+      <!-- Card 4: Expert Guidance -->
+      <div class="choose-card">
+        <div class="choose-icon icon-purple">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h3>Expert Guidance</h3>
+        <p>Our experts are always here to help you.</p>
+      </div>
+
+      <!-- Card 5: Wide Range -->
+      <div class="choose-card">
+        <div class="choose-icon icon-red">
+          <i class="fa-solid fa-house-chimney"></i>
+        </div>
+        <h3>Wide Range</h3>
+        <p>Thousands of properties across prime locations.</p>
+      </div>
+
+      <!-- Card 6: Customer First -->
+      <div class="choose-card">
+        <div class="choose-icon icon-teal">
+          <i class="fa-solid fa-handshake"></i>
+        </div>
+        <h3>Customer First</h3>
+        <p>We prioritize your satisfaction above everything.</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<!-- Why Choose Us Section End -->
+
+<!-- Let's Find Your Dream Property CTA Section Start -->
+<section class="dream-cta-section">
+  <div class="dream-cta-container">
+    
+    <!-- Left Icon & Heading Content -->
+    <div class="dream-cta-left">
+      <div class="dream-cta-iconbox">
+        <i class="fa-solid fa-house-chimney"></i>
+      </div>
+      <div class="dream-cta-text">
+        <h2>Let's Find Your Dream Property</h2>
+        <p>We are here to help you find the best property that suits your needs.</p>
+      </div>
+    </div>
+
+    <!-- Right Action Buttons -->
+    <div class="dream-cta-buttons">
+      <a href="{% url 'contact' %}" class="btn-orange">Contact Us</a>
+      <a href="{% url 'properties' %}" class="btn-outline">Explore Properties</a>
+    </div>
+
+  </div>
+</section>
+<!-- Let's Find Your Dream Property CTA Section End -->
+
+  {% include 'website/footer.html' %}
+
+</body>
+
+</html>

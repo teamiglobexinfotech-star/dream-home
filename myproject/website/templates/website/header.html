@@ -1,0 +1,292 @@
+ <!-- 1. Navigation Bar -->
+<header class="header">
+    <div class="logo">🏠 DREAMHOME</div>
+    
+    <ul class="nav-links" id="primaryNavigation">
+        <li><a href="{% url 'home' %}" class="active">Home</a></li>
+        <li><a href="{% url 'about' %}">About Us</a></li>
+        
+        <!-- Properties Dropdown -->
+        <li class="dropdown">
+            <a href="{% url 'properties' %}">Properties</a>
+            <button class="dropdown-toggle" type="button" aria-label="Show property links"
+                    aria-expanded="false">
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="{% url 'properties' %}?status=Sale">Buy Property</a>
+                <a href="{% url 'properties' %}?status=Rent">Rent Property</a>
+                <a href="{% url 'properties' %}">Villas & Plots</a>
+            </div>
+        </li>
+
+        <li><a href="{% url 'projects' %}">Projects</a></li>
+        <li><a href="{% url 'agents'%}">Agents</a></li>
+        <li><a href="{% url 'blogs'%}">Blog</a></li>
+        <li><a href="{% url 'contact'%}">Contact Us</a></li>
+        
+    </ul>
+
+    <div class="header-actions">
+        <!-- New Quick Enquiry Button -->
+        <a href="#" class="btn-enquiry" >Enquiry</a>
+        <!-- Naya Schedule Visit Button -->
+        <a href="#" class=" btn-schedule-visit">Schedule Visit</a>
+        <!-- <a href="{% url 'login' %}" class="btn-outline" style="text-decoration: none; display: inline-block; text-align: center;">Login</a> -->
+
+        <!-- <div class="login-dropdown">
+
+    <a href="javascript:void(0);" class="btn-outline login-dropdown-btn">
+        Login
+        <i class="fa-solid fa-chevron-down login-arrow"></i>
+    </a>
+
+    <div class="login-dropdown-content">
+
+        <a href="{% url 'login' %}?role=customer">
+            <span>Customer Login</span>
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+
+        <a href="{% url 'login' %}?role=agent">
+            <span>Agent Login</span>
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+
+        <a href="{% url 'login' %}?role=admin">
+            <span>Admin Login</span>
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+
+    </div>
+
+</div>
+
+
+        <a href="{% url 'register' %}" class="btn-solid" style="text-decoration: none; display: inline-block; text-align: center;">Register</a> -->
+
+        {% if header_user and header_role %}
+
+    <!-- Logged-in User Dropdown -->
+    <div class="login-dropdown">
+
+        <a href="javascript:void(0);" class="btn-outline login-dropdown-btn"
+           aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-user login-profile-icon" aria-hidden="true"></i>
+            {{ header_user.full_name }}
+            <i class="fa-solid fa-chevron-down login-arrow"></i>
+        </a>
+
+        <div class="login-dropdown-content">
+
+            {% if header_role == 'customer' %}
+
+                <a href="{% url 'customer_dashboard' %}">
+                    <span>My Dashboard</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                <a href="{% url 'customer_dashboard' %}">
+                    <span>My Bookings</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                <a href="{% url 'customer_dashboard' %}">
+                    <span>Saved Properties</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                <a href="{% url 'logout' %}">
+                    <span>Logout</span>
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+
+            {% elif header_role == 'agent' %}
+
+                <a href="{% url 'agent_dashboard' %}">
+                    <span>Agent Dashboard</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                <a href="{% url 'agent_logout' %}">
+                    <span>Logout</span>
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+
+            {% elif header_role == 'admin' %}
+
+                <a href="{% url 'admin_dashboard' %}">
+                    <span>Admin Dashboard</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                <a href="{% url 'admin_logout' %}">
+                    <span>Logout</span>
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% else %}
+
+    <!-- Guest Login Dropdown -->
+    <div class="login-dropdown">
+
+        <a href="javascript:void(0);" class="btn-outline login-dropdown-btn"
+           aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-user login-profile-icon" aria-hidden="true"></i>
+            Login
+            <i class="fa-solid fa-chevron-down login-arrow"></i>
+        </a>
+
+        <div class="login-dropdown-content">
+
+            <a href="{% url 'login' %}?role=customer">
+                <span>Customer Login</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a href="{% url 'login' %}?role=agent">
+                <span>Agent Login</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a href="{% url 'login' %}?role=admin">
+                <span>Admin Login</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+    <a href="{% url 'register' %}" class="btn-solid"
+       style="text-decoration: none; display: inline-block; text-align: center;">
+        Register
+    </a>
+
+{% endif %}
+
+
+    </div>
+
+    <button class="hamburger-menu" type="button" aria-label="Open navigation menu"
+            aria-controls="primaryNavigation" aria-expanded="false">
+    <span></span>
+    <span></span>
+        <span></span>
+    </button>
+
+</header>
+
+<!-- Floating Side Button (Right Side) -->
+<div class="floating-enquiry-btn" id="openEnquiryModal">
+    <span>📋 Instant Enquiry</span>
+</div>
+
+<!-- Enquiry Form Modal Overlay -->
+<div class="enquiry-modal-overlay" id="enquiryModal">
+    <div class="enquiry-modal-card">
+        <button class="modal-close-btn" id="closeEnquiryModal">&times;</button>
+        
+        <div class="enquiry-modal-header">
+            <h3>Get In Touch</h3>
+            <p>Aapki requirement share karein, humari team jaldi contact karegi!</p>
+        </div>
+
+        <form action="{% url 'submit_enquiry' %}" method="POST" class="enquiry-modal-form">
+            {% csrf_token %}
+            <input type="hidden" name="property_id" id="enquiryPropertyId">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number *</label>
+                <input type="tel" name="phone" placeholder="Enter 10-digit mobile number" required pattern="[0-9]{10}">
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="name@example.com">
+            </div>
+
+            <div class="form-group">
+                <label>Property Interest</label>
+                <select name="property_type">
+                    <option value="" disabled selected>Select Requirement Type</option>
+                    <option value="Buy Residential">Buy Residential House / Flat</option>
+                    <option value="Buy Commercial">Commercial Office / Shop</option>
+                    <option value="Plots">Plot / Land</option>
+                    <option value="Rental">Property for Rent</option>
+                </select>
+            </div>
+
+
+            <!-- <div class="form-group">
+                <label>Preferred Site Visit Date & Time</label>
+                <input type="datetime-local" name="visit_date" class="form-control">
+            </div> -->
+
+            <div class="form-group">
+                <label>Your Message / Note</label>
+                <textarea name="message" rows="3" placeholder="Requirement detail yahan likhein..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-modal-submit">Submit Enquiry</button>
+        </form>
+    </div>
+</div>
+
+<!-- Schedule Visit Form Modal Overlay -->
+<div class="enquiry-modal-overlay" id="visitModal" style="display: none;">
+    <div class="enquiry-modal-card">
+        <button type="button" class="modal-close-btn" id="closeVisitModal">&times;</button>
+        
+        <div class="enquiry-modal-header">
+            <h3>Schedule a Site Visit</h3>
+            <p>Apni pasand ki property dekhne ke liye date aur time select karein!</p>
+        </div>
+
+        <form action="{% url 'submit_visit_schedule' %}" method="POST" class="enquiry-modal-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number *</label>
+                <input type="tel" name="phone" placeholder="Enter 10-digit mobile number" required pattern="[0-9]{10}">
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="name@example.com">
+            </div>
+
+            <div class="form-group">
+                <label>Select Property (Optional)</label>
+                {{ form.property }}
+            </div>
+
+            <div class="form-group">
+                <label>Visit Date & Time *</label>
+                <input type="datetime-local" name="visit_date" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label>Any Message / Note</label>
+                <textarea name="message" rows="3" placeholder="Koi khaas instruction..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-modal-submit" style="background-color: #f97316;">Confirm Visit Schedule</button>
+        </form>
+    </div>
+</div>

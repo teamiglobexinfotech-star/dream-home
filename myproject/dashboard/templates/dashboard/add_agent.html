@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Agent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; border: none; cursor: pointer; }
+        .btn-save { background: #28a745; width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; }
+        .btn-back { background: #6c757d; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Add New Agent</h2>
+            <!-- Back button mein nav-link-ajax class add ki gayi hai -->
+            <a href="{% url 'agent_list' %}" class="btn btn-back nav-link-ajax"><i class="fa fa-arrow-left"></i> Back</a>
+        </div>
+        
+        <!-- Form mein action aur class="ajax-form" add kiya gaya hai -->
+        <form method="POST" action="{% url 'add_agent' %}"  enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Agent Name</label>
+                <input type="text" name="name" required placeholder="Enter agent name">
+            </div>
+
+            <div class="form-group">
+                <label>Father Name</label>
+                <input type="text" name="father_name" placeholder="Enter father name">
+            </div>
+
+            <div class="form-group">
+                <label>Role / Designations</label>
+                <input type="text" name="role" placeholder="e.g. Property Consultant" value="Property Consultant">
+            </div>
+            <div class="form-group">
+                <label>Experience</label>
+                <input type="text" name="experience" placeholder="e.g. 5+ Years">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" required placeholder="Enter email address">
+            </div>
+            <div class="form-group">
+                <label>Login Password</label>
+                <input type="password" name="password" required placeholder="Enter login password for agent">
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" required placeholder="Enter phone number">
+            </div>
+
+            <div class="form-group">
+                <label>Aadhaar Card</label>
+                <input type="file" name="aadhaar_document" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+            <div class="form-group">
+                <label>PAN Card</label>
+                <input type="file" name="pan_document" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <div class="form-group">
+                <label>Agent Profile Image</label>
+                <input type="file" name="image" required>
+            </div>
+            <button type="submit" class="btn btn-save"><i class="fa fa-save"></i> Save Agent</button>
+        </form>
+    </div>
+</body>
+</html>

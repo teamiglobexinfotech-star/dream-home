@@ -1,0 +1,1289 @@
+<div class="p-6 bg-white text-slate-900 rounded-xl shadow-md">
+
+    <!-- ========================================================= -->
+    <!-- ======================= HEADER ========================== -->
+    <!-- ========================================================= -->
+
+    <div class="flex items-center justify-between mb-6">
+
+        <div>
+            <h2 class="text-2xl font-bold">
+                Manage Site Visits
+            </h2>
+
+            <p class="text-sm text-slate-500 mt-1">
+                Customer-wise property visit history
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- ================= SITE VISIT SUMMARY CARDS ============== -->
+    <!-- ========================================================= -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+        <!-- ================= TOTAL VISITS ================= -->
+
+        <a href="#completedVisitsSection"
+           class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
+                  hover:shadow-md hover:border-indigo-300 transition-all duration-200">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        Total Visits
+                    </p>
+
+                    <h3 class="text-3xl font-bold text-slate-900 mt-1">
+                        {{ total_visits_count }}
+                    </h3>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        All scheduled visits
+                    </p>
+
+                </div>
+
+
+                <div class="w-11 h-11 rounded-lg bg-indigo-50 flex items-center justify-center
+                            group-hover:bg-indigo-100 transition">
+
+                    <i class="fas fa-calendar-check text-indigo-600 text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ================= COMPLETED VISITS ================= -->
+
+        <a href="#completedVisitsSection"
+           class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
+                  hover:shadow-md hover:border-emerald-300 transition-all duration-200">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        Completed Visits
+                    </p>
+
+                    <h3 class="text-3xl font-bold text-slate-900 mt-1">
+                        {{ completed_visits_count }}
+                    </h3>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        Successfully completed
+                    </p>
+
+                </div>
+
+
+                <div class="w-11 h-11 rounded-lg bg-emerald-50 flex items-center justify-center
+                            group-hover:bg-emerald-100 transition">
+
+                    <i class="fas fa-check-circle text-emerald-600 text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ================= UPCOMING VISITS ================= -->
+
+        <a href="#upcomingVisitsSection"
+           class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
+                  hover:shadow-md hover:border-amber-300 transition-all duration-200">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-sm font-medium text-slate-500">
+                        Upcoming Visits
+                    </p>
+
+                    <h3 class="text-3xl font-bold text-slate-900 mt-1">
+                        {{ upcoming_visits_count }}
+                    </h3>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        Pending / assigned
+                    </p>
+
+                </div>
+
+
+                <div class="w-11 h-11 rounded-lg bg-amber-50 flex items-center justify-center
+                            group-hover:bg-amber-100 transition">
+
+                    <i class="fas fa-clock text-amber-600 text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+
+
+    <!-- ========================================================= -->
+    <!-- ================= ADD / COMPLETE VISIT ================== -->
+    <!-- ========================================================= -->
+
+    <form id="siteVisitForm"
+          method="POST"
+          action="{% url 'agent_site_visits' %}"
+          enctype="multipart/form-data"
+          class="bg-slate-50 p-5 rounded-xl mb-8 space-y-4 border border-slate-200">
+
+        {% csrf_token %}
+
+
+        <div>
+
+            <h3 class="text-lg font-semibold text-indigo-600">
+                Complete Site Visit
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+                Select the scheduled visit and upload the actual visit details.
+            </p>
+
+        </div>
+
+
+
+        <!-- ================= SCHEDULED VISIT ================= -->
+
+        <div>
+
+            <label class="block text-sm font-medium mb-1 text-slate-700">
+                Select Scheduled Visit
+            </label>
+
+
+            <select name="schedule_id"
+                    required
+                    class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
+
+                <option value="">
+                    -- Choose Scheduled Visit --
+                </option>
+
+
+                {% for schedule in schedules %}
+
+                    {% if schedule.status != 'Completed' and schedule.status != 'Cancelled' %}
+
+                        <option value="{{ schedule.id }}">
+
+                            {{ schedule.name }}
+
+                            {% if schedule.property %}
+                                - {{ schedule.property.title }}
+                            {% endif %}
+
+                            - {{ schedule.visit_date|date:"d M Y, h:i A" }}
+
+                        </option>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+
+        <!-- ================= LOCATION + PHOTO ================= -->
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+            <!-- LOCATION -->
+
+            <div>
+
+                <label class="block text-sm font-medium mb-1 text-slate-700">
+                    Location Visited / Address
+                </label>
+
+
+                <input type="text"
+                       name="location_visited"
+                       required
+                       class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
+
+            </div>
+
+
+
+            <!-- PHOTO -->
+
+            <div>
+
+                <label class="block text-sm font-medium mb-1 text-slate-700">
+                    Visit Photo
+                </label>
+
+
+                <input type="file"
+                       name="visit_image"
+                       accept="image/*"
+                       required
+                       class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= NOTES ================= -->
+
+        <div>
+
+            <label class="block text-sm font-medium mb-1 text-slate-700">
+                Notes / Remarks
+            </label>
+
+
+            <textarea name="notes"
+                      rows="2"
+                      placeholder="Add visit remarks..."
+                      class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500"></textarea>
+
+        </div>
+
+
+
+        <!-- ================= SUBMIT ================= -->
+
+        <button type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-lg transition">
+
+            Complete Visit
+
+        </button>
+
+    </form>
+
+
+
+    <!-- ========================================================= -->
+    <!-- ================= UPCOMING SCHEDULES ==================== -->
+    <!-- ========================================================= -->
+
+    <div id="upcomingVisitsSection" class="mb-8">
+
+
+        <div class="flex items-center justify-between mb-4">
+
+            <div>
+
+                <h3 class="text-xl font-bold">
+                    Upcoming Scheduled Visits
+                </h3>
+
+                <p class="text-xs text-slate-500 mt-1">
+                    Future visits scheduled for customers
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        {% if schedules %}
+
+            <div class="space-y-3">
+
+                {% for schedule in schedules %}
+
+                    {% if schedule.status != 'Completed' and schedule.status != 'Cancelled' %}
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+
+                                <!-- ================= SCHEDULE INFO ================= -->
+
+                                <div>
+
+                                    <h4 class="font-semibold text-slate-900">
+                                        {{ schedule.name }}
+                                    </h4>
+
+
+                                    {% if schedule.property %}
+
+                                        <p class="text-sm text-indigo-600 mt-1">
+                                            {{ schedule.property.title }}
+                                        </p>
+
+                                    {% else %}
+
+                                        <p class="text-sm text-slate-500 mt-1">
+                                            Property Not Specified
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    <p class="text-sm text-slate-500 mt-1">
+
+                                        <i class="fas fa-calendar-days mr-1"></i>
+
+                                        {{ schedule.visit_date|date:"d M Y, h:i A" }}
+
+                                    </p>
+
+
+                                    {% if schedule.message %}
+
+                                        <p class="text-xs text-slate-500 mt-1">
+                                            {{ schedule.message }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+
+
+                                <!-- ================= STATUS ================= -->
+
+                                <div>
+
+                                    {% if schedule.status == 'Assigned' %}
+
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200">
+
+                                            <i class="fas fa-user-check mr-1"></i>
+
+                                            Assigned
+
+                                        </span>
+
+
+                                    {% elif schedule.status == 'Pending' %}
+
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">
+
+                                            <i class="fas fa-clock mr-1"></i>
+
+                                            Pending
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
+
+                <p class="text-slate-500 text-sm">
+                    No upcoming visits scheduled.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- ========================================================= -->
+    <!-- ================= COMPLETED HISTORY ===================== -->
+    <!-- ========================================================= -->
+
+    <div id="completedVisitsSection">
+
+
+        <!-- ================= HISTORY HEADER ================= -->
+
+        <div class="mb-5">
+
+            <h3 class="text-xl font-bold">
+                Completed Visits History
+            </h3>
+
+            <p class="text-sm text-slate-500 mt-1">
+                Customer-wise complete visit history
+            </p>
+
+        </div>
+
+
+
+        {% if visits %}
+
+
+            <!-- ================= CUSTOMER GROUP ================= -->
+
+            {% regroup visits|dictsort:"schedule.name" by schedule.name as customer_groups %}
+
+
+
+            <!-- ================= CUSTOMER CARDS ================= -->
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+                {% for customer in customer_groups %}
+
+
+                    <!-- ================= CUSTOMER CARD ================= -->
+
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+
+
+                        <!-- ================= CUSTOMER HEADER ================= -->
+
+                        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
+
+                            <div class="flex items-center justify-between gap-3">
+
+
+                                <div class="min-w-0">
+
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wide">
+                                        Customer
+                                    </p>
+
+                                    <h4 class="text-base font-bold text-slate-900 truncate">
+                                        {{ customer.grouper }}
+                                    </h4>
+
+                                </div>
+
+
+                                <div class="flex items-center gap-2">
+
+                                    <span class="text-[11px] text-slate-500 whitespace-nowrap">
+
+                                        {{ customer.list|length }}
+
+                                        Visit{% if customer.list|length != 1 %}s{% endif %}
+
+                                    </span>
+
+
+                                    <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+
+                                        <i class="fas fa-user text-indigo-600 text-xs"></i>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- ================= CUSTOMER TABLE ================= -->
+
+                        <div class="overflow-x-auto">
+
+                            <table class="w-full min-w-[700px] text-xs">
+
+
+                                <!-- ================= TABLE HEADER ================= -->
+
+                                <thead class="bg-white border-b border-slate-200">
+
+                                    <tr>
+
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                            Date
+                                        </th>
+
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                            Property
+                                        </th>
+
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                            Purpose / Visit Type
+                                        </th>
+
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                            Status
+                                        </th>
+
+                                        <th class="px-3 py-2.5 text-right text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                            History
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+
+                                <!-- ================= TABLE BODY ================= -->
+
+                                <tbody class="divide-y divide-slate-100">
+
+
+                                    {% for visit in customer.list|dictsortreversed:"created_at" %}
+
+                                        <tr class="hover:bg-slate-50 transition">
+
+
+                                            <!-- ================= DATE ================= -->
+
+                                            <td class="px-3 py-3 whitespace-nowrap">
+
+                                                {% if visit.visit_date %}
+
+                                                    <div class="font-semibold text-slate-800">
+                                                        {{ visit.visit_date|date:"d M Y" }}
+                                                    </div>
+
+                                                    <div class="text-[10px] text-slate-400 mt-0.5">
+                                                        {{ visit.visit_date|date:"h:i A" }}
+                                                    </div>
+
+                                                {% else %}
+
+                                                    <div class="font-semibold text-slate-800">
+                                                        {{ visit.created_at|date:"d M Y" }}
+                                                    </div>
+
+                                                    <div class="text-[10px] text-slate-400 mt-0.5">
+                                                        {{ visit.created_at|date:"h:i A" }}
+                                                    </div>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+
+                                            <!-- ================= PROPERTY ================= -->
+
+                                            <td class="px-3 py-3">
+
+                                                {% if visit.schedule and visit.schedule.property %}
+
+                                                    <div class="font-medium text-indigo-600 truncate max-w-[130px]">
+
+                                                        {{ visit.schedule.property.title }}
+
+                                                    </div>
+
+                                                {% else %}
+
+                                                    <span class="text-slate-400">
+                                                        Property Not Specified
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+
+                                            <!-- ================= PURPOSE / TYPE ================= -->
+
+                                            <td class="px-3 py-3">
+
+                                                <div class="font-medium text-slate-800">
+
+                                                    {% if visit.visit_type %}
+
+                                                        {{ visit.visit_type }}
+
+                                                    {% else %}
+
+                                                        Site Visit
+
+                                                    {% endif %}
+
+                                                </div>
+
+
+                                                {% if visit.visit_purpose %}
+
+                                                    <div class="text-[10px] text-slate-400 mt-1 max-w-[130px] truncate">
+
+                                                        {{ visit.visit_purpose }}
+
+                                                    </div>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+
+                                            <!-- ================= STATUS ================= -->
+
+                                            <td class="px-3 py-3 whitespace-nowrap">
+
+                                                {% if visit.status == 'Approved' %}
+
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200">
+
+                                                        <i class="fas fa-check-circle mr-1"></i>
+
+                                                        Approved
+
+                                                    </span>
+
+
+                                                {% elif visit.status == 'Rejected' %}
+
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-rose-600 bg-rose-50 border border-rose-200">
+
+                                                        <i class="fas fa-times-circle mr-1"></i>
+
+                                                        Rejected
+
+                                                    </span>
+
+
+                                                {% else %}
+
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200">
+
+                                                        <i class="fas fa-clock mr-1"></i>
+
+                                                        Pending
+
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+
+                                            <!-- ================= ACTIONS ================= -->
+
+                                            <td class="px-3 py-3">
+
+                                                <div class="flex items-center justify-end gap-1">
+
+
+                                                    <!-- ================= VIEW ================= -->
+
+                                                    <button type="button"
+                                                            class="view-visit-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1.5 rounded-lg text-[10px] transition"
+
+                                                            data-visit-id="{{ visit.id }}"
+
+                                                            data-customer-name="{% if visit.schedule %}{{ visit.schedule.name }}{% else %}Unknown Customer{% endif %}"
+
+                                                            data-property-name="{% if visit.schedule and visit.schedule.property %}{{ visit.schedule.property.title }}{% else %}Property Not Specified{% endif %}"
+
+                                                            data-location="{{ visit.location_visited|default:'' }}"
+
+                                                            data-notes="{{ visit.notes|default:'' }}"
+
+                                                            data-status="{{ visit.status }}"
+
+                                                            data-visit-type="{{ visit.visit_type|default:'Site Visit' }}"
+
+                                                            data-visit-date="{% if visit.visit_date %}{{ visit.visit_date|date:'d M Y, h:i A' }}{% else %}{{ visit.created_at|date:'d M Y, h:i A' }}{% endif %}"
+
+                                                            data-image="{% if visit.visit_image %}{{ visit.visit_image.url }}{% endif %}">
+
+                                                        <i class="fas fa-eye"></i>
+
+                                                    </button>
+
+
+
+                                                    <!-- ================= NEXT VISIT ================= -->
+
+                                                    <button type="button"
+                                                            class="next-visit-btn bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2 py-1.5 rounded-lg text-[10px] transition"
+
+                                                            data-visit-id="{{ visit.id }}"
+
+                                                            data-customer-name="{% if visit.schedule %}{{ visit.schedule.name }}{% else %}Unknown Customer{% endif %}"
+
+                                                            data-property-name="{% if visit.schedule and visit.schedule.property %}{{ visit.schedule.property.title }}{% endif %}"
+
+                                                            data-property-id="{% if visit.schedule and visit.schedule.property %}{{ visit.schedule.property.id }}{% endif %}"
+
+                                                            data-url="{% url 'agent_next_site_visit' visit.id %}">
+
+                                                        <i class="fas fa-calendar-plus"></i>
+
+                                                    </button>
+
+
+
+                                                    <!-- ================= CUSTOMER PROPERTIES ================= -->
+
+                                                    <select id="visitProperties-{{ visit.id }}"
+                                                            class="hidden visit-properties-data">
+
+                                                        {% for property in visit.available_properties %}
+
+                                                            <option value="{{ property.id }}">
+                                                                {{ property.title }}
+                                                            </option>
+
+                                                        {% endfor %}
+
+                                                    </select>
+
+
+
+                                                    <!-- ================= EDIT ================= -->
+
+                                                    <a href="{% url 'agent_edit_site_visit' visit.id %}"
+                                                       class="edit-visit-btn bg-blue-50 hover:bg-blue-100 text-blue-600 px-2 py-1.5 rounded-lg text-[10px] transition">
+
+                                                        <i class="fas fa-pen"></i>
+
+                                                    </a>
+
+
+
+                                                    <!-- ================= DELETE ================= -->
+
+                                                    <a href="{% url 'agent_delete_site_visit_delete' visit.id %}"
+                                                       class="delete-visit-btn bg-rose-50 hover:bg-rose-100 text-rose-600 px-2 py-1.5 rounded-lg text-[10px] transition">
+
+                                                        <i class="fas fa-trash"></i>
+
+                                                    </a>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+
+        {% else %}
+
+
+            <!-- ================= EMPTY STATE ================= -->
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center">
+
+                <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-3">
+
+                    <i class="fas fa-calendar-xmark text-slate-400"></i>
+
+                </div>
+
+                <p class="text-slate-700 font-medium">
+                    No site visits recorded yet.
+                </p>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Completed visits will appear here customer-wise.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- ================= VIEW VISIT MODAL ====================== -->
+<!-- ========================================================= -->
+
+<div id="viewVisitModal"
+     class="fixed inset-0 z-[10000] hidden bg-black/70 flex items-center justify-center p-4">
+
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+
+            <div>
+
+                <h3 class="text-xl font-bold text-slate-900">
+                    Visit Details
+                </h3>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Complete site visit information
+                </p>
+
+            </div>
+
+
+            <button type="button"
+                    id="closeViewVisitModal"
+                    class="text-slate-400 hover:text-slate-700 text-2xl leading-none">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <div class="p-6 space-y-5">
+
+
+            <!-- ================= IMAGE ================= -->
+
+            <div id="viewVisitImageContainer"
+                 class="hidden">
+
+                <img id="viewVisitImage"
+                     src=""
+                     alt="Visit Photo"
+                     class="w-full max-h-[350px] object-cover rounded-xl border border-slate-200">
+
+            </div>
+
+
+
+            <!-- ================= CUSTOMER / PROPERTY ================= -->
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+                <!-- CUSTOMER -->
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                    <p class="text-xs text-slate-500 uppercase tracking-wide">
+                        Customer
+                    </p>
+
+                    <p id="viewVisitCustomer"
+                       class="font-semibold text-slate-900 mt-1">
+                    </p>
+
+                </div>
+
+
+
+                <!-- PROPERTY -->
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                    <p class="text-xs text-slate-500 uppercase tracking-wide">
+                        Property
+                    </p>
+
+                    <p id="viewVisitProperty"
+                       class="font-semibold text-indigo-600 mt-1">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= VISIT INFO ================= -->
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+                <!-- VISIT TYPE -->
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                    <p class="text-xs text-slate-500 uppercase tracking-wide">
+                        Visit Type
+                    </p>
+
+                    <p id="viewVisitType"
+                       class="font-semibold text-slate-900 mt-1">
+                    </p>
+
+                </div>
+
+
+
+                <!-- VISIT DATE -->
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                    <p class="text-xs text-slate-500 uppercase tracking-wide">
+                        Visit Date
+                    </p>
+
+                    <p id="viewVisitDate"
+                       class="font-semibold text-slate-900 mt-1">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= LOCATION ================= -->
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                <p class="text-xs text-slate-500 uppercase tracking-wide">
+                    Location
+                </p>
+
+                <p id="viewVisitLocation"
+                   class="text-slate-700 mt-1">
+                </p>
+
+            </div>
+
+
+
+            <!-- ================= NOTES ================= -->
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                <p class="text-xs text-slate-500 uppercase tracking-wide">
+                    Notes / Remarks
+                </p>
+
+                <p id="viewVisitNotes"
+                   class="text-slate-700 mt-1 whitespace-pre-line">
+                </p>
+
+            </div>
+
+
+
+            <!-- ================= STATUS ================= -->
+
+            <div class="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                <span class="text-sm text-slate-500">
+                    Status
+                </span>
+
+                <span id="viewVisitStatus"
+                      class="font-semibold text-xs px-3 py-1 rounded-full">
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <div class="flex justify-end px-6 py-4 border-t border-slate-200">
+
+            <button type="button"
+                    id="closeViewVisitBtn"
+                    class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 transition">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- ================= NEXT VISIT MODAL ====================== -->
+<!-- ========================================================= -->
+
+<div id="nextVisitModal"
+     class="fixed inset-0 z-[9999] hidden bg-black/70 flex items-center justify-center p-4">
+
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+
+            <div>
+
+                <h3 class="text-xl font-bold text-slate-900">
+                    Schedule Next Visit
+                </h3>
+
+
+                <p class="text-sm text-slate-500 mt-1">
+
+                    Customer:
+
+                    <span id="nextVisitCustomerName"
+                          class="text-indigo-600 font-medium">
+                    </span>
+
+                </p>
+
+
+                <p id="nextVisitPropertyName"
+                   class="text-xs text-slate-500 mt-1">
+                </p>
+
+            </div>
+
+
+            <button type="button"
+                    id="closeNextVisitModal"
+                    class="text-slate-400 hover:text-slate-700 text-2xl leading-none">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================= FORM ================= -->
+
+        <form id="nextVisitForm"
+              method="POST"
+              class="p-6 space-y-4">
+
+            {% csrf_token %}
+
+
+
+            <!-- ================= PREVIOUS VISIT ID ================= -->
+
+            <input type="hidden"
+                   id="nextVisitId"
+                   name="previous_visit_id">
+
+
+
+            <!-- ================= PROPERTY ================= -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Property
+                </label>
+
+
+                <select name="property_id"
+                        id="nextVisitProperty"
+                        required
+                        class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
+
+                    <option value="">
+                        -- Select Property --
+                    </option>
+
+                </select>
+
+
+                <p class="text-[11px] text-slate-400 mt-1">
+
+                    Previous property is selected by default.
+                    You can choose another customer property.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- ================= VISIT TYPE ================= -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Visit Type
+                </label>
+
+
+                <select name="visit_type"
+                        required
+                        class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
+
+                    <option value="">
+                        -- Select Visit Type --
+                    </option>
+
+                    <option value="Revisit">
+                        Revisit
+                    </option>
+
+                    <option value="Discussion">
+                        Discussion
+                    </option>
+
+                    <option value="Final Visit">
+                        Final Visit
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- ================= DATE & TIME ================= -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Next Visit Date & Time
+                </label>
+
+
+                <input type="datetime-local"
+                       id="nextVisitDate"
+                       name="visit_date"
+                       required
+                       class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
+
+            </div>
+
+
+
+            <!-- ================= PURPOSE ================= -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Visit Purpose
+                </label>
+
+
+                <textarea name="visit_purpose"
+                          rows="3"
+                          required
+                          placeholder="Why does the customer need another visit?"
+                          class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500"></textarea>
+
+            </div>
+
+
+
+            <!-- ================= MESSAGE ================= -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Additional Remarks
+                </label>
+
+
+                <textarea name="message"
+                          rows="2"
+                          placeholder="Additional information..."
+                          class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500"></textarea>
+
+            </div>
+
+
+
+            <!-- ================= INFO ================= -->
+
+            <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-3">
+
+                <p class="text-xs text-indigo-700">
+
+                    <i class="fas fa-circle-info mr-1"></i>
+
+                    This will create a future scheduled visit.
+                    The visit photo will be uploaded after the actual visit.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- ================= BUTTONS ================= -->
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+
+
+                <button type="button"
+                        id="cancelNextVisitBtn"
+                        class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        id="submitNextVisitBtn"
+                        class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition">
+
+                    Schedule Next Visit
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ================= END MODALS ================= -->

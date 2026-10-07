@@ -1,0 +1,319 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Blog</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f7f6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: #28a745;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+        }
+
+        .btn-back {
+            background: #6c757d;
+            white-space: nowrap;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        select[multiple] {
+            min-height: 120px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+
+        .help-text {
+            display: block;
+            color: #777;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            background: #fff3f3;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .field-error {
+            display: block;
+            color: red;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-back {
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>Add New Blog</h2>
+
+        <a href="{% url 'blog_list' %}"
+           data-url="{% url 'blog_list' %}"
+           class="btn btn-back nav-link-ajax">
+
+            <i class="fa fa-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+
+    <form method="POST"
+          action="{% url 'add_blog' %}"
+          enctype="multipart/form-data"
+          class="ajax-form">
+
+        {% csrf_token %}
+
+
+        {% if form.errors %}
+            <div class="error-message">
+                Please correct the errors below.
+            </div>
+        {% endif %}
+
+
+        <!-- Blog Title -->
+        <div class="form-group">
+
+            <label>
+                Blog Title
+            </label>
+
+            {{ form.title }}
+
+            {% if form.title.errors %}
+                <small class="field-error">
+                    {{ form.title.errors.0 }}
+                </small>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Category -->
+        <div class="form-group">
+
+            <label>
+                Category
+            </label>
+
+            {{ form.category }}
+
+            {% if form.category.errors %}
+                <small class="field-error">
+                    {{ form.category.errors.0 }}
+                </small>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Tags -->
+        <div class="form-group">
+
+            <label>
+                Tags
+            </label>
+
+            {{ form.tags }}
+
+            <small class="help-text">
+                Hold Ctrl and select multiple tags.
+            </small>
+
+            {% if form.tags.errors %}
+                <small class="field-error">
+                    {{ form.tags.errors.0 }}
+                </small>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Blog Image -->
+        <div class="form-group">
+
+            <label>
+                Blog Image
+            </label>
+
+            {{ form.image }}
+
+            {% if form.image.errors %}
+                <small class="field-error">
+                    {{ form.image.errors.0 }}
+                </small>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Short Excerpt -->
+        <div class="form-group">
+
+            <label>
+                Short Excerpt
+            </label>
+
+            {{ form.excerpt }}
+
+            <small class="help-text">
+                Maximum 300 characters.
+            </small>
+
+            {% if form.excerpt.errors %}
+                <small class="field-error">
+                    {{ form.excerpt.errors.0 }}
+                </small>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Blog Content -->
+        <div class="form-group">
+
+            <label>
+                Blog Content
+            </label>
+
+            {{ form.content }}
+
+            {% if form.content.errors %}
+                <small class="field-error">
+                    {{ form.content.errors.0 }}
+                </small>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Save Button -->
+        <button type="submit"
+                class="btn btn-save">
+
+            <i class="fa fa-save"></i>
+            Save Blog
+
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

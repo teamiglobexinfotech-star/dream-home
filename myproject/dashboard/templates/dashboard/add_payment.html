@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Record New Payment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; border: none; cursor: pointer; }
+        .btn-save { background: #28a745; width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; }
+        .btn-back { background: #6c757d; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Record New Payment</h2>
+            <!-- Back button mein nav-link-ajax class add ki gayi hai -->
+            <a href="{% url 'payment_list' %}" class="btn btn-back nav-link-ajax"><i class="fa fa-arrow-left"></i> Back</a>
+        </div>
+        
+        <!-- Form mein action aur class="ajax-form" add kiya gaya hai -->
+        <form method="POST" action="{% url 'add_payment' %}" class="ajax-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" name="customer_name" required placeholder="Enter customer name">
+            </div>
+            <div class="form-group">
+                <label>Select Property (Optional)</label>
+                <select name="property_id">
+                    <option value="">-- Choose Property --</option>
+                    {% for prop in properties %}
+                        <option value="{{ prop.pk }}">{{ prop.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₹)</label>
+                <input type="number" name="amount" required placeholder="Enter amount in numbers">
+            </div>
+            <div class="form-group">
+                <label>Transaction ID / Reference No.</label>
+                <input type="text" name="transaction_id" placeholder="Enter transaction or receipt ID">
+            </div>
+            <div class="form-group">
+                <label>Payment Status</label>
+                <select name="status">
+                    <option value="Completed">Completed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Failed">Failed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-save"><i class="fa fa-save"></i> Save Payment Record</button>
+        </form>
+    </div>
+</body>
+</html>

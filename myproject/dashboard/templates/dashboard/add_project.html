@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Project - Dashboard</title>
+
+    <!-- CSS sirf isi page par kaam karegi -->
+    <style>
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .project-form-box {
+            max-width: 750px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .project-form-box .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .project-form-box h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .project-form-box .btn-back {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .project-form-box .btn-back:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+
+        /* Django form elements styling */
+        .project-form-box form p {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .project-form-box form label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .project-form-box form input[type="text"],
+        .project-form-box form input[type="number"],
+        .project-form-box form input[type="email"],
+        .project-form-box form input[type="password"],
+        .project-form-box form input[type="file"],
+        .project-form-box form select,
+        .project-form-box form textarea {
+            width: 100% !important;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .project-form-box form input:focus,
+        .project-form-box form select:focus,
+        .project-form-box form textarea:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .project-form-box form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .project-form-box form button,
+        .project-form-box form input[type="submit"] {
+            background-color: #22c55e !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .project-form-box form button:hover,
+        .project-form-box form input[type="submit"]:hover {
+            background-color: #16a34a !important;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="project-form-box">
+
+        <div class="form-header">
+
+            <h2>Add New Project</h2>
+
+            <a href="{% url 'project_list' %}"
+               class="btn-back nav-link-ajax">
+                ← Back to Projects
+            </a>
+
+        </div>
+
+        <form method="POST"
+              action="{% url 'add_project' %}"
+              enctype="multipart/form-data"
+              class="ajax-form">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <div style="margin-top: 24px;">
+
+                <button type="submit" class="btn btn-success">
+                    Save Project
+                </button>
+
+                <a href="{% url 'project_list' %}"
+                   class="btn btn-secondary nav-link-ajax"
+                   style="background-color: #64748b; color: white; padding: 10px 22px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 14px;">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

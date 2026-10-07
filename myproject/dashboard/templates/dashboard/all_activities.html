@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Activities - Admin Dashboard</title>
+    <!-- FontAwesome icons ke liye agar CSS link ho toh yahan rakh sakte hain -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .back-btn { background: #007bff; color: #fff; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; }
+        .back-btn:hover { background: #0056b3; }
+        .activity-list { list-style: none; padding: 0; margin: 0; }
+        .activity-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f1f1; }
+        .act-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; margin-right: 15px; }
+        .act-icon.blue { background-color: #007bff; }
+        .act-icon.green { background-color: #28a745; }
+        .act-details p { margin: 0; font-weight: 600; color: #333; }
+        .act-details span { font-size: 12px; color: #777; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-flex">
+            <h2>All Customer & Admin Activities</h2>
+            <a href="{% url 'admin_dashboard' %}" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <ul class="activity-list">
+            {% for act in all_activities %}
+            <li class="activity-item">
+                <div class="act-icon {{ act.bg_color }}">
+                    <i class="fa-solid {{ act.icon }}"></i>
+                </div>
+                <div class="act-details">
+                    <p>{{ act.title }}</p>
+                    <span>By {{ act.user }} • {{ act.time|date:"d M Y, h:i A" }}</span>
+                </div>
+            </li>
+            {% empty %}
+            <li style="padding: 20px; text-align: center; color: #777;">No activities found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</body>
+</html>

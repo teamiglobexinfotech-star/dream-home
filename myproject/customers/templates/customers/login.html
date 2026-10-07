@@ -1,0 +1,369 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Dream Home</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Separate CSS file link -->
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    
+</head>
+<body>
+
+    {% include 'website/header.html' %}
+
+    <!-- Hidden Django Message Bridge for external JS -->
+    <!--<div id="login-success-data" data-message="{% if messages %}{% for message in messages %}{% if 'success' in message.tags or 'Login Successfully' in message|stringformat:"s" %}{{ message }}{% endif %}{% endfor %}{% endif %}"></div>-->
+
+    <!-- Toast Popup Element -->
+    <div id="successToast" class="login-success-toast"></div>
+
+    <div class="login-page-scope">
+        <section class="hero-banner" style="background: linear-gradient(to right, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.65) 50%, rgba(15, 23, 42, 0.2) 100%), url('{% static "images/properties/banner.png" %}') no-repeat center center/cover;">
+            <div class="hero-content">
+                <h1>Welcome Back!</h1>
+                <p>Select your login portal to continue exploring properties.</p>
+                <div class="breadcrumb">Home &gt; <span>Login</span></div>
+            </div>
+        </section>
+
+        <!-- Perfectly Centered Portal Wrapper -->
+        <div class="login-wrapper" style="display: flex; justify-content: center; align-items: center; padding: 60px 20px;">
+            <div style="background: #ffffff; width: 100%; max-width: 500px; padding: 40px; border-radius: 20px; box-shadow: 0px 15px 35px rgba(0,0,0,0.08);">
+                
+                <h3 style="margin-bottom: 25px; font-size: 22px; color: #111; text-align: center; font-weight: 700;">Choose Your Portal</h3>
+                
+                <!-- Customer Login Card -->
+                <div onclick="openCustomerModal()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 12px; transition: all 0.2s; background: #fafafa;" onmouseover="this.style.borderColor='#1e3a8a'; this.style.background='#fff';" onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#fafafa';">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; color: #1e3a8a; font-size: 16px;">Customer Login</h4>
+                        <p style="margin: 0; font-size: 13px; color: #6b7280;">Login to access saved properties and bookings.</p>
+                    </div>
+                    <span style="font-weight: bold; color: #1e3a8a; font-size: 18px;">&gt;</span>
+                </div>
+
+                <!-- Agent Login Card -->
+                <div onclick="openAgentModal()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 12px; transition: all 0.2s; background: #fafafa;" onmouseover="this.style.borderColor='#d97706'; this.style.background='#fff';" onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#fafafa';">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; color: #d97706; font-size: 16px;">Agent Login</h4>
+                        <p style="margin: 0; font-size: 13px; color: #6b7280;">Login to manage your properties and leads.</p>
+                    </div>
+                    <span style="font-weight: bold; color: #d97706; font-size: 18px;">&gt;</span>
+                </div>
+
+                <!-- Admin Login Card -->
+                <div onclick="openAdminModal()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border: 1px solid #e5e7eb; border-radius: 12px; border-left: 5px solid #4f46e5; transition: all 0.2s; background: #fafafa;" onmouseover="this.style.borderColor='#4f46e5'; this.style.background='#fff';" onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='#fafafa';">
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; color: #4f46e5; font-size: 16px;">Admin Login</h4>
+                        <p style="margin: 0; font-size: 13px; color: #6b7280;">Login to access administrative controls.</p>
+                    </div>
+                    <span style="font-weight: bold; color: #4f46e5; font-size: 18px;">&gt;</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Login Popup Modal -->
+    <div id="authModalOverlay" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-box">
+            <span class="auth-close-btn" onclick="closeAuthModal()">&times;</span>
+            <h2 id="modalTitle" style="font-size: 20px; font-weight: 700; color: #111; margin-bottom: 5px;">Login Portal</h2>
+            <p class="auth-modal-subtitle" id="modalSubtitle" style="font-size: 13px; color: #666; margin-bottom: 20px;">Enter your credentials to continue</p>
+            
+            <form method="POST" id="authLoginForm">
+                {% csrf_token %}
+                <input type="hidden" name="login_role" id="modalRoleInput" value="customer">
+                
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label style="font-size: 13px; font-weight: 600; color: #374151;">Email / Mobile Number</label>
+                    <input type="text" name="username_or_mobile" placeholder="Enter email or mobile" required style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-top: 5px; outline: none; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 20px; text-align: left;">
+                    <label style="font-size: 13px; font-weight: 600; color: #374151;">Password</label>
+                    <input type="password" name="password" placeholder="Enter password" required style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-top: 5px; outline: none; box-sizing: border-box;">
+                </div>
+
+                <div style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+                    <a href="{% url 'forgot_password' %}?role=customer"
+                    id="forgotPasswordLink"
+                    style="
+                        color: #2563eb;
+                        text-decoration: none;
+                        font-size: 13px;
+                        font-weight: 600;
+                    ">
+                        Forgot Password?
+                    </a>
+                </div>
+
+                
+                <button type="submit" id="modalSubmitBtn" style="width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.2s;">Login</button>
+                <a href="{% url 'home' %}"
+                    style="display: inline-block; margin-top: 12px; color: #6b7280; text-decoration: none; font-size: 13px; font-weight: 600;">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    Go to Home Page
+                </a>
+            </form>
+
+            <!-- Register Redirect Link inside Popup -->
+            <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">
+                Don't have an account? <a href="{% url 'register' %}" style="color: #2563eb; text-decoration: none; font-weight: 600;">Register Now</a>
+            </p>
+        </div>
+    </div>
+
+
+    
+<!-- ================= REGISTER MODAL ================= -->
+
+<div id="registerModalOverlay" class="auth-modal-overlay" style="display: none;">
+
+    <div class="auth-modal-box register-modal-box">
+
+        <!-- Close Button -->
+        <span class="auth-close-btn" onclick="closeRegisterModal()">&times;</span>
+
+        <h2 style="margin-bottom: 8px; color: #1e3a8a;">
+            Create Your Account
+        </h2>
+
+        <p style="margin-bottom: 22px; color: #6b7280; font-size: 14px;">
+            Join Hume Properties and explore verified properties across India.
+        </p>
+
+        <form method="POST" action="{% url 'register' %}" id="registerModalForm">
+
+            {% csrf_token %}
+
+            <!-- Full Name -->
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600;">
+                    Full Name *
+                </label>
+
+                <input
+                    type="text"
+                    name="full_name"
+                    placeholder="Enter your full name"
+                    required
+                    style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ddd; border-radius: 8px;"
+                >
+            </div>
+
+            <!-- Mobile Number -->
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600;">
+                    Mobile Number *
+                </label>
+
+                <input
+                    type="text"
+                    name="mobile_number"
+                    placeholder="Enter your mobile number"
+                    required
+                    style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ddd; border-radius: 8px;"
+                >
+            </div>
+
+            <!-- Email -->
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600;">
+                    Email Address *
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    required
+                    style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ddd; border-radius: 8px;"
+                >
+            </div>
+
+            <!-- Password -->
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600;">
+                    Password *
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ddd; border-radius: 8px;"
+                >
+            </div>
+
+            <!-- Confirm Password -->
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600;">
+                    Confirm Password *
+                </label>
+
+                <input
+                    type="password"
+                    name="confirm_password"
+                    placeholder="Confirm your password"
+                    required
+                    style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ddd; border-radius: 8px;"
+                >
+            </div>
+
+            <!-- Terms -->
+            <div style="display: flex; align-items: flex-start; gap: 8px; text-align: left; margin-bottom: 18px;">
+
+                <input
+                    type="checkbox"
+                    id="registerModalTerms"
+                    required
+                    style="margin-top: 3px;"
+                >
+
+                <label for="registerModalTerms" style="font-size: 12px; color: #666; line-height: 1.5;">
+                    I agree to the
+                    <a href="#" style="color: #1e3a8a;">Terms & Conditions</a>
+                    and
+                    <a href="#" style="color: #1e3a8a;">Privacy Policy</a>
+                </label>
+
+            </div>
+
+            <!-- Submit -->
+            <button
+                type="submit"
+                style="width: 100%; border: none; padding: 12px; border-radius: 8px; background: #1e3a8a; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+        <!-- Login -->
+        <p style="margin-top: 18px; font-size: 13px; color: #666;">
+
+            Already have an account?
+
+            <a
+                href="javascript:void(0);"
+                onclick="switchToLoginModal();"
+                style="color: #1e3a8a; font-weight: 600; text-decoration: none;"
+            >
+                Login
+            </a>
+            
+
+        </p>
+
+    </div>
+
+</div>
+
+
+
+    <!-- Modal Styling -->
+    <style>
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .auth-modal-box {
+            background: #ffffff;
+            width: 400px;
+            padding: 30px;
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0px 15px 35px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .auth-close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+    </style>
+
+    <!-- JavaScript to Control Popups -->
+    <script>
+
+        function updateForgotPasswordLink(role) {
+            const forgotLink = document.getElementById('forgotPasswordLink');
+
+            if (forgotLink) {
+                forgotLink.href = "{% url 'forgot_password' %}?role=" + role;
+            }
+        }
+
+
+
+        function openCustomerModal() {
+            document.getElementById('modalTitle').innerText = "Customer Login";
+            document.getElementById('modalSubtitle').innerText = "Enter your customer credentials";
+            document.getElementById('modalRoleInput').value = "customer";
+            document.getElementById('modalSubmitBtn').style.background = "#1e3a8a";
+            updateForgotPasswordLink("customer");
+            document.getElementById('authModalOverlay').style.display = 'flex';
+        }
+
+        function openAgentModal() {
+            document.getElementById('modalTitle').innerText = "Agent Login";
+            document.getElementById('modalSubtitle').innerText = "Enter your agent credentials";
+            document.getElementById('modalRoleInput').value = "agent";
+            document.getElementById('modalSubmitBtn').style.background = "#d97706";
+            updateForgotPasswordLink("agent");
+            document.getElementById('authModalOverlay').style.display = 'flex';
+        }
+
+        function openAdminModal() {
+            document.getElementById('modalTitle').innerText = "Admin Portal Login";
+            document.getElementById('modalSubtitle').innerText = "Enter administrative credentials";
+            document.getElementById('modalRoleInput').value = "admin";
+            document.getElementById('modalSubmitBtn').style.background = "#4f46e5";
+            updateForgotPasswordLink("admin");
+            document.getElementById('authModalOverlay').style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModalOverlay').style.display = 'none';
+        }
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get("role");
+
+        if (role === "customer") {
+            openCustomerModal();
+        }
+        else if (role === "agent") {
+            openAgentModal();
+        }
+        else if (role === "admin") {
+            openAdminModal();
+        }
+
+    });
+    
+
+    </script>
+
+    <!-- Separate JS file link -->
+    <script src="{% static 'website/script.js' %}"></script>
+    
+    {% include 'website/footer.html' %}
+</body>
+</html>

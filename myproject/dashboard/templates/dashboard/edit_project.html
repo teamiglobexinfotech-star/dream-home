@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Project - Dashboard</title>
+
+    <!-- Yeh CSS sirf isi page par kaam karegi aur baaki pages ko disturb nahi karegi -->
+    <style>
+
+        .edit-project-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Top Header / Back Button Area */
+        .edit-project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .edit-project-header h2 {
+            margin: 0;
+            color: #333333;
+            font-size: 24px;
+        }
+
+        .btn-back-dashboard {
+            background-color: #17a2b8;
+            color: white;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-back-dashboard:hover {
+            background-color: #138496;
+        }
+
+        /* Django form ke paragraphs aur inputs ki styling */
+        .edit-project-container form p {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-project-container form label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555555;
+        }
+
+        .edit-project-container form input[type="text"],
+        .edit-project-container form input[type="number"],
+        .edit-project-container form input[type="file"],
+        .edit-project-container form select,
+        .edit-project-container form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .edit-project-container form input:focus,
+        .edit-project-container form select:focus,
+        .edit-project-container form textarea:focus {
+            border-color: #28a745;
+            outline: none;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Form Actions Buttons */
+        .form-actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-project-container .btn-success-custom {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .edit-project-container .btn-success-custom:hover {
+            background-color: #218838;
+        }
+
+        .edit-project-container .btn-secondary-custom {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 15px;
+        }
+
+        .edit-project-container .btn-secondary-custom:hover {
+            background-color: #5a6268;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="edit-project-container">
+
+        <!-- Header with Title and Back to Projects Button -->
+        <div class="edit-project-header">
+
+            <h2>Edit Project</h2>
+
+            <a href="{% url 'project_list' %}"
+               class="btn-back-dashboard nav-link-ajax">
+
+                <i class="fas fa-arrow-left"></i>
+                Back to Projects
+
+            </a>
+
+        </div>
+
+        <form method="POST"
+              action="{% url 'edit_project' project.pk %}"
+              enctype="multipart/form-data"
+              class="ajax-form">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <div class="form-actions">
+
+                <button type="submit" class="btn-success-custom">
+                    Update Project
+                </button>
+
+                <a href="{% url 'project_list' %}"
+                   class="btn-secondary-custom nav-link-ajax">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

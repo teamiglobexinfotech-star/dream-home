@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Blogs - DreamHome</title>
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    {% include 'website/header.html' %}
+
+    <!-- Hero Banner -->
+    <section class="page-hero-banner blogs-hero" style="background: linear-gradient(to right, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.2)), url('{% static "images/properties/villa6.png" %}') no-repeat center center/cover;">
+        <div class="hero-banner-content">
+            <h1>Our Blogs</h1>
+            <p><a href="{% url 'home' %}">Home</a> <span>/</span> Blogs</p>
+            <p class="banner-subtext">Stay updated with the latest real estate trends, tips, and insights from our experts.</p>
+        </div>
+    </section>
+
+    <!-- Main Content Layout (Grid + Sidebar) -->
+    <div class="blogs-page-container">
+        
+        <!-- Left Side: Toolbar + Blog Cards Grid -->
+        <div class="blogs-main-content">
+            <div class="blogs-toolbar">
+                <p>{{ showing_text }}</p>
+                <div class="toolbar-search-filter">
+                    <form method="GET" action="{% url 'blogs' %}" class="blog-search-form">
+                        <select name="category" class="category-dropdown" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.name }}" {% if selected_category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="q" value="{{ query }}" placeholder="Search blogs...">
+                        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Blogs Grid (3 columns layout) -->
+            <div class="blogs-grid-box">
+                {% for blog in blogs %}
+                <div class="blog-card">
+                    <div class="blog-img-box">
+                        {% if blog.image %}
+                            <img src="{{ blog.image.url }}" alt="{{ blog.title }}" onclick="openBlogModal('{{ blog.image.url }}', '{{ blog.title|escapejs }}', '{{ blog.created_at|date:"M d, Y" }}', `{{ blog.content|safe|escapejs }}`)" class="clickable-blog-img">
+                        {% endif %}
+                        <span class="blog-badge">{{ blog.category.name }}</span>
+                    </div>
+                    <div class="blog-content-box">
+                        <p class="blog-date"><i class="fa-regular fa-calendar"></i> {{ blog.created_at|date:"M d, Y" }}</p>
+                        <h3>{{ blog.title }}</h3>
+                        <p class="blog-excerpt">{{ blog.excerpt|truncatechars:110 }}</p>
+                        <a href="javascript:void(0)" class="read-more-link" onclick="openBlogModal('{{ blog.image.url }}', '{{ blog.title|escapejs }}', '{{ blog.created_at|date:"M d, Y" }}', `{{ blog.content|safe|escapejs }}`)">Read More →</a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-blogs-found">No blogs found.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if blogs.has_other_pages %}
+            <div class="pagination-box">
+                {% if blogs.has_previous %}
+                    <a href="?page={{ blogs.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" class="page-arrow"><i class="fa-solid fa-arrow-left"></i></a>
+                {% endif %}
+                {% for num in blogs.paginator.page_range %}
+                    {% if blogs.number == num %}
+                        <span class="page-num active">{{ num }}</span>
+                    {% else %}
+                        <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" class="page-num">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if blogs.has_next %}
+                    <a href="?page={{ blogs.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" class="page-arrow"><i class="fa-solid fa-arrow-right"></i></a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Side: Sidebar -->
+        <aside class="blogs-sidebar">
+            <!-- Categories Widget -->
+            <div class="sidebar-widget">
+                <h3>Categories</h3>
+                <ul class="sidebar-categories-list">
+                    {% for cat in categories %}
+                    <li>
+                        <a href="?category={{ cat.name }}">{{ cat.name }}</a>
+                        <span class="count-badge">{{ cat.blog_count }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Recent Posts Widget -->
+            <div class="sidebar-widget">
+                <h3>Recent Posts</h3>
+                <div class="recent-posts-list">
+                    {% for post in recent_posts %}
+                    <div class="recent-post-item">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                        {% endif %}
+                        <div>
+                            <h4><a href="javascript:void(0)" onclick="openBlogModal('{{ post.image.url }}', '{{ post.title|escapejs }}', '{{ post.created_at|date:"M d, Y" }}', `{{ post.content|safe|escapejs }}`)">{{ post.title|truncatechars:45 }}</a></h4>
+                            <p><i class="fa-regular fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Popular Tags Widget -->
+            <div class="sidebar-widget">
+                <h3>Popular Tags</h3>
+                <div class="tags-cloud">
+                    {% for tag in popular_tags %}
+                        <a href="#" class="tag-pill">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="projects-cta-box blogs-page-cta">
+        <div class="container cta-flex">
+            <div class="cta-left-content">
+                <div class="cta-icon-circle"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <h2>Need Help Finding the Right Property?</h2>
+                    <p>Our experts are here to guide you every step of the way.</p>
+                </div>
+            </div>
+            <div class="cta-right-buttons">
+                <a href="{% url 'contact' %}" class="btn-green-call">Contact Us </a>
+                <a href="#" class="btn-schedule-visit btn-dark-visit"><i class="fa-regular fa-calendar"></i> Schedule a Call</a>
+            </div>
+        </div>
+    </section>
+
+    {% include 'website/footer.html' %}
+
+    <!-- Full Blog Content Modal Box -->
+    <div id="blogModal" class="image-modal">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeBlogModal()">&times;</span>
+            <img id="modalBlogImg" src="" alt="">
+            <h2 id="modalBlogTitle"></h2>
+            <p id="modalBlogDate"></p>
+            <div id="modalBlogContent"></div>
+        </div>
+    </div>
+
+    <script src="{% static 'website/script.js' %}"></script>
+</body>
+</html>

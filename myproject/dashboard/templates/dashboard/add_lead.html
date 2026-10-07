@@ -1,0 +1,24 @@
+<div class="container" style="max-width: 650px; margin: 20px auto; background: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+    <h2 style="margin-top: 0; margin-bottom: 25px; font-size: 24px; color: #2c3e50; border-bottom: 2px solid #eaeaea; padding-bottom: 10px;">📋 Add New Lead / Enquiry</h2>
+    
+    <!-- class="ajax-form" add kiya gaya hai -->
+    <form method="POST" class="ajax-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <div class="btn-container" style="margin-top: 30px; display: flex; align-items: center; gap: 15px;">
+            <button type="submit" class="btn-success" style="background-color: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;">Save Lead</button>
+            <!-- nav-link-ajax class aur lead_list URL -->
+            <a href="{% url 'lead_list' %}" class="btn-secondary nav-link-ajax" style="background-color: #6c757d; color: white; padding: 12px 20px; border-radius: 6px; font-size: 16px; text-decoration: none; font-weight: 600; display: inline-block;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Form fields ki styling jo pehle thi */
+    .container form p { margin-bottom: 20px; display: flex; flex-direction: column; }
+    .container form label { font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #495057; }
+    .container form input, .container form select, .container form textarea {
+        width: 100%; padding: 10px 14px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; box-sizing: border-box;
+    }
+</style>

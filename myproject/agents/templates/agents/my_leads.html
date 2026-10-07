@@ -1,0 +1,96 @@
+
+<div class="p-6">
+    <h3 class="text-2xl font-bold text-slate-800 mb-6">My Leads</h3>
+    
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-slate-600 text-xs uppercase tracking-wider font-semibold">
+                        <th class="py-3 px-4">Client Name</th>
+                        <th class="py-3 px-4">Phone Number</th>
+                        <th class="py-3 px-4">Email</th>
+                        <th class="py-3 px-4">Property</th>
+                        <th class="py-3 px-4">Visit Date & Time</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4">Requested On</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                    {% for schedule in schedules %}
+                        <tr class="hover:bg-slate-50 transition">
+
+                            <td class="py-3 px-4 font-medium text-slate-900">
+                                {{ schedule.name }}
+                            </td>
+
+                            <td class="py-3 px-4">
+                                {{ schedule.phone }}
+                            </td>
+
+                            <td class="py-3 px-4">
+                                {{ schedule.email|default:"-" }}
+                            </td>
+
+                            <td class="py-3 px-4">
+                                <span class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-medium">
+                                    {% if schedule.property %}
+                                        {{ schedule.property.title }}
+                                    {% else %}
+                                        Property Not Available
+                                    {% endif %}
+                                </span>
+                            </td>
+
+                            <td class="py-3 px-4">
+                                {{ schedule.visit_date|date:"d M Y, h:i A" }}
+                            </td>
+
+                            <td class="py-3 px-4">
+                                {% if schedule.status == "Assigned" %}
+                                    <span class="bg-green-50 text-green-600 px-2.5 py-1 rounded-full text-xs font-medium">
+                                        Assigned
+                                    </span>
+
+                                {% elif schedule.status == "Pending" %}
+                                    <span class="bg-yellow-50 text-yellow-600 px-2.5 py-1 rounded-full text-xs font-medium">
+                                        Pending
+                                    </span>
+
+                                {% elif schedule.status == "Completed" %}
+                                    <span class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-medium">
+                                        Completed
+                                    </span>
+
+                                {% elif schedule.status == "Cancelled" %}
+                                    <span class="bg-red-50 text-red-600 px-2.5 py-1 rounded-full text-xs font-medium">
+                                        Cancelled
+                                    </span>
+
+                                {% else %}
+                                    <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full text-xs font-medium">
+                                        {{ schedule.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td class="py-3 px-4">
+                                {{ schedule.created_at|date:"d M Y" }}
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-8 text-slate-400">
+                                Aapke paas abhi koi scheduled lead nahi hai.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

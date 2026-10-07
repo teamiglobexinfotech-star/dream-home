@@ -1,0 +1,1504 @@
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+
+        <h2>
+            Scheduling Management
+        </h2>
+
+        <a
+            href="{% url 'admin_dashboard' %}"
+            class="btn-back-dashboard"
+        >
+            <i class="fa fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- Scheduling Table -->
+    <div style="overflow-x: auto;">
+
+        <table id="scheduleTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Customer</th>
+
+                    <th>Property</th>
+
+                    <th>Phone</th>
+
+                    <th>Visit Date & Time</th>
+
+                    <th>Agent</th>
+
+                    <th>Status</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for schedule in schedules %}
+
+                <tr class="schedule-row">
+
+                    <!-- ================================= -->
+                    <!-- ID -->
+                    <!-- ================================= -->
+
+                    <td>
+                        #{{ forloop.counter }}
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- CUSTOMER -->
+                    <!-- ================================= -->
+
+                    <td>
+
+                        <strong>
+                            {{ schedule.name }}
+                        </strong>
+
+                        {% if schedule.email %}
+
+                            <br>
+
+                            <small>
+                                {{ schedule.email }}
+                            </small>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- PROPERTY -->
+                    <!-- ================================= -->
+
+                    <td>
+
+                        {% if schedule.property %}
+
+                            <strong>
+                                {{ schedule.property.title }}
+                            </strong>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                —
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- PHONE -->
+                    <!-- ================================= -->
+
+                    <td class="phone-column">
+
+                        {{ schedule.phone }}
+
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- VISIT DATE & TIME -->
+                    <!-- ================================= -->
+
+                    <td class="visit-datetime">
+
+                        <!-- Normal View -->
+                        <div class="schedule-datetime-view">
+                            <strong>
+                                {{ schedule.visit_date|date:"d M Y" }}
+                            </strong>
+                            <br>
+                            <small>
+                                <i class="fa fa-clock"></i>
+                                {{ schedule.visit_date|time:"h\:i A" }}
+                            </small>
+                        </div>
+
+                        <!-- Edit View -->
+                        <div
+                            class="schedule-datetime-edit"
+                            style="display:none;"
+                        >
+                            <input
+                                type="date"
+                                class="schedule-date-input"
+                                value="{{ schedule.visit_date|date:'Y-m-d' }}"
+                            >
+
+                            <input
+                                type="time"
+                                class="schedule-time-input"
+                                value="{{ schedule.visit_date|time:'H\:i' }}"
+                            >
+
+                            <div style="margin-top:6px; white-space:nowrap;">
+
+                                <button
+                                    type="button"
+                                    class="save-schedule-date"
+                                    data-id="{{ schedule.id }}"
+                                    style="
+                                        background:#28a745;
+                                        color:white;
+                                        border:none;
+                                        padding:4px 8px;
+                                        border-radius:4px;
+                                        cursor:pointer;
+                                        font-size:11px;
+                                    "
+                                >
+                                    <i class="fa fa-check"></i>
+                                    Save
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="cancel-schedule-date"
+                                    style="
+                                        background:#6c757d;
+                                        color:white;
+                                        border:none;
+                                        padding:4px 8px;
+                                        border-radius:4px;
+                                        cursor:pointer;
+                                        font-size:11px;
+                                    "
+                                >
+                                    Cancel
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- AGENT -->
+                    <!-- ================================= -->
+
+                    <td>
+
+                        <select
+                            class="schedule-agent-select"
+                            data-schedule-id="{{ schedule.id }}"
+                            data-previous-value="{% if schedule.agent %}{{ schedule.agent.id }}{% endif %}"
+                        >
+
+                            <!-- Already assigned agent -->
+
+                            {% if schedule.agent %}
+
+                                <option
+                                    value="{{ schedule.agent.id }}"
+                                    selected
+                                >
+
+                                    {% if schedule.agent.full_name %}
+
+                                        {{ schedule.agent.full_name }}
+
+                                    {% else %}
+
+                                        {{ schedule.agent.email }}
+
+                                    {% endif %}
+
+                                </option>
+
+                            {% else %}
+
+                                <option
+                                    value=""
+                                    selected
+                                >
+                                    Select Agent
+                                </option>
+
+                            {% endif %}
+
+
+                            <!-- Available agents -->
+
+                            {% for agent in agents %}
+
+                                {% if not schedule.agent or schedule.agent.id != agent.id %}
+
+                                    <option
+                                        value="{{ agent.id }}"
+                                    >
+
+                                        {% if agent.full_name %}
+
+                                            {{ agent.full_name }}
+
+                                        {% else %}
+
+                                            {{ agent.email }}
+
+                                        {% endif %}
+
+                                    </option>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <!-- Assigned label -->
+
+                        {% if schedule.agent %}
+
+                            <div class="assigned-label">
+
+                                <i class="fa fa-user-check"></i>
+
+                                Assigned
+
+                            </div>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- STATUS -->
+                    <!-- ================================= -->
+
+                    <td>
+
+                        <select
+                            class="schedule-status-select"
+                            data-schedule-id="{{ schedule.id }}"
+                        >
+
+                            <option
+                                value="Pending"
+                                {% if schedule.status == "Pending" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Pending
+                            </option>
+
+
+                            <option
+                                value="Assigned"
+                                {% if schedule.status == "Assigned" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Assigned
+                            </option>
+
+
+                            <option
+                                value="Completed"
+                                {% if schedule.status == "Completed" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Completed
+                            </option>
+
+
+                            <option
+                                value="Cancelled"
+                                {% if schedule.status == "Cancelled" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </td>
+
+
+                    <!-- ================================= -->
+                    <!-- ACTIONS -->
+                    <!-- ================================= -->
+
+                    <td class="actions-column">
+
+
+                        <!-- EDIT -->
+
+                        <button
+                            type="button"
+                            class="schedule-edit-btn"
+                            data-id="{{ schedule.id }}"
+                            title="Edit Visit"
+                        >
+
+                            <i class="fa fa-pen"></i>
+
+                        </button>
+
+
+                        <!-- VIEW -->
+
+                        <button
+                            type="button"
+                            class="schedule-view-btn"
+
+                            data-id="{{ schedule.id }}"
+
+                            data-name="{{ schedule.name }}"
+
+                            data-email="{{ schedule.email|default:'' }}"
+
+                            data-phone="{{ schedule.phone }}"
+
+                            data-message="{{ schedule.message|default:'' }}"
+
+                            data-property="{% if schedule.property %}{{ schedule.property.title }}{% else %}—{% endif %}"
+
+                            data-date="{{ schedule.visit_date|date:'d M Y' }}"
+
+                            data-time="{{ schedule.visit_date|time:'h:i A' }}"
+
+                            title="View Details"
+                        >
+
+                            <i class="fa fa-eye"></i>
+
+                        </button>
+
+
+                        <!-- DELETE -->
+
+                        <button
+                            type="button"
+                            class="schedule-delete-btn"
+                            data-id="{{ schedule.id }}"
+                            title="Delete Visit"
+                        >
+
+                            <i class="fa fa-trash"></i>
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="empty-row"
+                    >
+
+                        <i class="fa fa-calendar-xmark"></i>
+
+                        <br>
+
+                        No schedule visit requests found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- VIEW CUSTOMER DETAILS MODAL -->
+<!-- ================================================= -->
+
+<div
+    id="scheduleDetailsModal"
+    class="schedule-modal"
+>
+
+    <div class="schedule-modal-box">
+
+
+        <!-- ========================================= -->
+        <!-- MODAL HEADER -->
+        <!-- ========================================= -->
+
+        <div class="schedule-modal-header">
+
+            <h3>
+
+                <i class="fa fa-calendar-check"></i>
+
+                Visit Details
+
+            </h3>
+
+
+            <button
+                type="button"
+                id="closeScheduleDetails"
+                class="modal-close-btn"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- MODAL BODY -->
+        <!-- ========================================= -->
+
+        <div class="schedule-modal-body">
+
+
+            <!-- CUSTOMER -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-user"></i>
+
+                    Customer
+
+                </span>
+
+
+                <strong id="detailCustomerName">
+                    —
+                </strong>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-envelope"></i>
+
+                    Email
+
+                </span>
+
+
+                <span id="detailCustomerEmail">
+                    —
+                </span>
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-phone"></i>
+
+                    Phone
+
+                </span>
+
+
+                <span id="detailCustomerPhone">
+                    —
+                </span>
+
+            </div>
+
+
+            <!-- PROPERTY -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-building"></i>
+
+                    Property
+
+                </span>
+
+
+                <span id="detailProperty">
+                    —
+                </span>
+
+            </div>
+
+
+            <!-- VISIT DATE -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-calendar"></i>
+
+                    Visit Date
+
+                </span>
+
+
+                <span id="detailVisitDate">
+                    —
+                </span>
+
+            </div>
+
+
+            <!-- VISIT TIME -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-clock"></i>
+
+                    Visit Time
+
+                </span>
+
+
+                <span id="detailVisitTime">
+                    —
+                </span>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div class="detail-message">
+
+                <span class="detail-label">
+
+                    <i class="fa fa-message"></i>
+
+                    Customer Message
+
+                </span>
+
+
+                <div id="detailCustomerMessage">
+                    No message provided.
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- MODAL FOOTER -->
+        <!-- ========================================= -->
+
+        <div class="schedule-modal-footer">
+
+            <button
+                type="button"
+                id="closeScheduleDetailsBottom"
+                class="modal-cancel-btn"
+            >
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<style>
+
+/* ================================================= */
+/* MAIN CONTAINER */
+/* ================================================= */
+
+.container {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 10px;
+}
+
+
+/* ================================================= */
+/* HEADER */
+/* ================================================= */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #343a40;
+}
+
+
+/* ================================================= */
+/* BACK BUTTON */
+/* ================================================= */
+
+.btn-back-dashboard {
+    background-color: #17a2b8;
+    color: white;
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-back-dashboard:hover {
+    background-color: #138496;
+    color: white;
+}
+
+
+/* ================================================= */
+/* TABLE */
+/* ================================================= */
+
+#scheduleTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#scheduleTable th {
+    background: #343a40;
+    color: white;
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#scheduleTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+#scheduleTable tbody tr:hover {
+    background: #f8f9fa;
+}
+
+
+/* ================================================= */
+/* CUSTOMER */
+/* ================================================= */
+
+#scheduleTable td strong {
+    color: #343a40;
+}
+
+#scheduleTable td small {
+    color: #777;
+    font-size: 11px;
+}
+
+
+/* ================================================= */
+/* PHONE */
+/* ================================================= */
+
+.phone-column {
+    white-space: nowrap;
+}
+
+
+/* ================================================= */
+/* DATE & TIME */
+/* ================================================= */
+
+.visit-datetime {
+    white-space: nowrap;
+}
+
+.visit-datetime small {
+    color: #777;
+}
+
+.visit-datetime i {
+    margin-right: 3px;
+}
+
+
+/* ================================================= */
+/* AGENT & STATUS SELECT */
+/* ================================================= */
+
+.schedule-agent-select,
+.schedule-status-select {
+    width: 100%;
+    min-width: 135px;
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    color: #333;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+}
+
+.schedule-agent-select:focus,
+.schedule-status-select:focus {
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 2px rgba(23,162,184,0.1);
+}
+
+.schedule-agent-select:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+
+/* ================================================= */
+/* ASSIGNED LABEL */
+/* ================================================= */
+
+.assigned-label {
+    margin-top: 5px;
+    font-size: 11px;
+    color: #28a745;
+}
+
+.assigned-label i {
+    margin-right: 3px;
+}
+
+
+/* ================================================= */
+/* ACTION BUTTONS */
+/* ================================================= */
+
+.actions-column {
+    white-space: nowrap;
+}
+
+.schedule-edit-btn,
+.schedule-view-btn,
+.schedule-delete-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 3px;
+}
+
+
+/* EDIT */
+
+.schedule-edit-btn {
+    background: #ffc107;
+    color: black;
+}
+
+.schedule-edit-btn:hover {
+    background: #e0a800;
+}
+
+
+/* VIEW */
+
+.schedule-view-btn {
+    background: #17a2b8;
+    color: white;
+}
+
+.schedule-view-btn:hover {
+    background: #138496;
+}
+
+
+/* DELETE */
+
+.schedule-delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.schedule-delete-btn:hover {
+    background: #c82333;
+}
+
+
+/* ================================================= */
+/* EMPTY STATE */
+/* ================================================= */
+
+.empty-row {
+    text-align: center;
+    color: #777;
+    padding: 30px !important;
+}
+
+.empty-row i {
+    display: inline-block;
+    font-size: 28px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+
+/* ================================================= */
+/* DETAILS MODAL */
+/* ================================================= */
+
+.schedule-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+
+/* MODAL BOX */
+
+.schedule-modal-box {
+    width: 100%;
+    max-width: 520px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+
+/* MODAL HEADER */
+
+.schedule-modal-header {
+    background: #343a40;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.schedule-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.schedule-modal-header h3 i {
+    margin-right: 6px;
+}
+
+
+/* CLOSE BUTTON */
+
+.modal-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+
+/* MODAL BODY */
+
+.schedule-modal-body {
+    padding: 20px;
+}
+
+
+/* DETAIL ITEM */
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 11px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+}
+
+.detail-item:last-of-type {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: #555;
+    font-weight: 500;
+}
+
+.detail-label i {
+    width: 18px;
+    color: #17a2b8;
+    margin-right: 4px;
+}
+
+.detail-item strong,
+.detail-item span:last-child {
+    color: #343a40;
+    text-align: right;
+}
+
+
+/* MESSAGE */
+
+.detail-message {
+    margin-top: 15px;
+}
+
+.detail-message .detail-label {
+    display: block;
+    margin-bottom: 7px;
+}
+
+#detailCustomerMessage {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 4px;
+    color: #555;
+    min-height: 50px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+
+/* MODAL FOOTER */
+
+.schedule-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.modal-cancel-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.modal-cancel-btn:hover {
+    background: #5a6268;
+}
+
+
+/* ================================================= */
+/* MOBILE */
+/* ================================================= */
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-back-dashboard {
+        width: fit-content;
+    }
+
+    #scheduleTable th,
+    #scheduleTable td {
+        padding: 9px;
+    }
+
+    .schedule-modal-box {
+        max-width: 95%;
+    }
+
+    .detail-item {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .detail-item strong,
+    .detail-item span:last-child {
+        text-align: left;
+    }
+
+}
+
+</style>
+
+
+
+ <!-- <script>
+    
+
+/*
+=====================================================
+VIEW DETAILS MODAL
+
+Scheduling page AJAX se load hota hai.
+Isliye event delegation use ki gayi hai.
+=====================================================
+*/
+
+
+/* =================================================
+   VIEW DETAILS
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const viewButton =
+        e.target.closest('.schedule-view-btn');
+
+
+    if (!viewButton) {
+        return;
+    }
+
+
+    const detailsModal =
+        document.getElementById(
+            'scheduleDetailsModal'
+        );
+
+    const customerName =
+        document.getElementById(
+            'detailCustomerName'
+        );
+
+    const customerEmail =
+        document.getElementById(
+            'detailCustomerEmail'
+        );
+
+    const customerPhone =
+        document.getElementById(
+            'detailCustomerPhone'
+        );
+
+    const property =
+        document.getElementById(
+            'detailProperty'
+        );
+
+    const visitDate =
+        document.getElementById(
+            'detailVisitDate'
+        );
+
+    const visitTime =
+        document.getElementById(
+            'detailVisitTime'
+        );
+
+    const message =
+        document.getElementById(
+            'detailCustomerMessage'
+        );
+
+
+    if (customerName) {
+
+        customerName.textContent =
+            viewButton.dataset.name || '—';
+
+    }
+
+
+    if (customerEmail) {
+
+        customerEmail.textContent =
+            viewButton.dataset.email || '—';
+
+    }
+
+
+    if (customerPhone) {
+
+        customerPhone.textContent =
+            viewButton.dataset.phone || '—';
+
+    }
+
+
+    if (property) {
+
+        property.textContent =
+            viewButton.dataset.property || '—';
+
+    }
+
+
+    if (visitDate) {
+
+        visitDate.textContent =
+            viewButton.dataset.date || '—';
+
+    }
+
+
+    if (visitTime) {
+
+        visitTime.textContent =
+            viewButton.dataset.time || '—';
+
+    }
+
+
+    if (message) {
+
+        message.textContent =
+            viewButton.dataset.message ||
+            'No message provided.';
+
+    }
+
+
+    if (detailsModal) {
+
+        detailsModal.style.display = 'flex';
+
+    }
+
+});
+
+
+
+/* =================================================
+   CLOSE DETAILS MODAL
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+
+    /* TOP CLOSE */
+
+    if (
+        e.target.closest(
+            '#closeScheduleDetails'
+        )
+    ) {
+
+        const modal =
+            document.getElementById(
+                'scheduleDetailsModal'
+            );
+
+        if (modal) {
+
+            modal.style.display = 'none';
+
+        }
+
+        return;
+    }
+
+
+    /* BOTTOM CLOSE */
+
+    if (
+        e.target.closest(
+            '#closeScheduleDetailsBottom'
+        )
+    ) {
+
+        const modal =
+            document.getElementById(
+                'scheduleDetailsModal'
+            );
+
+        if (modal) {
+
+            modal.style.display = 'none';
+
+        }
+
+        return;
+    }
+
+
+    /* CLICK OUTSIDE */
+
+    const modal =
+        document.getElementById(
+            'scheduleDetailsModal'
+        );
+
+    if (
+        modal &&
+        e.target === modal
+    ) {
+
+        modal.style.display = 'none';
+
+    }
+
+});
+
+
+
+/* =================================================
+   STATUS
+   ================================================= */
+
+document.addEventListener('change', function (e) {
+
+    const statusSelect =
+        e.target.closest(
+            '.schedule-status-select'
+        );
+
+
+    if (!statusSelect) {
+        return;
+    }
+
+
+    const scheduleId =
+        statusSelect.dataset.scheduleId;
+
+    const status =
+        statusSelect.value;
+
+
+    console.log(
+        'Update Status:',
+        status,
+        'Schedule:',
+        scheduleId
+    );
+
+});
+
+
+
+/* =================================================
+   EDIT
+   ================================================= */
+
+/* =================================================
+   EDIT DATE & TIME INLINE
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const editButton =
+        e.target.closest('.schedule-edit-btn');
+
+    if (!editButton) {
+        return;
+    }
+
+    const row =
+        editButton.closest('.schedule-row');
+
+    if (!row) {
+        return;
+    }
+
+    const view =
+        row.querySelector('.schedule-datetime-view');
+
+    const edit =
+        row.querySelector('.schedule-datetime-edit');
+
+    if (view && edit) {
+        view.style.display = 'none';
+        edit.style.display = 'block';
+    }
+});
+
+
+/* =================================================
+   CANCEL DATE & TIME EDIT
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const cancelButton =
+        e.target.closest('.cancel-schedule-date');
+
+    if (!cancelButton) {
+        return;
+    }
+
+    const row =
+        cancelButton.closest('.schedule-row');
+
+    if (!row) {
+        return;
+    }
+
+    const view =
+        row.querySelector('.schedule-datetime-view');
+
+    const edit =
+        row.querySelector('.schedule-datetime-edit');
+
+    if (edit) {
+        edit.style.display = 'none';
+    }
+
+    if (view) {
+        view.style.display = 'block';
+    }
+});
+
+
+/* =================================================
+   DELETE
+   ================================================= */
+
+document.addEventListener('click', function (e) {
+
+    const deleteButton =
+        e.target.closest(
+            '.schedule-delete-btn'
+        );
+
+
+    if (!deleteButton) {
+        return;
+    }
+
+
+    const scheduleId =
+        deleteButton.dataset.id;
+
+
+    if (
+        typeof Swal !== 'undefined'
+    ) {
+
+        Swal.fire({
+
+            title:
+                'Delete Visit?',
+
+            text:
+                'Are you sure you want to delete this schedule visit?',
+
+            icon:
+                'warning',
+
+            showCancelButton:
+                true,
+
+            confirmButtonColor:
+                '#dc3545',
+
+            cancelButtonColor:
+                '#6c757d',
+
+            confirmButtonText:
+                'Yes, Delete',
+
+            cancelButtonText:
+                'Cancel'
+
+        }).then(function (result) {
+
+            if (result.isConfirmed) {
+
+                /*
+                 * Delete AJAX will be connected
+                 * in the next step.
+                 */
+
+                console.log(
+                    'Delete Schedule:',
+                    scheduleId
+                );
+
+            }
+
+        });
+
+    } else {
+
+        if (
+            confirm(
+                'Kya aap is schedule visit ko delete karna chahte hain?'
+            )
+        ) {
+
+            console.log(
+                'Delete Schedule:',
+                scheduleId
+            );
+
+        }
+
+    }
+
+});
+
+</script>  -->
+

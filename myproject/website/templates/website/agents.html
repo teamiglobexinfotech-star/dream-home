@@ -1,0 +1,125 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Agents | DreamHome</title>
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <script src="{% static 'website/script.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <!-- Header Include -->
+    {% include 'website/header.html' %}
+
+    <!-- Hero Banner with Search -->
+    <section class="page-hero-banner agents-hero" style="background: linear-gradient(to right, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.65) 50%, rgba(15, 23, 42, 0.2) 100%), url('{% static "images/properties/interior.jpeg" %}') no-repeat center center/cover;">
+        <div class="hero-banner-content">
+            <h1>Our Agents</h1>
+            <p><a href="{% url 'home' %}">Home</a> <span>/</span> Agents</p>
+            <p class="banner-subtext">Meet our professional and experienced property experts who are always here to help you.</p>
+            
+            <!-- Search Form with Clear Button -->
+            <form method="GET" action="{% url 'agents' %}" class="hero-search-box">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search agent by name, role...">
+                {% if query %}
+                    <a href="{% url 'agents' %}" class="clear-search-btn" title="Clear Search"><i class="fa-solid fa-xmark"></i></a>
+                {% endif %}
+                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Agents Grid Container -->
+    <div class="agents-main-container">
+        <div class="agents-toolbar">
+            <p>{{ showing_text }}</p>
+            <div class="toolbar-filters">
+                
+                
+                <!-- Sorting Dropdown Form -->
+                <form method="GET" action="{% url 'agents' %}" id="sortForm" style="display:inline;">
+                    {% if query %}
+                        <input type="hidden" name="q" value="{{ query }}">
+                    {% endif %}
+                    <select name="sort" class="filter-dropdown" onchange="document.getElementById('sortForm').submit()">
+    <option value="exp_high" {% if sort_by == 'exp_high' %}selected{% endif %}>Experience: High to Low</option>
+    <option value="exp_low" {% if sort_by == 'exp_low' %}selected{% endif %}>Experience: Low to High</option>
+</select>
+                </form>
+            </div>
+        </div>
+
+        <div class="agents-grid">
+            {% for agent in agents %}
+            <div class="team-agent-card">
+                <div class="team-img-box">
+                    {% if agent.image %}
+                        <img src="{{ agent.image.url }}" alt="{{ agent.name }}">
+                    {% else %}
+                        <div class="placeholder-img-box"></div>
+                    {% endif %}
+                </div>
+                <div class="team-info-box">
+                    <h3>{{ agent.name }}</h3>
+                    <p class="team-role">{{ agent.role }}</p>
+                    <p class="team-exp"><i class="fa-solid fa-briefcase"></i> {{ agent.experience }}</p>
+                    
+                    <div class="team-social-icons">
+                        <a href="tel:{{ agent.phone }}" title="Call"><i class="fa-solid fa-phone"></i></a>
+                        <a href="mailto:{{ agent.email }}" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                        <span title="Assigned Properties: {{ agent.assigned_properties_count }}" class="prop-badge-count">{{ agent.assigned_properties_count }}</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="grid-column: span 4; text-align: center; color: #64748b; padding: 40px;">No agents found in database.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Dynamic Pagination Buttons -->
+        {% if agents.has_other_pages %}
+        <div class="pagination-box">
+            {% if agents.has_previous %}
+                <a href="?page={{ agents.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="page-arrow"><i class="fa-solid fa-arrow-left"></i></a>
+            {% endif %}
+
+            {% for num in agents.paginator.page_range %}
+                {% if agents.number == num %}
+                    <span class="page-num active">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="page-num">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if agents.has_next %}
+                <a href="?page={{ agents.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="page-arrow"><i class="fa-solid fa-arrow-right"></i></a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- CTA Section -->
+    <section class="projects-cta-box agents-page-cta">
+        <div class="container cta-flex">
+            <div class="cta-left-content">
+                <div class="cta-icon-circle"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <h2>Need Help Choosing the Right Property?</h2>
+                    <p>Our experienced agents are here to guide you to find your dream property.</p>
+                </div>
+            </div>
+            <div class="cta-right-buttons">
+                <a href="{% url 'contact' %}" class="btn-green-call">Contact Us </a>
+                <a href="#" class="btn-schedule-visit btn-dark-visit"><i class="fa-regular fa-calendar"></i> Schedule a Call</a>
+            </div>
+        </div>
+    </section>
+
+    {% include 'website/footer.html' %}
+</body>
+</html>

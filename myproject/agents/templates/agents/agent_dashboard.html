@@ -1,0 +1,895 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamHome - Real Estate Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/agent_dashboard.css' %}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dream-blue': '#1e40af',
+                        'sidebar-dark': '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-hidden">
+
+    <div class="flex h-screen w-full overflow-hidden">
+
+        <aside id="sidebar" class="w-64 bg-sidebar-dark text-slate-300 hidden md:flex flex-col border-r border-slate-800 shrink-0" x-data="{ search: '' }">
+            
+            <div class="p-5 flex items-center space-x-3 border-b border-slate-800">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-house-chimney text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-base tracking-wide">DreamHome</h1>
+                    <p class="text-[10px] text-slate-400">Real Estate Portal</p>
+                </div>
+            </div>
+
+            <!-- Live Sidebar Search Input -->
+            <div class="px-4 pt-4">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" 
+                           x-model="search" 
+                           placeholder="Search menu..." 
+                           class="w-full bg-slate-900 text-slate-200 text-xs rounded-lg pl-9 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-500">
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-3 py-4 space-y-6 text-xs custom-scrollbar">
+                <div>
+                    <p class="font-semibold text-slate-500 uppercase tracking-wider mb-2 px-3">Main Menu</p>
+                    <nav class="space-y-1">
+                        <a href="#" id="agentDashboardLink" data-url="{% url 'agent_dashboard' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white font-medium ajax-sidebar-link"
+                           x-show="search === '' || 'dashboard'.includes(search.toLowerCase())">
+                            <i class="fa-solid fa-chart-pie w-4"></i><span>Dashboard</span>
+                        </a>
+                        <a href="#" id="agentPropertiesLink" data-url="{% url 'agent_properties' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-300 transition"
+                           x-show="search === '' || 'my properties'.includes(search.toLowerCase())">
+                            <i class="fa-solid fa-building w-4"></i><span>My Properties</span>
+                        </a>
+                        <a href="#" id="agentLeadsLink" data-url="{% url 'agent_leads' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-300 transition ajax-sidebar-link"
+                           x-show="search === '' || 'customers'.includes(search.toLowerCase())">
+                                <i class="fa-solid fa-user-group w-4"></i>
+                                <span>Customers</span>
+                        </a>
+                        <a href="#" id="agentSiteVisitsLink" data-url="{% url 'agent_site_visits' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-300 transition ajax-sidebar-link"
+                           x-show="search === '' || 'site visits'.includes(search.toLowerCase())">
+                                <i class="fa-solid fa-calendar-check w-4"></i>
+                                <span>Site Visits</span>
+                        </a>
+                        <a href="#" data-url="{% url 'agent_commission' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-300 transition ajax-sidebar-link"
+                           x-show="search === '' || 'commission'.includes(search.toLowerCase())">
+                            <i class="fa-solid fa-wallet w-4"></i>
+                            <span>Commission</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-slate-500 uppercase tracking-wider mb-2 px-3">Tools</p>
+                    <nav class="space-y-1">
+                        <!-- Calendar with Coming Soon Badge -->
+                        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 transition group"
+                           x-show="search === '' || 'calendar'.includes(search.toLowerCase())">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-calendar-days w-4"></i>
+                                <span>Calendar</span>
+                            </div>
+                            <span class="text-[9px] bg-slate-800 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-semibold">Soon</span>
+                        </a>
+                        <!-- Tasks with Coming Soon Badge -->
+                        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 transition group"
+                           x-show="search === '' || 'tasks'.includes(search.toLowerCase())">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-list-check w-4"></i>
+                                <span>Tasks</span>
+                            </div>
+                            <span class="text-[9px] bg-slate-800 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-semibold">Soon</span>
+                        </a>
+                        <!-- Documents with Coming Soon Badge -->
+                        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 transition group"
+                           x-show="search === '' || 'documents'.includes(search.toLowerCase())">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-file-lines w-4"></i>
+                                <span>Documents</span>
+                            </div>
+                            <span class="text-[9px] bg-slate-800 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-semibold">Soon</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-slate-500 uppercase tracking-wider mb-2 px-3">Account</p>
+                    <nav class="space-y-1">
+                        <a href="#" id="agentProfileLink" data-url="{% url 'agent_own_profile' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-300 transition ajax-sidebar-link"
+                           x-show="search === '' || 'profile'.includes(search.toLowerCase())">
+                            <i class="fa-solid fa-user w-4"></i>
+                            <span>Profile</span>
+                        </a>
+                        <!-- Settings Dropdown Parent -->
+                    <div class="space-y-1" x-show="search === '' || 'settings'.includes(search.toLowerCase()) || 'change password'.includes(search.toLowerCase())">
+                        <button type="button" id="settingsToggle" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white text-slate-300 transition text-sm">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-gear w-4"></i>
+                                <span>Settings</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" id="settingsChevron"></i>
+                        </button>
+
+                        <!-- Submenu -->
+                        <div id="settingsSubmenu" class="hidden pl-7 space-y-1">
+                            <a href="{% url 'agent_change_password' %}" class="ajax-sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white text-slate-300 transition text-xs"
+                               x-show="search === '' || 'change password'.includes(search.toLowerCase())">
+                                <i class="fa-solid fa-key w-4"></i>
+                                <span>Change Password</span>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="#" id="logoutTrigger" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-red-400 text-slate-300 transition"
+                       x-show="search === '' || 'logout'.includes(search.toLowerCase())">
+                        <i class="fa-solid fa-right-from-bracket w-4"></i>
+                        <span>Logout</span>
+                    </a>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="p-3 m-3 bg-blue-950/60 rounded-xl text-center border border-blue-800/40">
+                <div class="text-blue-400 mb-1"><i class="fa-solid fa-headset text-xl"></i></div>
+                <h4 class="text-white text-xs font-semibold">Need Help?</h4>
+                <p class="text-[10px] text-slate-400 mb-2">We're here to help you succeed.</p>
+                <button class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold py-1.5 rounded-lg transition">Contact Support</button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col h-screen overflow-hidden">
+
+            <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-btn" class="text-slate-600 hover:text-blue-600 md:hidden">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">Welcome back, {{ request.user.full_name|default:request.user.email }} 👋</h2>
+                        <p class="text-[11px] text-slate-500">Here's what's happening with your business today.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    
+                    <div class="relative notif-wrapper" data-mark-url="{% url 'agent_mark_ajax_read' %}">
+                        <!-- Notification Button with Badge -->
+                        <button type="button" class="notif-btn relative text-slate-500 hover:text-blue-600 focus:outline-none p-1">
+                            <i class="fa-regular fa-bell text-base"></i>
+                            {% if notification_count > 0 %}
+                                <span class="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                                    {{ notification_count }}
+                                </span>
+                            {% endif %}
+                        </button>
+
+                        <!-- Dropdown Panel (Yahan 'hidden' class hona zaroori hai taaki default close rahe) -->
+                        <div class="notif-dropdown hidden absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <div class="px-4 py-2 border-b border-slate-100 flex justify-between items-center">
+                                <span class="font-bold text-xs text-slate-900">Notifications</span>
+                                <span  id="mark-all-read-btn" class="text-[10px] text-blue-600 font-semibold cursor-pointer hover:underline">Mark all as read</span>
+                            </div>
+                            
+                            <div class="max-h-64 overflow-y-auto divide-y divide-slate-50">
+                                {% for notif in notifications %}
+                                <a href="{{ notif.link|default:'#' }}" class="block px-4 py-3 hover:bg-slate-50 transition-colors">
+                                    <p class="font-bold text-xs text-slate-900">{{ notif.title }}</p>
+                                    <p class="text-[11px] text-slate-600 mt-0.5">{{ notif.message }}</p>
+                                    <span class="text-[9px] text-slate-400 mt-1 block">{{ notif.created_at|date:"d M, g:i A" }}</span>
+                                </a>
+                                {% empty %}
+                                <div class="py-6 text-center text-slate-400 text-xs">
+                                    No new notifications.
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="flex items-center space-x-3 border-l pl-4 border-slate-200">
+                        {% if request.user.profile_image %}
+                            <img src="{{ request.user.profile_image.url }}" class="w-8 h-8 rounded-full object-cover border">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-xs border">
+                                {{ request.user.full_name|slice:":1"|upper|default:"A" }}
+                            </div>
+                        {% endif %}
+                        <div class="hidden lg:block text-left">
+                            <h4 class="text-xs font-bold text-slate-900 leading-tight">{{ request.user.full_name|default:request.user.email }}</h4>
+                            <p class="text-[10px] text-slate-500">{{ request.user.designation|default:"Property Advisor" }}</p>
+                        </div>
+                    </div> -->
+                    <!-- Agent Profile Dropdown -->
+                    <div class="relative border-l pl-4 border-slate-200">
+
+                        <!-- Existing Profile Area -->
+                        <div id="agentProfileBtn"
+                            class="flex items-center space-x-3 cursor-pointer select-none">
+
+                            {% if request.user.profile_image %}
+                                <img src="{{ request.user.profile_image.url }}"
+                                    class="w-8 h-8 rounded-full object-cover border"
+                                    alt="Profile">
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-xs border">
+                                    {{ request.user.full_name|slice:":1"|upper|default:"A" }}
+                                </div>
+                            {% endif %}
+
+                            <div class="hidden lg:block text-left">
+                                <h4 class="text-xs font-bold text-slate-900 leading-tight">
+                                    {{ request.user.full_name|default:request.user.email }}
+                                </h4>
+
+                                <p class="text-[10px] text-slate-500">
+                                    {{ request.user.designation|default:"Property Advisor" }}
+                                </p>
+                            </div>
+
+                            <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                        </div>
+
+
+                        <!-- Profile Dropdown -->
+                        <div id="agentProfileDropdown"
+                            class="hidden absolute right-0 top-12 w-52 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
+
+                            <!-- My Profile -->
+                            <a href="{% url 'agent_own_profile' %}"
+                            class="ajax-sidebar-link flex items-center gap-3 px-4 py-3 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition">
+
+                                <i class="fa-solid fa-user text-blue-600 w-4"></i>
+                                <span>My Profile</span>
+
+                            </a>
+
+
+                            <!-- Back to Home -->
+                            <a href="{% url 'home' %}"
+                            class="flex items-center gap-3 px-4 py-3 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition">
+
+                                <i class="fa-solid fa-house text-blue-600 w-4"></i>
+                                <span>Back to Home</span>
+
+                            </a>
+
+
+                            <!-- Logout -->
+                            <a href="#"
+                            id="logoutTrigger"
+                            class="flex items-center gap-3 px-4 py-3 text-xs font-medium text-red-600 hover:bg-red-50 transition border-t border-slate-100">
+
+                                <i class="fa-solid fa-right-from-bracket w-4"></i>
+                                <span>Logout</span>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </header>
+
+            <main id="dashboard-dynamic-content" class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 custom-scrollbar pb-16">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                    <!-- ASSIGNED PROPERTIES -->
+    <a href="#"
+       data-url="{% url 'agent_properties' %}"
+       class="ajax-sidebar-link block bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm hover:border-blue-500 hover:shadow transition group">
+
+        <div class="flex justify-between items-center mb-1">
+            <span class="text-[11px] text-slate-500 font-medium group-hover:text-blue-600 transition">
+                My Properties
+            </span>
+
+            <span class="bg-blue-50 text-blue-600 p-1.5 rounded-lg text-xs">
+                <i class="fa-solid fa-house"></i>
+            </span>
+        </div>
+
+        <h3 class="text-xl font-bold text-slate-900">
+            {{ assigned_properties_count }}
+        </h3>
+
+        <p class="text-[10px] text-emerald-600 font-semibold mt-1">
+            ↑ +5 this month
+        </p>
+    </a>
+                    <a href="{% url 'agent_leads' %}" class="ajax-sidebar-link block bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm hover:border-blue-500 hover:shadow transition group">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[11px] text-slate-500 font-medium group-hover:text-blue-600 transition">New Customers</span>
+                            <span class="bg-emerald-50 text-emerald-600 p-1.5 rounded-lg text-xs"><i class="fa-solid fa-user-plus"></i></span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">{{ new_leads_count }}</h3>
+                        <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ +12 this month</p>
+                    </a>
+                     <!-- SITE VISITS -->
+    <a href="#"
+       data-url="{% url 'agent_site_visits' %}"
+       class="ajax-sidebar-link block bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm hover:border-amber-500 hover:shadow transition group">
+
+        <div class="flex justify-between items-center mb-1">
+            <span class="text-[11px] text-slate-500 font-medium group-hover:text-amber-600 transition">
+                Site Visits
+            </span>
+
+            <span class="bg-amber-50 text-amber-600 p-1.5 rounded-lg text-xs">
+                <i class="fa-solid fa-calendar-days"></i>
+            </span>
+        </div>
+
+        <h3 class="text-xl font-bold text-slate-900">
+            {{ sitevisit_count }}
+        </h3>
+
+        <p class="text-[10px] text-emerald-600 font-semibold mt-1">
+            ↑ Total visits
+        </p>
+    </a>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-500 font-medium">Monthly Sales</span><span class="bg-purple-50 text-purple-600 p-1.5 rounded-lg text-xs"><i class="fa-solid fa-chart-line"></i></span></div>
+                        <h3 class="text-lg font-bold text-slate-900">₹ 1.85 Cr</h3>
+                        <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ +18.6% this month</p>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-500 font-medium">Total Commission</span><span class="bg-blue-50 text-blue-600 p-1.5 rounded-lg text-xs"><i class="fa-solid fa-wallet"></i></span></div>
+                        <h3 class="text-lg font-bold text-slate-900">₹ 2,35,000</h3>
+                        <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ +15.4% this month</p>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-500 font-medium">Pending Commission</span><span class="bg-rose-50 text-rose-600 p-1.5 rounded-lg text-xs"><i class="fa-solid fa-clock-rotate-left"></i></span></div>
+                        <h3 class="text-lg font-bold text-slate-900">₹ 85,000</h3>
+                        <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ +5.2% this month</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <h3 class="font-bold text-xs text-slate-900 mb-2">Lead Status Overview</h3>
+                        
+                        <div class="py-4 flex items-center justify-center">
+                            <!-- Donut Chart Container with Custom Hover Tooltips -->
+                            <div class="relative w-32 h-32 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90 overflow-visible" viewBox="0 0 36 36">
+                                    <!-- Background track -->
+                                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f1f5f9" stroke-width="4"></circle>
+                                    
+                                    <!-- New Lead Slice -->
+                                    <g class="cursor-pointer group/slice">
+                                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#2563eb" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="0" class="hover:stroke-[5] transition-all"></circle>
+                                    </g>
+                                    
+                                    <!-- Contacted Slice -->
+                                    <g class="cursor-pointer group/slice">
+                                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-25" class="hover:stroke-[5] transition-all"></circle>
+                                    </g>
+                                    
+                                    <!-- Follow Up Slice -->
+                                    <g class="cursor-pointer group/slice">
+                                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-45" class="hover:stroke-[5] transition-all"></circle>
+                                    </g>
+                                    
+                                    <!-- Site Visit Slice -->
+                                    <g class="cursor-pointer group/slice">
+                                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="15 85" stroke-dashoffset="-65" class="hover:stroke-[5] transition-all"></circle>
+                                    </g>
+                                    
+                                    <!-- Negotiation Slice -->
+                                    <g class="cursor-pointer group/slice">
+                                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f43f5e" stroke-width="4" stroke-dasharray="10 90" stroke-dashoffset="-80" class="hover:stroke-[5] transition-all"></circle>
+                                    </g>
+                                    
+                                    <!-- Converted Slice -->
+                                    <g class="cursor-pointer group/slice">
+                                        <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#14b8a6" stroke-width="4" stroke-dasharray="10 90" stroke-dashoffset="-90" class="hover:stroke-[5] transition-all"></circle>
+                                    </g>
+                                </svg>
+                                
+                                <!-- Center Total Text -->
+                                <div class="absolute inset-0 flex items-center justify-center text-center pointer-events-none">
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 block">Total</span>
+                                        <span class="text-sm font-bold text-slate-900">{{ new_leads_count }} Leads</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Legend with Instant Popup Tooltips on Hover -->
+                        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 mt-2">
+                            <div class="relative group flex items-center space-x-1.5 p-1 rounded hover:bg-slate-50 cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                                <span>New Lead ({{ new_lead_count }})</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20">
+                                    New Lead: {{ new_lead_count }}
+                                </div>
+                            </div>
+
+                            <div class="relative group flex items-center space-x-1.5 p-1 rounded hover:bg-slate-50 cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>Contacted ({{ contacted_count }})</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20">
+                                    Contacted: {{ contacted_count }}
+                                </div>
+                            </div>
+
+                            <div class="relative group flex items-center space-x-1.5 p-1 rounded hover:bg-slate-50 cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <span>Follow Up ({{ follow_up_count }})</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20">
+                                    Follow Up: {{ follow_up_count }}
+                                </div>
+                            </div>
+
+                            <div class="relative group flex items-center space-x-1.5 p-1 rounded hover:bg-slate-50 cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                <span>Site Visit ({{ site_visit_status_count }})</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20">
+                                    Site Visit: {{ site_visit_status_count }}
+                                </div>
+                            </div>
+
+                            <div class="relative group flex items-center space-x-1.5 p-1 rounded hover:bg-slate-50 cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                <span>Negotiation ({{ negotiation_count }})</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20">
+                                    Negotiation: {{ negotiation_count }} items
+                                </div>
+                            </div>
+
+                            <div class="relative group flex items-center space-x-1.5 p-1 rounded hover:bg-slate-50 cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                                <span>Converted ({{ converted_count }})</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20">
+                                    Converted: {{ converted_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm lg:col-span-2 flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-xs text-slate-900">Monthly Performance</h3>
+                            <div class="flex items-center space-x-3 text-[10px]">
+                                <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span><span class="text-slate-600">This Month</span></span>
+                                <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span><span class="text-slate-600">Last Month</span></span>
+                            </div>
+                        </div>
+                        <div class="h-44 w-full relative flex items-center justify-center">
+                            <canvas id="monthlyPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- My Leads Table (Takes 2 columns on large screens) -->
+                    <div class="lg:col-span-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-xs text-slate-900">My Leads</h3>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-[10px] text-slate-400 uppercase tracking-wide">
+                                        <th class="py-2.5 font-medium">Client Name</th>
+                                        <th class="py-2.5 font-medium">Phone Number</th>
+                                        <th class="py-2.5 font-medium">Property Type</th>
+                                        <th class="py-2.5 font-medium">Visit Date</th>
+                                        <th class="py-2.5 font-medium text-right">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-[11px]">
+                                    {% for lead in leads %}
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="py-3 pr-3 font-bold text-slate-900">{{ lead.name }}</td>
+                                        <td class="py-3 pr-3 text-slate-600">{{ lead.phone }}</td>
+                                        <td class="py-3 pr-3">
+                                            <span class="bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">
+                                                {{ lead.property_type|default:"Buy Residential" }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 pr-3 text-slate-600">{{ lead.visit_date|date:"d M Y, H:i"|default:"N/A" }}</td>
+                                        <td class="py-3 text-right text-slate-500">{{ lead.created_at|date:"d M Y" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="py-6 text-center text-slate-400 text-xs">No leads found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Widget (Takes 1 column on the right side) -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-xs" 
+                        x-data="calendar()" 
+                        x-init="initCalendar()">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-slate-900" x-text="monthNames[month] + ' ' + year"></h3>
+                            <div class="space-x-1 text-slate-500">
+                                <button @click="changeMonth(-1)" class="p-1 hover:bg-slate-100 rounded"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+                                <button @click="changeMonth(1)" class="p-1 hover:bg-slate-100 rounded"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-7 text-center text-[10px] text-slate-400 mb-1">
+                            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                        </div>
+                        <div class="grid grid-cols-7 text-center text-[11px] gap-y-1 text-slate-600">
+                            <template x-for="day in blankDays">
+                                <span></span>
+                            </template>
+                            <template x-for="date in daysInMonth" :key="date">
+                                <span class="flex items-center justify-center mx-auto w-5 h-5 cursor-pointer rounded-full"
+                                    :class="{
+                                        'bg-blue-600 text-white font-bold': isToday(date),
+                                        'hover:bg-slate-100': !isToday(date)
+                                    }"
+                                    x-text="date">
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-xs text-slate-900">Upcoming Site Visits</h3>
+                        </div>
+                        
+                        <!-- 2 Columns Grid: Max 4 latest items (2 upar, 2 neeche) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            {% for visit in upcoming_visits|slice:":4" %}
+                            <div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50/50">
+                                <div class="flex items-center space-x-2.5 min-w-0">
+                                    {% if visit.visit_image %}
+                                        <img src="{{ visit.visit_image.url }}" class="w-10 h-10 rounded-lg object-cover shrink-0" alt="Visit">
+                                    {% else %}
+                                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=150" class="w-10 h-10 rounded-lg object-cover shrink-0" alt="Default">
+                                    {% endif %}
+                                    <div class="min-w-0">
+                                        <h4 class="font-semibold text-slate-900 truncate">{{ visit.location_visited|default:"Site Visit" }}</h4>
+                                        <p class="text-[10px] text-slate-400">Status: <span class="text-emerald-600 font-medium">{{ visit.status }}</span></p>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0 pl-2">
+                                    <p class="font-bold text-blue-600 text-[11px]">{{ visit.created_at|date:"d M" }}</p>
+                                    <p class="text-[9px] text-slate-500">Enquiry #{{ visit.enquiry.id }}</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-span-2 py-6 text-center text-slate-400 text-xs">
+                                No upcoming site visits scheduled.
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-xs">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-slate-900">Recent Notifications</h3>
+                            
+                        </div>
+                        
+                        <div class="space-y-3">
+                            {% for notif in recent_notifications %}
+                            <div class="flex items-start space-x-2.5 {% if not forloop.last %}pb-2.5 border-b border-slate-100{% endif %}">
+                                <!-- Dynamic Icon & Color based on notification type -->
+                                <span class="pt-0.5 
+                                    {% if notif.type == 'lead' %}text-blue-600
+                                    {% elif notif.type == 'visit' %}text-amber-600
+                                    {% else %}text-emerald-600{% endif %}">
+                                    <i class="fa-solid 
+                                        {% if notif.type == 'lead' %}fa-user-plus
+                                        {% elif notif.type == 'visit' %}fa-calendar-check
+                                        {% else %}fa-wallet{% endif %} text-xs"></i>
+                                </span>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-slate-900 leading-tight truncate">{{ notif.title }}</p>
+                                    <p class="text-[9px] text-slate-400 truncate">{{ notif.description }}</p>
+                                </div>
+                                
+                                <span class="text-[9px] text-slate-400 shrink-0">{{ notif.created_at|timesince }} ago</span>
+                            </div>
+                            {% empty %}
+                            <div class="py-4 text-center text-slate-400 text-xs">
+                                No recent notifications found.
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="grid grid-cols-1">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-xs text-slate-900">My Properties</h3>
+                            <a href="#" class="text-[11px] text-blue-600 font-semibold hover:underline">View All</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-[10px] text-slate-400 uppercase tracking-wide">
+                                        <th class="py-2.5 pr-3 font-medium w-2/5">Property</th>
+                                        <th class="py-2.5 px-3 font-medium">Type</th>
+                                        <th class="py-2.5 px-3 font-medium">Location</th>
+                                        <th class="py-2.5 px-3 font-medium">Price</th>
+                                        <th class="py-2.5 pl-3 font-medium text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-[11px]">
+                                    {% for prop in properties|slice:":4" %}
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="py-3 pr-3 flex items-center space-x-2.5">
+                                            {% if prop.image %}
+                                                <img src="{{ prop.image.url }}" class="w-8 h-8 rounded-lg object-cover shrink-0" alt="{{ prop.title }}">
+                                            {% else %}
+                                                <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-400 text-[9px] shrink-0">IMG</div>
+                                            {% endif %}
+                                            <span class="font-semibold text-slate-900 leading-snug">{{ prop.title }}</span>
+                                        </td>
+                                        <td class="py-3 px-3 text-slate-600">{{ prop.category }}</td>
+                                        <td class="py-3 px-3 text-slate-600">{{ prop.location }}</td>
+                                        <td class="py-3 px-3 font-bold text-slate-900">₹ {{ prop.price }}</td>
+                                        <td class="py-3 pl-3 text-right">
+                                            {% if prop.status == 'Available' %}
+                                                <span class="bg-emerald-50 text-emerald-600 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">Available</span>
+                                            {% else %}
+                                                <span class="bg-amber-50 text-amber-600 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">{{ prop.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="py-6 text-center text-slate-400 text-xs">No properties assigned yet.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl transform transition-all">
+        <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border-4 border-amber-100">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-1">Are you sure?</h3>
+        <p class="text-sm text-slate-500 mb-6">Do you want to logout?</p>
+        <div class="flex space-x-3">
+            <button id="cancelLogout" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition text-sm">Cancel</button>
+            <form action="{% url 'agent_logout' %}" method="POST" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl transition text-sm flex items-center justify-center">Yes, Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="{% static 'dashboard/agent_dashboard.js' %}"></script>
+<script>
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const chartElement = document.getElementById('monthlyPerformanceChart');
+    //     if (chartElement) {
+    //         const ctx = chartElement.getContext('2d');
+            
+    //         // Django context se dynamic data JSON filter ke zariye lena
+    //         const thisYearData = JSON.parse('{{ this_year_data|safe }}');
+    //         const lastYearData = JSON.parse('{{ last_year_data|safe }}');
+
+    //         new Chart(ctx, {
+    //             type: 'line',
+    //             data: {
+    //                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    //                 datasets: [
+    //                     {
+    //                         label: 'This Year',
+    //                         data: thisYearData,
+    //                         borderColor: '#2563eb',
+    //                         backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    //                         borderWidth: 2,
+    //                         tension: 0.3,
+    //                         fill: true,
+    //                         pointRadius: 3
+    //                     },
+    //                     {
+    //                         label: 'Last Year',
+    //                         data: lastYearData,
+    //                         borderColor: '#cbd5e1',
+    //                         backgroundColor: 'transparent',
+    //                         borderWidth: 2,
+    //                         borderDash: [4, 4],
+    //                         tension: 0.3,
+    //                         pointRadius: 2
+    //                     }
+    //                 ]
+    //             },
+    //             options: {
+    //                 responsive: true,
+    //                 maintainAspectRatio: false,
+    //                 plugins: {
+    //                     legend: { display: false }
+    //                 },
+    //                 scales: {
+    //                     y: {
+    //                         grid: { color: '#f1f5f9' },
+    //                         ticks: { font: { size: 9 } }
+    //                     },
+    //                     x: {
+    //                         grid: { display: false },
+    //                         ticks: { font: { size: 9 } }
+    //                     }
+    //                 }
+    //             }
+    //         });
+    //     }
+
+    //     console.log("Agent Dashboard Script Initialized Successfully!");
+    // });
+
+    window.initMonthlyPerformanceChart = function () {
+
+    const chartElement = document.getElementById('monthlyPerformanceChart');
+
+    if (!chartElement) {
+        return;
+    }
+
+    const ctx = chartElement.getContext('2d');
+
+    // Django context se dynamic data
+    const thisYearData = JSON.parse('{{ this_year_data|safe }}');
+    const lastYearData = JSON.parse('{{ last_year_data|safe }}');
+
+    new Chart(ctx, {
+        type: 'line',
+
+        data: {
+            labels: [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ],
+
+            datasets: [
+                {
+                    label: 'This Year',
+                    data: thisYearData,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                },
+
+                {
+                    label: 'Last Year',
+                    data: lastYearData,
+                    borderColor: '#cbd5e1',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [4, 4],
+                    tension: 0.3,
+                    pointRadius: 2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+
+            scales: {
+                y: {
+                    grid: {
+                        color: '#f1f5f9'
+                    },
+                    ticks: {
+                        font: {
+                            size: 9
+                        }
+                    }
+                },
+
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 9
+                        }
+                    }
+                }
+            }
+        }
+    });
+};
+
+
+// Full page refresh ke liye
+document.addEventListener("DOMContentLoaded", function () {
+    window.initMonthlyPerformanceChart();
+});
+
+
+function calendar() {
+    return {
+        month: new Date().getMonth(),
+        year: new Date().getFullYear(),
+        daysInMonth: 0,
+        blankDays: [],
+        monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        
+        initCalendar() {
+            let daysCounts = new Date(this.year, this.month + 1, 0).getDate();
+            let startingDay = new Date(this.year, this.month, 1).getDay();
+            
+            this.daysInMonth = Array.from({length: daysCounts}, (_, i) => i + 1);
+            this.blankDays = Array.from({length: startingDay});
+        },
+        
+        changeMonth(val) {
+            if (this.month + val > 11) {
+                this.month = 0;
+                this.year++;
+            } else if (this.month + val < 0) {
+                this.month = 11;
+                this.year--;
+            } else {
+                this.month += val;
+            }
+            this.initCalendar();
+        },
+        
+        isToday(date) {
+            const today = new Date();
+            return date === today.getDate() && this.month === today.getMonth() && this.year === today.getFullYear();
+        }
+    }
+}
+
+</script>
+    
+
+</body>
+</html>

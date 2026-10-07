@@ -1,0 +1,186 @@
+{% load static %}
+<div class="edit-agent-container">
+    <div class="edit-agent-header">
+        <h2>Edit Agent</h2>
+        <!-- Button bilkul "Back to Dashboard" ka hi rahega -->
+        <a href="{% url 'admin_dashboard' %}" class="btn-back-dashboard">
+            <i class="fa fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Form update hone ke baad view ke through Agent Management par redirect hoga -->
+    <form method="POST" action="{% url 'edit_agent' agent.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="edit-agent-group">
+            <label>Agent Name</label>
+            <input type="text" name="name" value="{{ agent.name }}" required>
+        </div>
+
+        <div class="edit-agent-group">
+            <label>Father Name</label>
+            <input type="text" name="father_name" value="{{ agent.father_name|default:'' }}">
+        </div>
+
+        
+        <div class="edit-agent-group">
+            <label>Role / Designation</label>
+            <input type="text" name="role" value="{{ agent.role }}">
+        </div>
+        
+        <div class="edit-agent-group">
+            <label>Experience</label>
+            <input type="text" name="experience" value="{{ agent.experience }}">
+        </div>
+        
+        <div class="edit-agent-group">
+            <label>Email Address</label>
+            <input type="email" name="email" value="{{ agent.email }}" required>
+        </div>
+
+       <div class="edit-agent-group">
+            <label>Password (Naya password set karne ke liye bharein, warna khali chhod dein)</label>
+            <input type="password" name="password" placeholder="Leave blank to keep old password">
+        </div>
+        
+        <div class="edit-agent-group">
+            <label>Phone Number</label>
+            <input type="text" name="phone" value="{{ agent.phone }}" required>
+        </div>
+
+        <div class="edit-agent-group">
+            <label>Aadhaar Card</label>
+            <input type="file" name="aadhaar_document">
+
+            {% if agent.aadhaar_document %}
+                <p style="font-size: 13px; color: #666; margin-top: 6px;">
+                    Current Aadhaar: Available
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="edit-agent-group">
+            <label>PAN Card</label>
+            <input type="file" name="pan_document">
+
+            {% if agent.pan_document %}
+                <p style="font-size: 13px; color: #666; margin-top: 6px;">
+                    Current PAN: Available
+                </p>
+            {% endif %}
+        </div>
+        
+        <div class="edit-agent-group">
+            <label>Change Profile Image (Optional)</label>
+            <input type="file" name="image">
+            {% if agent.image %}
+                <p style="font-size: 13px; color: #666; margin-top: 6px;">Current Image:</p>
+                <img src="{{ agent.image.url }}" class="edit-agent-current-img" alt="Agent Image">
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn-update-agent"><i class="fa fa-sync"></i> Update Agent</button>
+    </form>
+</div>
+
+<style>
+    /* Scoped CSS: Yeh saari styling sirf .edit-agent-container ke andar hi kaam karegi, baaki kisi page par asar nahi padega */
+    .edit-agent-container { 
+        max-width: 700px; 
+        margin: 20px auto; 
+        background: white; 
+        padding: 30px; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .edit-agent-container .edit-agent-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 25px; 
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 12px;
+    }
+
+    .edit-agent-container .edit-agent-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 24px;
+    }
+
+    .edit-agent-container .btn-back-dashboard {
+        background-color: #17a2b8;
+        color: white;
+        padding: 8px 14px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .edit-agent-container .btn-back-dashboard:hover {
+        background-color: #138496;
+    }
+
+    .edit-agent-container .edit-agent-group { 
+        margin-bottom: 20px; 
+    }
+
+    .edit-agent-container label { 
+        display: block; 
+        margin-bottom: 8px; 
+        font-weight: 600; 
+        color: #555555; 
+    }
+
+    .edit-agent-container input[type="text"],
+    .edit-agent-container input[type="email"],
+    .edit-agent-container input[type="password"],
+    .edit-agent-container input[type="file"] { 
+        width: 100%; 
+        padding: 10px; 
+        border: 1px solid #ccc; 
+        border-radius: 6px; 
+        box-sizing: border-box; 
+        font-size: 14px;
+    }
+
+    .edit-agent-container input:focus {
+        border-color: #28a745;
+        outline: none;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+    }
+
+    .edit-agent-container .edit-agent-current-img { 
+        width: 70px; 
+        height: 70px; 
+        border-radius: 6px; 
+        object-fit: cover; 
+        margin-top: 8px; 
+        border: 1px solid #ddd;
+    }
+
+    .edit-agent-container .btn-update-agent { 
+        background: #ffc107; 
+        color: #000; 
+        width: 100%; 
+        padding: 12px; 
+        font-size: 16px; 
+        margin-top: 15px; 
+        font-weight: 600; 
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .edit-agent-container .btn-update-agent:hover {
+        background: #e0a800;
+    }
+</style>

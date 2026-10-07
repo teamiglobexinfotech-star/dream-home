@@ -1,0 +1,906 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Management</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #343a40;
+        }
+
+        .header-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* =========================
+           MAIN BUTTONS
+        ========================= */
+
+        .btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-add {
+            background: #28a745;
+        }
+
+        .btn-add:hover {
+            background: #218838;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        /* =========================
+           TABLE WRAPPER
+        ========================= */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .blog-table {
+            width: 100%;
+            min-width: 1050px;
+            border-collapse: collapse;
+            margin-top: 10px;
+            table-layout: fixed;
+        }
+
+        .blog-table th,
+        .blog-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .blog-table th {
+            background: #343a40;
+            color: white;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .blog-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* =========================
+           COLUMN WIDTHS
+        ========================= */
+
+        .blog-table th:nth-child(1),
+        .blog-table td:nth-child(1) {
+            width: 5%;
+            text-align: center;
+        }
+
+        .blog-table th:nth-child(2),
+        .blog-table td:nth-child(2) {
+            width: 25%;
+        }
+
+        .blog-table th:nth-child(3),
+        .blog-table td:nth-child(3) {
+            width: 14%;
+        }
+
+        .blog-table th:nth-child(4),
+        .blog-table td:nth-child(4) {
+            width: 18%;
+        }
+
+        .blog-table th:nth-child(5),
+        .blog-table td:nth-child(5) {
+            width: 12%;
+        }
+
+        .blog-table th:nth-child(6),
+        .blog-table td:nth-child(6) {
+            width: 26%;
+        }
+
+        /* =========================
+           BLOG TITLE
+        ========================= */
+
+        .blog-title {
+            font-weight: 600;
+            color: #343a40;
+            line-height: 1.4;
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        /* =========================
+           CATEGORY
+        ========================= */
+
+        .category-text {
+            color: #555;
+            line-height: 1.4;
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        /* =========================
+           TAGS
+        ========================= */
+
+        .tags-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .no-tags {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* =========================
+           DATE
+        ========================= */
+
+        .blog-date {
+            white-space: nowrap;
+            color: #555;
+            font-size: 13px;
+        }
+
+        /* =========================
+           ACTIONS
+        ========================= */
+
+        .actions-cell {
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+
+        .actions-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 5px;
+            width: 100%;
+        }
+
+        /*
+        IMPORTANT:
+        Blog buttons intentionally DO NOT use
+        the common .action-btn class.
+        This prevents the dashboard's generic
+        action handler from catching Blog actions.
+        */
+
+        .blog-action-btn {
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: auto;
+        }
+
+        /* =========================
+           VIEW BUTTON
+        ========================= */
+
+        .blog-view-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .blog-view-btn:hover {
+            background: #138496;
+        }
+
+        /* =========================
+           EDIT BUTTON
+        ========================= */
+
+        .blog-edit-btn {
+            background: #ffc107;
+            color: black;
+        }
+
+        .blog-edit-btn:hover {
+            background: #e0a800;
+        }
+
+        /* =========================
+           DELETE BUTTON
+        ========================= */
+
+        .blog-delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .blog-delete-btn:hover {
+            background: #c82333;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .blog-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99999;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        .blog-modal-content {
+            background: white;
+            width: 700px;
+            max-width: 90%;
+            max-height: 80vh;
+
+            border-radius: 8px;
+            overflow: hidden;
+
+            box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+        }
+
+        /* =========================
+           MODAL HEADER
+        ========================= */
+
+        .blog-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: #343a40;
+            color: white;
+
+            padding: 14px 18px;
+        }
+
+        .blog-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .blog-modal-header button {
+            border: none;
+            background: none;
+            color: white;
+
+            font-size: 25px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .blog-modal-header button:hover {
+            opacity: 0.8;
+        }
+
+        /* =========================
+           MODAL BODY
+        ========================= */
+
+        .blog-modal-body {
+            padding: 20px;
+
+            max-height: calc(80vh - 60px);
+
+            overflow-y: auto;
+        }
+
+        /* =========================
+           MODAL IMAGE
+        ========================= */
+
+        .blog-modal-image-wrapper {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .blog-modal-image {
+            width: 100%;
+            max-height: 300px;
+
+            object-fit: cover;
+
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .no-blog-image {
+            width: 100%;
+            height: 220px;
+
+            background: #f1f3f5;
+
+            border: 1px solid #ddd;
+            border-radius: 6px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* =========================
+           MODAL INFO
+        ========================= */
+
+        .blog-info p {
+            margin: 10px 0;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .blog-info strong {
+            color: #343a40;
+        }
+
+        .blog-info span {
+            color: #555;
+        }
+
+        /* =========================
+           MODAL SECTION
+        ========================= */
+
+        .blog-section {
+            margin-top: 18px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .blog-section h4 {
+            margin: 0 0 8px 0;
+            color: #343a40;
+            font-size: 15px;
+        }
+
+        .blog-section p {
+            margin: 0;
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* =========================
+           MODAL TAGS
+        ========================= */
+
+        .modal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .modal-tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .blog-table {
+                min-width: 1050px;
+            }
+
+        }
+
+        @media (max-width: 900px) {
+
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .header-buttons {
+                flex-wrap: wrap;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .blog-modal-content {
+                width: 95%;
+            }
+
+            .blog-modal-body {
+                padding: 15px;
+            }
+
+            .blog-modal-image {
+                max-height: 220px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <div class="header">
+
+        <h2>Blog Management</h2>
+
+        <div class="header-buttons">
+
+            <!-- ADD BLOG -->
+
+            <a href="{% url 'add_blog' %}"
+               data-url="{% url 'add_blog' %}"
+               class="btn btn-add nav-link-ajax">
+
+                <i class="fa fa-plus"></i>
+                Add New Blog
+
+            </a>
+
+
+            <!-- BACK TO DASHBOARD -->
+
+            <a href="{% url 'admin_dashboard' %}"
+               class="btn btn-back">
+
+                <i class="fa fa-arrow-left"></i>
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         TABLE
+    ========================= -->
+
+    <div class="table-wrapper">
+
+        <table class="blog-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Blog Title</th>
+
+                    <th>Category</th>
+
+                    <th>Tags</th>
+
+                    <th>Created Date</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for blog in blogs %}
+
+                <tr>
+
+                    <!-- NUMBER -->
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+
+                    <!-- BLOG TITLE -->
+
+                    <td>
+
+                        <div class="blog-title">
+                            {{ blog.title }}
+                        </div>
+
+                    </td>
+
+
+                    <!-- CATEGORY -->
+
+                    <td>
+
+                        <div class="category-text">
+                            {{ blog.category.name }}
+                        </div>
+
+                    </td>
+
+
+                    <!-- TAGS -->
+
+                    <td>
+
+                        <div class="tags-wrapper">
+
+                            {% for tag in blog.tags.all %}
+
+                                <span class="tag">
+                                    {{ tag.name }}
+                                </span>
+
+                            {% empty %}
+
+                                <span class="no-tags">
+                                    No Tags
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        <span class="blog-date">
+                            {{ blog.created_at|date:"d M Y" }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td class="actions-cell">
+
+                        <div class="actions-wrapper">
+
+                            <!-- =========================
+                                 VIEW BLOG
+                            ========================= -->
+
+                            <button
+                                type="button"
+                                class="blog-action-btn blog-view-btn"
+
+                                data-title="{{ blog.title|escape }}"
+
+                                data-category="{{ blog.category.name|escape }}"
+
+                                data-date="{{ blog.created_at|date:'d M Y, h:i A' }}"
+
+                                data-excerpt="{{ blog.excerpt|escape }}"
+
+                                data-content="{{ blog.content|escape }}"
+
+                                {% if blog.image %}
+                                    data-image="{{ blog.image.url }}"
+                                {% else %}
+                                    data-image=""
+                                {% endif %}
+
+                                data-tags="{% for tag in blog.tags.all %}{{ tag.name|escape }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                            >
+
+                                <i class="fa fa-eye"></i>
+                                View
+
+                            </button>
+
+
+                            <!-- =========================
+                                 EDIT BLOG
+                            ========================= -->
+
+                            <a
+                                href="{% url 'edit_blog' blog.pk %}"
+                                data-url="{% url 'edit_blog' blog.pk %}"
+                                class="blog-action-btn blog-edit-btn nav-link-ajax"
+                            >
+
+                                <i class="fa fa-pen"></i>
+                                Edit
+
+                            </a>
+
+
+                            <!-- =========================
+                                 DELETE BLOG
+                            ========================= -->
+
+                            <a
+                                href="{% url 'delete_blog' blog.pk %}"
+                                data-url="{% url 'delete_blog' blog.pk %}"
+                                class="blog-action-btn blog-delete-btn"
+                            >
+
+                                <i class="fa fa-trash"></i>
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+            {% empty %}
+
+                <tr>
+
+                    <td colspan="6"
+                        style="text-align:center; color:#777;">
+
+                        No blogs found.
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     BLOG DETAILS MODAL
+================================================== -->
+
+<div id="blogViewModal"
+     class="blog-modal">
+
+    <div class="blog-modal-content">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="blog-modal-header">
+
+            <h3>Blog Details</h3>
+
+            <button
+                type="button"
+                id="closeBlogViewModal">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <!-- MODAL BODY -->
+
+        <div class="blog-modal-body">
+
+
+            <!-- IMAGE -->
+
+            <div class="blog-modal-image-wrapper">
+
+                <img
+                    id="blogModalImage"
+                    class="blog-modal-image"
+                    src=""
+                    alt="Blog Image"
+                    style="display:none;"
+                >
+
+
+                <div
+                    id="noBlogImage"
+                    class="no-blog-image"
+                    style="display:none;"
+                >
+
+                    No Image Available
+
+                </div>
+
+            </div>
+
+
+            <!-- BLOG INFO -->
+
+            <div class="blog-info">
+
+                <p>
+
+                    <strong>Title:</strong>
+
+                    <span id="blogModalTitle"></span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>Category:</strong>
+
+                    <span id="blogModalCategory"></span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>Created Date:</strong>
+
+                    <span id="blogModalDate"></span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>Tags:</strong>
+
+                </p>
+
+
+                <div
+                    id="blogModalTags"
+                    class="modal-tags">
+                </div>
+
+            </div>
+
+
+            <!-- EXCERPT -->
+
+            <div class="blog-section">
+
+                <h4>
+                    Excerpt
+                </h4>
+
+                <p id="blogModalExcerpt"></p>
+
+            </div>
+
+
+            <!-- CONTENT -->
+
+            <div class="blog-section">
+
+                <h4>
+                    Blog Content
+                </h4>
+
+                <p id="blogModalContent"></p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1538 @@
+<style>
+/* =========================================================
+   SITE VISITS PAGE
+   ========================================================= */
+
+.site-visits-page {
+    width: 100%;
+    min-height: 100%;
+    padding: 4px 0 30px;
+    background: #ffffff;
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+.site-visits-page *,
+.site-visit-modal-overlay * {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.site-visits-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 8px 4px 24px;
+    background: #ffffff;
+}
+
+.site-visits-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.site-visits-heading-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 20px;
+}
+
+.site-visits-heading h2 {
+    margin: 0 0 4px;
+    color: #0f172a;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.site-visits-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   TOTAL VISITS
+   ========================================================= */
+
+.site-visits-total {
+    min-width: 115px;
+    padding: 11px 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.site-visits-total span {
+    display: block;
+    margin-bottom: 2px;
+    color: #2563eb;
+    font-size: 22px;
+    font-weight: 750;
+    line-height: 1.1;
+}
+
+.site-visits-total small {
+    display: block;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.site-visits-card {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+}
+
+.site-visits-card-top {
+    min-height: 76px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.site-visits-card-top h3 {
+    margin: 0 0 4px;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.site-visits-card-top p {
+    margin: 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.site-visits-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border: 1px solid #dcfce7;
+    border-radius: 20px;
+    background: #f0fdf4;
+    color: #15803d;
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.site-visits-live span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.site-visits-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+}
+
+.site-visits-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.site-visits-table thead {
+    background: #ffffff;
+}
+
+.site-visits-table thead th {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.site-visits-table tbody tr {
+    background: #ffffff;
+    transition: background 0.2s ease;
+}
+
+.site-visits-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.site-visits-table tbody td {
+    padding: 15px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.site-visits-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   PROPERTY NAME
+   ========================================================= */
+
+.site-property-info {
+    min-width: 190px;
+}
+
+.site-property-info strong {
+    display: block;
+    max-width: 240px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.site-property-info span {
+    display: block;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+.site-date-cell {
+    min-width: 145px;
+}
+
+.site-date-cell strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.site-date-cell small {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   AGENT
+   ========================================================= */
+
+.site-agent-cell {
+    min-width: 135px;
+}
+
+.site-agent-name {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 4px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.site-agent-name i {
+    color: #2563eb;
+    font-size: 11px;
+}
+
+.site-agent-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #64748b;
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.site-agent-phone:hover {
+    color: #2563eb;
+}
+
+.site-agent-phone i {
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.site-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.site-status.status-pending {
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.site-status.status-assigned {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.site-status.status-review {
+    border: 1px solid #ddd6fe;
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.site-status.status-approved {
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.site-status.status-rejected {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.site-status.status-completed {
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.site-status.status-cancelled {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+.site-location-cell {
+    max-width: 180px;
+    color: #475569;
+    font-size: 11px;
+}
+
+.site-location-cell span {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.site-location-cell i {
+    margin-top: 2px;
+    color: #2563eb;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   VIEW BUTTON
+   ========================================================= */
+
+.site-view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 72px;
+    padding: 7px 11px;
+    border: 1px solid #bfdbfe;
+    border-radius: 7px;
+    outline: none;
+    background: #eff6ff;
+    color: #2563eb;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.site-view-btn:hover {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.site-view-btn i {
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.site-visits-empty {
+    padding: 65px 20px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.site-visits-empty-icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f8fafc;
+    color: #94a3b8;
+    font-size: 24px;
+}
+
+.site-visits-empty h3 {
+    margin: 0 0 6px;
+    color: #334155;
+    font-size: 16px;
+}
+
+.site-visits-empty p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+
+.site-visit-modal-overlay {
+    position: fixed;
+    z-index: 99999;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background: rgba(15, 23, 42, 0.62);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.site-visit-modal {
+    position: relative;
+    width: min(680px, 100%);
+    max-height: 92vh;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+    animation: siteVisitModalIn 0.22s ease-out;
+}
+
+@keyframes siteVisitModalIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   MODAL CLOSE
+   ========================================================= */
+
+.site-visit-modal-close {
+    position: absolute;
+    z-index: 10;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+    outline: none;
+    background: rgba(15, 23, 42, 0.55);
+    color: #ffffff;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.site-visit-modal-close:hover {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   MODAL PROPERTY IMAGE
+   ========================================================= */
+
+.site-visit-modal-image {
+    position: relative;
+    width: 100%;
+    height: 230px;
+    overflow: hidden;
+    background: #e2e8f0;
+}
+
+.site-visit-modal-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.site-visit-modal-image::after {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    content: "";
+    background: linear-gradient(
+        to top,
+        rgba(15, 23, 42, 0.82),
+        rgba(15, 23, 42, 0.08) 70%
+    );
+}
+
+.site-visit-modal-image-overlay {
+    position: absolute;
+    z-index: 2;
+    right: 25px;
+    bottom: 20px;
+    left: 25px;
+    color: #ffffff;
+}
+
+.site-visit-modal-image-overlay span {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 5px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.14);
+    font-size: 9px;
+    font-weight: 650;
+    backdrop-filter: blur(5px);
+}
+
+.site-visit-modal-image-overlay h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   MODAL CONTENT
+   ========================================================= */
+
+.site-visit-modal-content {
+    max-height: calc(92vh - 230px);
+    overflow-y: auto;
+    padding: 22px 25px 28px;
+    background: #ffffff;
+}
+
+.site-visit-modal-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.site-visit-modal-content::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+.site-visit-modal-content::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cbd5e1;
+}
+
+
+/* =========================================================
+   STATUS + DATE
+   ========================================================= */
+
+.site-modal-top-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.site-modal-status-box,
+.site-modal-date-box {
+    padding: 13px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+    background: #ffffff;
+}
+
+.site-modal-status-box small,
+.site-modal-date-box small {
+    display: block;
+    margin-bottom: 7px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.site-modal-status-box .site-status {
+    font-size: 10px;
+}
+
+.site-modal-date-box strong {
+    display: block;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DETAILS
+   ========================================================= */
+
+.site-modal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 21px;
+}
+
+.site-modal-detail {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+    background: #ffffff;
+}
+
+.site-modal-detail-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 13px;
+}
+
+.site-modal-detail small {
+    display: block;
+    margin-bottom: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.site-modal-detail strong {
+    display: block;
+    overflow: hidden;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   MODAL SECTION
+   ========================================================= */
+
+.site-modal-section {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #eef2f7;
+}
+
+.site-modal-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 11px;
+}
+
+.site-modal-section-title i {
+    color: #2563eb;
+    font-size: 13px;
+}
+
+.site-modal-section-title h4 {
+    margin: 0;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.site-modal-section > p {
+    margin: 0;
+    padding: 11px 13px;
+    border: 1px solid #f1f5f9;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   AGENT
+   ========================================================= */
+
+.site-modal-agent {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+    background: #ffffff;
+}
+
+.site-modal-agent-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 14px;
+}
+
+.site-modal-agent strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.site-modal-agent a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #2563eb;
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.site-modal-agent a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   VISIT IMAGE
+   ========================================================= */
+
+.site-modal-visit-image {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+    background: #f8fafc;
+}
+
+.site-modal-visit-image img {
+    width: 100%;
+    max-height: 300px;
+    display: block;
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.site-visits-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.site-visits-table-wrapper::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+.site-visits-table-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cbd5e1;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .site-visits-header {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .site-visits-heading h2 {
+        font-size: 21px;
+    }
+
+    .site-visits-card-top {
+        padding: 16px;
+    }
+
+    .site-visits-table thead th,
+    .site-visits-table tbody td {
+        padding: 13px 12px;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .site-visits-page {
+        padding-bottom: 20px;
+    }
+
+    .site-visits-header {
+        align-items: flex-start;
+    }
+
+    .site-visits-heading {
+        gap: 10px;
+    }
+
+    .site-visits-heading-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        font-size: 17px;
+    }
+
+    .site-visits-heading h2 {
+        font-size: 18px;
+    }
+
+    .site-visits-heading p {
+        font-size: 11px;
+    }
+
+    .site-visits-total {
+        min-width: 85px;
+        padding: 9px 12px;
+    }
+
+    .site-visits-total span {
+        font-size: 18px;
+    }
+
+    .site-visits-total small {
+        font-size: 9px;
+    }
+
+    .site-visits-card-top {
+        align-items: flex-start;
+    }
+
+    .site-visits-card-top h3 {
+        font-size: 14px;
+    }
+
+    .site-visits-live {
+        padding: 6px 8px;
+        font-size: 9px;
+    }
+
+    .site-visit-modal-overlay {
+        padding: 12px;
+    }
+
+    .site-visit-modal {
+        max-height: 94vh;
+        border-radius: 15px;
+    }
+
+    .site-visit-modal-image {
+        height: 190px;
+    }
+
+    .site-visit-modal-image-overlay {
+        right: 18px;
+        bottom: 16px;
+        left: 18px;
+    }
+
+    .site-visit-modal-image-overlay h2 {
+        font-size: 18px;
+    }
+
+    .site-visit-modal-content {
+        max-height: calc(94vh - 190px);
+        padding: 18px;
+    }
+
+    .site-modal-top-info,
+    .site-modal-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 430px) {
+
+    .site-visits-heading h2 {
+        font-size: 16px;
+    }
+
+    .site-visits-heading p {
+        max-width: 170px;
+        line-height: 1.4;
+    }
+
+    .site-visits-total {
+        min-width: 72px;
+        padding: 8px 9px;
+    }
+
+    .site-visits-total span {
+        font-size: 17px;
+    }
+
+    .site-visits-total small {
+        font-size: 8px;
+    }
+
+    .site-visits-card {
+        border-radius: 12px;
+    }
+
+    .site-visits-card-top {
+        padding: 14px;
+    }
+
+    .site-visit-modal-close {
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+    }
+
+    .site-visit-modal-image {
+        height: 170px;
+    }
+
+    .site-visit-modal-content {
+        padding: 16px;
+    }
+}
+</style>
+
+
+<!-- =========================================================
+     SITE VISITS PAGE
+     ========================================================= -->
+
+<div class="site-visits-page">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="site-visits-header">
+
+        <div class="site-visits-heading">
+
+            <div class="site-visits-heading-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+
+
+            <div>
+
+                <h2>
+                    My Site Visits
+                </h2>
+
+
+                <p>
+                    Manage and track your property site visits
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="site-visits-total">
+
+            <span id="siteVisitTotal">
+                0
+            </span>
+
+            <small>
+                Total Visits
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SITE VISITS CARD
+         ===================================================== -->
+
+    <div class="site-visits-card">
+
+
+        <div class="site-visits-card-top">
+
+            <div>
+
+                <h3>
+                    Site Visit Requests
+                </h3>
+
+
+                <p>
+                    Your visit status will be updated here
+                </p>
+
+            </div>
+
+
+            <div class="site-visits-live">
+
+                <span></span>
+
+                Live Status
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SINGLE TABLE
+             ================================================= -->
+
+        <div class="site-visits-table-wrapper">
+
+            <table class="site-visits-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Property
+                        </th>
+
+                        <th>
+                            Visit Date &amp; Time
+                        </th>
+
+                        <th>
+                            Agent
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Location
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="siteVisitsTableBody">
+
+                    <!--
+                        JavaScript will insert ONE ROW
+                        for each VisitSchedule.
+                    -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =================================================
+             EMPTY STATE
+             ================================================= -->
+
+        <div
+            class="site-visits-empty"
+            id="siteVisitsEmpty"
+            style="display:none;"
+        >
+
+            <div class="site-visits-empty-icon">
+
+                <i class="fa-regular fa-calendar-xmark"></i>
+
+            </div>
+
+
+            <h3>
+                No Site Visits Found
+            </h3>
+
+
+            <p>
+                You haven't scheduled any property visits yet.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SITE VISIT DETAIL MODAL
+     
+     PROPERTY IMAGE IS ONLY SHOWN HERE.
+     ========================================================= -->
+
+<div
+    class="site-visit-modal-overlay"
+    id="siteVisitModal"
+    style="display:none;"
+>
+
+
+    <div class="site-visit-modal">
+
+
+        <!-- =================================================
+             CLOSE BUTTON
+             ================================================= -->
+
+        <button
+            type="button"
+            class="site-visit-modal-close"
+            id="closeSiteVisitModal"
+            aria-label="Close"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <!-- =================================================
+             PROPERTY IMAGE
+             ONLY IN MODAL
+             ================================================= -->
+
+        <div class="site-visit-modal-image">
+
+            <img
+                id="modalPropertyImage"
+                src=""
+                alt="Property"
+            >
+
+
+            <div class="site-visit-modal-image-overlay">
+
+
+                <span id="modalPropertyType">
+                    Property
+                </span>
+
+
+                <h2 id="modalPropertyName">
+                    Property Name
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MODAL CONTENT
+             ================================================= -->
+
+        <div class="site-visit-modal-content">
+
+
+            <!-- STATUS + DATE -->
+
+            <div class="site-modal-top-info">
+
+
+                <div class="site-modal-status-box">
+
+                    <small>
+                        Current Status
+                    </small>
+
+
+                    <span
+                        id="modalVisitStatus"
+                        class="site-status status-pending"
+                    >
+
+                        <span class="status-dot"></span>
+
+                        Pending
+
+                    </span>
+
+                </div>
+
+
+                <div class="site-modal-date-box">
+
+                    <small>
+                        Visit Date &amp; Time
+                    </small>
+
+
+                    <strong id="modalVisitDate">
+                        Not Scheduled
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOCATION + CONTACT -->
+
+            <div class="site-modal-details-grid">
+
+
+                <div class="site-modal-detail">
+
+                    <div class="site-modal-detail-icon">
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <small>
+                            Location
+                        </small>
+
+
+                        <strong id="modalVisitLocation">
+                            Not Available
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="site-modal-detail">
+
+                    <div class="site-modal-detail-icon">
+
+                        <i class="fa-solid fa-phone"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <small>
+                            Contact
+                        </small>
+
+
+                        <strong id="modalVisitPhone">
+                            Not Available
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ASSIGNED AGENT
+                 ================================================= -->
+
+            <div class="site-modal-section">
+
+
+                <div class="site-modal-section-title">
+
+                    <i class="fa-solid fa-user-tie"></i>
+
+
+                    <h4>
+                        Assigned Agent
+                    </h4>
+
+                </div>
+
+
+                <div class="site-modal-agent">
+
+
+                    <div class="site-modal-agent-avatar">
+
+                        <i class="fa-solid fa-user"></i>
+
+                    </div>
+
+
+                    <div>
+
+
+                        <strong id="modalAgentName">
+                            Not Assigned
+                        </strong>
+
+
+                        <a
+                            id="modalAgentPhone"
+                            href="#"
+                            style="display:none;"
+                        >
+
+                            <i class="fa-solid fa-phone"></i>
+
+                            <span></span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 VISIT TYPE
+                 ================================================= -->
+
+            <div
+                class="site-modal-section"
+                id="modalVisitTypeSection"
+                style="display:none;"
+            >
+
+
+                <div class="site-modal-section-title">
+
+                    <i class="fa-solid fa-list-check"></i>
+
+
+                    <h4>
+                        Visit Type
+                    </h4>
+
+                </div>
+
+
+                <p id="modalVisitType"></p>
+
+            </div>
+
+
+            <!-- =================================================
+                 VISIT PURPOSE
+                 ================================================= -->
+
+            <div
+                class="site-modal-section"
+                id="modalVisitPurposeSection"
+                style="display:none;"
+            >
+
+
+                <div class="site-modal-section-title">
+
+                    <i class="fa-solid fa-bullseye"></i>
+
+
+                    <h4>
+                        Visit Purpose
+                    </h4>
+
+                </div>
+
+
+                <p id="modalVisitPurpose"></p>
+
+            </div>
+
+
+            <!-- =================================================
+                 NOTES
+                 ================================================= -->
+
+            <div class="site-modal-section">
+
+
+                <div class="site-modal-section-title">
+
+                    <i class="fa-solid fa-note-sticky"></i>
+
+
+                    <h4>
+                        Notes
+                    </h4>
+
+                </div>
+
+
+                <p id="modalVisitNotes">
+                    No notes available.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 AGENT VISIT IMAGE
+                 ================================================= -->
+
+            <div
+                class="site-modal-section"
+                id="modalVisitImageSection"
+                style="display:none;"
+            >
+
+
+                <div class="site-modal-section-title">
+
+                    <i class="fa-solid fa-camera"></i>
+
+
+                    <h4>
+                        Visit Image
+                    </h4>
+
+                </div>
+
+
+                <div class="site-modal-visit-image">
+
+
+                    <img
+                        id="modalVisitImage"
+                        src=""
+                        alt="Site Visit"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,691 @@
+<div class="container">
+
+    <div class="header">
+        <h2>All Projects Management</h2>
+
+        <a href="{% url 'admin_dashboard' %}" 
+            class="btn btn-back">
+                <i class="fa fa-arrow-left"></i>
+                Back to Dashboard
+        </a>
+    </div>
+
+
+    <!-- ADD PROJECT BUTTON -->
+    <a href="{% url 'add_project' %}"
+       class="btn btn-add nav-link-ajax">
+        <i class="fa fa-plus"></i>
+        Add New Project
+    </a>
+
+
+    <!-- ========================================================= -->
+    <!-- PROJECT TABLE -->
+    <!-- ========================================================= -->
+
+    <table class="project-table">
+
+        <thead>
+            <tr>
+
+                <th>ID</th>
+
+                <th>Project Title</th>
+
+                <th>Location</th>
+
+                <th>Category</th>
+
+                <th>Status</th>
+
+                <th>Possession / Completion</th>
+
+                <th class="actions-heading">
+                    Actions
+                </th>
+
+            </tr>
+        </thead>
+
+
+        <tbody>
+
+            {% for project in projects %}
+
+            <tr>
+
+                <!-- ID -->
+                <td>
+                    #{{ forloop.counter }}
+                </td>
+
+
+                <!-- PROJECT TITLE -->
+                <td>
+                    {{ project.title }}
+                </td>
+
+
+                <!-- LOCATION -->
+                <td>
+                    {{ project.location }}
+                </td>
+
+
+                <!-- CATEGORY -->
+                <td>
+                    {{ project.get_category_display }}
+                </td>
+
+
+                <!-- STATUS -->
+                <td>
+                    {{ project.status_text }}
+                </td>
+
+
+                <!-- POSSESSION -->
+                <td>
+                    {{ project.possession_or_completion }}
+                </td>
+
+
+                <!-- ACTIONS -->
+                <td class="project-actions">
+
+
+                    <!-- ========================= -->
+                    <!-- VIEW BUTTON -->
+                    <!-- ========================= -->
+
+                    <button type="button"
+                            class="btn project-view-btn"
+                            onclick="openProjectModal(
+                                '{{ project.id }}',
+                                '{{ project.title|escapejs }}',
+                                '{{ project.location|escapejs }}',
+                                '{{ project.get_category_display|escapejs }}',
+                                '{{ project.status_text|escapejs }}',
+                                '{{ project.possession_or_completion|escapejs }}',
+                                '{{ project.description|escapejs }}',
+                                '{{ project.amenities|escapejs }}',
+                                '{% if project.image %}{{ project.image.url }}{% endif %}'
+                            )">
+
+                        <i class="fa fa-eye"></i>
+
+                    </button>
+
+
+                    <!-- ========================= -->
+                    <!-- EDIT BUTTON -->
+                    <!-- ========================= -->
+
+                    <a href="{% url 'edit_project' project.pk %}"
+                       class="btn btn-edit nav-link-ajax">
+
+                        <i class="fa fa-pen"></i>
+
+                    </a>
+
+
+                    <!-- ========================= -->
+                    <!-- DELETE BUTTON -->
+                    <!-- ========================= -->
+
+                    <a href="{% url 'delete_project' project.pk %}"
+                       class="btn btn-del"
+                       onclick="return confirm('Kya aap is project ko delete karna chahte hain?');">
+
+                        <i class="fa fa-trash"></i>
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="7"
+                    class="no-projects">
+
+                    No projects found.
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- PROJECT VIEW MODAL -->
+<!-- ========================================================= -->
+
+<div id="projectViewModal"
+     class="project-modal">
+
+
+    <div class="project-modal-content">
+
+
+        <!-- ================================================= -->
+        <!-- MODAL HEADER -->
+        <!-- ================================================= -->
+
+        <div class="project-modal-header">
+
+            <h2 id="modalProjectTitle">
+                Project Details
+            </h2>
+
+            <button type="button"
+                    class="project-modal-close"
+                    onclick="closeProjectModal()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- MODAL BODY -->
+        <!-- ================================================= -->
+
+        <div class="project-modal-body">
+
+
+            <!-- ================================================= -->
+            <!-- PROJECT IMAGE -->
+            <!-- ================================================= -->
+
+            <div class="project-modal-image-box">
+
+                <img id="modalProjectImage"
+                     src=""
+                     alt="Project Image"
+                     style="display:none;">
+
+                <div id="noProjectImage"
+                     class="no-project-image">
+
+                    No Image Available
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- PROJECT DETAILS -->
+            <!-- ================================================= -->
+
+            <div class="project-modal-details">
+
+
+                <!-- PROJECT ID -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Project ID
+                    </span>
+
+                    <span id="modalProjectId"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- PROJECT TITLE -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Project Title
+                    </span>
+
+                    <span id="modalProjectTitleValue"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- LOCATION -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Location
+                    </span>
+
+                    <span id="modalProjectLocation"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- CATEGORY -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Category
+                    </span>
+
+                    <span id="modalProjectCategory"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Status
+                    </span>
+
+                    <span id="modalProjectStatus"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- POSSESSION / COMPLETION -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Possession / Completion
+                    </span>
+
+                    <span id="modalProjectPossession"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- AMENITIES -->
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Amenities
+                    </span>
+
+                    <span id="modalProjectAmenities"
+                          class="detail-value">
+                    </span>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+                <div class="detail-item detail-description">
+
+                    <span class="detail-label">
+                        Description
+                    </span>
+
+                    <p id="modalProjectDescription"
+                       class="detail-value">
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- CSS -->
+<!-- ========================================================= -->
+
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: #f4f7f6;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .header h2 {
+        margin: 0;
+        color: #333;
+    }
+
+    /* =========================
+       COMMON BUTTON
+    ========================= */
+
+    .btn {
+        padding: 8px 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        color: white;
+        display: inline-block;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* =========================
+       BACK TO DASHBOARD
+    ========================= */
+
+    .btn-back-dashboard {
+        background: #6c757d;
+    }
+
+    .btn-back-dashboard:hover {
+        background: #5a6268;
+    }
+
+    .btn-back {
+        background: #6c757d;
+    }
+
+    /* =========================
+       ADD PROJECT
+    ========================= */
+
+    .btn-add {
+        background: #28a745;
+        margin-bottom: 10px;
+    }
+
+    .btn-add:hover {
+        background: #218838;
+    }
+
+    /* =========================
+       TABLE
+    ========================= */
+
+    .project-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .project-table th,
+    .project-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .project-table th {
+        background: #343a40;
+        color: white;
+    }
+
+    /* =========================
+       ACTIONS
+    ========================= */
+
+    .project-actions {
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    .project-view-btn {
+        background: #17a2b8;
+        padding: 5px 10px;
+        color: white;
+        border-radius: 3px;
+        font-size: 12px;
+        border: none;
+        cursor: pointer;
+        margin-right: 4px;
+    }
+
+    .project-view-btn:hover {
+        background: #138496;
+    }
+
+    .btn-edit {
+        background: #ffc107;
+        padding: 5px 10px;
+        color: black;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-right: 4px;
+    }
+
+    .btn-edit:hover {
+        background: #e0a800;
+    }
+
+    .btn-del {
+        background: #dc3545;
+        padding: 5px 10px;
+        color: white;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+
+    .btn-del:hover {
+        background: #c82333;
+    }
+
+    /* =========================
+       NO PROJECTS
+    ========================= */
+
+    .no-projects {
+        text-align: center !important;
+        color: #777;
+    }
+
+    /* =========================
+       PROJECT MODAL
+    ========================= */
+
+    .project-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .project-modal-content {
+        background: white;
+        width: 500px;
+        max-width: 90%;
+        border-radius: 8px;
+        padding: 20px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    /* =========================
+       MODAL HEADER
+    ========================= */
+
+    .project-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+
+    .project-modal-header h2 {
+        margin: 0 0 15px 0;
+        font-size: 20px;
+        color: #333;
+    }
+
+    .project-modal-close {
+        border: none;
+        background: none;
+        font-size: 25px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .project-modal-close:hover {
+        color: #dc3545;
+    }
+
+    /* =========================
+       MODAL BODY
+    ========================= */
+
+    .project-modal-body {
+        display: block;
+    }
+
+    /* =========================
+       PROJECT IMAGE
+    ========================= */
+
+    .project-modal-image-box {
+        width: 100%;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .project-modal-image-box img {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+    }
+
+    .no-project-image {
+        width: 100%;
+        height: 200px;
+        background: #f1f3f5;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #999;
+        font-size: 14px;
+    }
+
+    /* =========================
+       PROJECT DETAILS
+    ========================= */
+
+    .project-modal-details {
+        display: block;
+    }
+
+    .detail-item {
+        margin: 10px 0;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #333;
+        margin-right: 5px;
+    }
+
+    .detail-value {
+        color: #555;
+        line-height: 1.5;
+    }
+
+    /* =========================
+       DESCRIPTION
+    ========================= */
+
+    .detail-description {
+        border-top: 1px solid #ddd;
+        margin-top: 15px;
+        padding-top: 15px;
+    }
+
+    .detail-description .detail-label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .detail-description p {
+        margin: 0;
+        color: #555;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+        .container {
+            padding: 15px;
+            overflow-x: auto;
+        }
+
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .project-table {
+            min-width: 900px;
+        }
+
+        .project-modal-content {
+            width: 500px;
+            max-width: 90%;
+        }
+
+    }
+</style>

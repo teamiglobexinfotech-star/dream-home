@@ -1,0 +1,90 @@
+<div class="space-y-6">
+    <!-- Header & Add Form Trigger / Section -->
+    <div class="card" style="padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">Admin Commission Management</h3>
+        </div>
+
+        <!-- Add Commission Form -->
+        <form id="adminCommissionForm" method="POST" action="{% url 'admin_commission_management' %}" style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #e5e7eb;">
+            {% csrf_token %}
+            <h4 style="margin-top: 0; margin-bottom: 12px; font-size: 15px; font-weight: 600; color: #374151;">Assign New Commission</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Select Agent</label>
+                    <select name="agent" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                        <option value="">Choose Agent</option>
+                        {% for agent in agents %}
+                            <option value="{{ agent.id }}">{{ agent.get_full_name|default:agent.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Deal / Property Title</label>
+                    <input type="text" name="deal_title" placeholder="e.g. Villa Plot Deal" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Amount (₹)</label>
+                    <input type="number" step="0.01" name="amount" placeholder="e.g. 15000" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 4px;">Initial Status</label>
+                    <select name="status" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                        <option value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 12px; text-align: right;">
+                <button type="submit" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 14px;">Save Commission</button>
+            </div>
+        </form>
+
+        <!-- Commissions Table -->
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="table" style="width: 100%; border-collapse: collapse; font-size: 14px; color: #374151;">
+                <thead>
+                    <tr style="background: #1f2937; color: #ffffff; text-align: left;">
+                        <th style="padding: 12px 16px; font-weight: 600;">#</th>
+                        <th style="padding: 12px 16px; font-weight: 600;">Agent Name</th>
+                        <th style="padding: 12px 16px; font-weight: 600;">Deal / Property</th>
+                        <th style="padding: 12px 16px; font-weight: 600;">Amount</th>
+                        <th style="padding: 12px 16px; font-weight: 600;">Status</th>
+                        <th style="padding: 12px 16px; font-weight: 600; text-align: center;">Actions / Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comm in commissions %}
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 12px 16px;">{{ forloop.counter }}</td>
+                        <td style="padding: 12px 16px; font-weight: 500; color: #111827;">{{ comm.agent.get_full_name|default:comm.agent.email }}</td>
+                        <td style="padding: 12px 16px;">{{ comm.deal_title }}</td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #059669;">₹ {{ comm.amount }}</td>
+                        <td style="padding: 12px 16px;">
+                            {% if comm.status == 'Paid' %}
+                                <span style="background: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Paid</span>
+                            {% else %}
+                                <span style="background: #fff3cd; color: #664d03; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 12px 16px; text-align: center;">
+                            <form class="updateCommissionForm" action="{% url 'update_commission_status' comm.id %}" method="POST" style="display: inline-flex; gap: 6px; align-items: center;">
+                                {% csrf_token %}
+                                <select name="status" style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;">
+                                    <option value="Pending" {% if comm.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Paid" {% if comm.status == 'Paid' %}selected{% endif %}>Paid</option>
+                                </select>
+                                <button type="submit" style="background: #10b981; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 32px; color: #6b7280; font-style: italic;">No commission records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

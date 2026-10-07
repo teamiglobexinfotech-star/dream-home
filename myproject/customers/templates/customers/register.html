@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration - Hume Properties</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    
+</head>
+<body>
+
+    {% include 'website/header.html' %}
+
+    <!-- 1. Sirf Banner Section par Background Image -->
+    <section class="reg-hero-banner" style="background: linear-gradient(rgba(11, 19, 41, 0.85), rgba(11, 19, 41, 0.85)), url('{% static "images/properties/banner.png" %}') no-repeat center center/cover;">
+        <div class="reg-hero-header-content">
+            <h1>Create Your Account</h1>
+            <p>Join Hume Properties and explore thousands of verified properties across India.</p>
+        </div>
+    </section>
+
+    <!-- 2. Form Section (Banner ke bahar white background par) -->
+    <section class="reg-form-section">
+        <div class="reg-main-wrapper">
+            <div class="reg-center-card">
+                <h3>Customer Registration</h3>
+                <p class="reg-card-sub">Fill in the details below to create your account</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="reg-alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" data-login-url="{% url 'login' %}" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="reg-form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="full_name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="reg-form-group">
+                        <label>Mobile Number *</label>
+                        <input type="text" name="mobile_number" placeholder="Enter your mobile number" required>
+                    </div>
+
+                    <div class="reg-form-group">
+                        <label>Email Address *</label>
+                        <input type="email" name="email" placeholder="Enter your email address" required>
+                    </div>
+
+                    <div class="reg-form-group">
+                        <label>Password *</label>
+                        <input type="password" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="reg-form-group">
+                        <label>Confirm Password *</label>
+                        <input type="password" name="confirm_password" placeholder="Confirm your password" required>
+                    </div>
+
+                    <div class="reg-terms-group">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
+
+                    <button type="submit" class="reg-submit-btn">Create Account</button>
+                </form>
+
+                <div class="reg-divider">OR</div>
+
+                <button type="button" class="reg-google-btn">
+                    <span style="color: #ea4335; font-weight: bold; margin-right: 8px;">G</span> Register with Google
+                </button>
+
+                <p class="reg-login-redirect">
+                    Already have an account? <a href="{% url 'login' %}">Login</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <script src="{% static 'website/script.js' %}"></script>
+    {% include 'website/footer.html' %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+<div class="card" style="padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #e5e7eb;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f3f4f6;">
+        <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">My Commission Earnings</h3>
+        <span style="font-size: 13px; color: #4b5563; background: #f3f4f6; padding: 4px 10px; border-radius: 6px; font-weight: 500;">Total Records: {{ commissions.count }}</span>
+    </div>
+    
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="width: 100%; border-collapse: collapse; font-size: 14px; color: #374151;">
+            <thead>
+                <tr style="background: #1f2937; color: #ffffff; text-align: left;">
+                    <th style="padding: 12px 16px; font-weight: 600; border-top-left-radius: 8px;">#</th>
+                    <th style="padding: 12px 16px; font-weight: 600;">Deal / Property</th>
+                    <th style="padding: 12px 16px; font-weight: 600;">Amount</th>
+                    <th style="padding: 12px 16px; font-weight: 600;">Status</th>
+                    <th style="padding: 12px 16px; font-weight: 600; text-align: center; border-top-right-radius: 8px;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comm in commissions %}
+                <tr style="border-bottom: 1px solid #f3f4f6;">
+                    <td style="padding: 12px 16px;">{{ forloop.counter }}</td>
+                    <td style="padding: 12px 16px; font-weight: 500; color: #111827;">{{ comm.deal_title }}</td>
+                    <td style="padding: 12px 16px; font-weight: 600; color: #059669;">₹ {{ comm.amount }}</td>
+                    <td style="padding: 12px 16px;">
+                        {% if comm.status == 'Paid' %}
+                            <span style="background: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Paid</span>
+                        {% else %}
+                            <span style="background: #fff3cd; color: #664d03; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px 16px; text-align: center; color: #6b7280; font-size: 13px;">{{ comm.created_at|date:"d M Y, H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 32px; color: #6b7280; font-style: italic;">No commission records found yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

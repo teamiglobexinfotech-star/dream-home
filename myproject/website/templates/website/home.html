@@ -1,0 +1,732 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DreamHome - Real Estate Portal</title>
+    <!-- External CSS Only -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <!--External JS ONLY-->
+    <script src="{% static 'website/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+<body>
+
+    {% include 'website/header.html' %}
+  
+   <!-- 2. Hero Carousel / Banner Section -->
+<section class="hero-carousel">
+    <div class="hero-content">
+        <h1>Find Your Dream Property Today</h1>
+        <p>Buy, Sell or Rent the best properties with trusted real estate experts.</p>
+        <div class="hero-buttons">
+            <!-- Explore Properties: Redirects to Properties Page -->
+            <a href="{% url 'properties' %}" class="btn-explore">
+                Explore Properties
+            </a>
+            
+            <!-- Contact Agent: Directs to Agents section or Agents Page -->
+            <a href="#agents" class="btn-contact">
+                Contact Agent
+            </a>
+        </div>
+    </div>
+</section>
+
+    <!-- 3. Search Filter Bar -->
+<div class="search-container">
+    <form action="{% url 'home' %}" method="GET" class="search-box">
+        
+        <!-- 1. Buy / Rent / Sale Dropdown -->
+        <div class="search-field">
+            <label>Purpose</label>
+            <select name="status">
+                <option value="">All Purpose</option>
+                <option value="Buy" {% if selected_status == 'Buy' %}selected{% endif %}>Buy</option>
+                <option value="Rent" {% if selected_status == 'Rent' %}selected{% endif %}>Rent</option>
+                <option value="Sale" {% if selected_status == 'Sale' %}selected{% endif %}>Sale</option>
+            </select>
+        </div>
+
+        <!-- 2. Location Input -->
+        <div class="search-field">
+            <label>Location</label>
+            <input type="text" name="location" value="{{ selected_location|default:'' }}" placeholder="Enter City or Location">
+        </div>
+
+        <!-- 3. Property Type Dropdown -->
+        <div class="search-field">
+            <label>Property Type</label>
+            <select name="category">
+                <option value="">All Type</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- 4. Search Button -->
+        <div>
+            <button type="submit" class="search-btn">Search Property</button>
+        </div>
+
+    </form>
+</div>    
+
+    
+    <!--Featured Properties-->
+    <section class="properties-section">
+    <div class="properties-header">
+        <h2>Featured Properties</h2>
+        <a href="{% url 'properties' %}" class="view-all-link">View All →</a>
+    </div>
+    
+    <div class="properties-grid">
+       {% for prop in featured_properties %}
+<div class="property-card" 
+     data-title="{{ prop.title }}"
+     data-location="{{ prop.location }}, {{ prop.city }}"
+     data-price="{{ prop.formatted_price }}"
+     data-beds="{{ prop.bedrooms }}"
+     data-baths="{{ prop.bathrooms }}"
+     data-area="{{ prop.area }}"
+     data-main="{{ prop.image.url }}"
+     data-gallery='[{% for img in prop.images.all %}"{{ img.image.url }}"{% if not forloop.last %},{% endif %}{% endfor %}]'>
+     
+    <div class="property-img-container">
+        {% if prop.image %}
+            <img src="{{ prop.image.url }}" alt="{{ prop.title }}" style="width:100%; height:100%; object-fit:cover;">
+        {% endif %}
+        <span class="property-status-badge">{{ prop.get_status_display }}</span>
+    </div>
+
+    <div class="property-details">
+        {% if prop.category %}
+    <div style="margin-bottom: 6px;">
+        <span style="background-color: #e2e8f0; color: #334155; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; display: inline-block; text-transform: uppercase;">
+            <i class="fa-solid fa-tag"></i> {{ prop.category.name }}
+        </span>
+    </div>
+    {% endif %}
+        <h3 class="property-title">{{ prop.title }}</h3>
+        <p class="property-location"><i class="fa-solid fa-location-dot"></i> {{ prop.location }}, {{ prop.city }}</p>
+        <div class="popup-price-box">
+            <span class="property-price">₹ {{ prop.formatted_price }}</span>
+        </div>
+        <div class="property-specs">
+            <span><i class="fa-solid fa-bed"></i> {{ prop.bedrooms }} Beds</span>
+            <span><i class="fa-solid fa-bath"></i> {{ prop.bathrooms }} Baths</span>
+            <span><i class="fa-solid fa-ruler-combined"></i> {{ prop.area }} Sq.Ft.</span>
+        </div>
+    </div>
+</div>
+{% endfor %}
+    </div>
+</section>
+
+<!-- ===========================
+      PROPERTY CATEGORIES
+=========================== -->
+
+<section class="property-category-section">
+
+    <div class="property-category-container">
+
+        <div class="property-category-header">
+
+            <h2>Property Categories</h2>
+
+            <!-- Dynamic Link to Properties Page -->
+            <a href="{% url 'properties' %}" class="category-view-all">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+        <div class="property-category-grid">
+
+            <!-- Dynamic Django Loop -->
+            {% for cat in categories %}
+                <a href="{% url 'properties' %}?category={{ cat.id }}" class="property-category-card" style="text-decoration: none; color: inherit;">
+
+                    <div class="property-category-icon {{ cat.name|slugify }}">
+                        
+                        <!-- Auto Icon Selection according to Category Name -->
+                        {% if 'residential' in cat.name|lower or 'house' in cat.name|lower %}
+                            <i class="fas fa-home"></i>
+                        {% elif 'commercial' in cat.name|lower %}
+                            <i class="fas fa-building"></i>
+                        {% elif 'villa' in cat.name|lower %}
+                            <i class="fas fa-house-user"></i>
+                        {% elif 'apartment' in cat.name|lower or 'flat' in cat.name|lower %}
+                            <i class="fas fa-city"></i>
+                        {% elif 'plot' in cat.name|lower or 'land' in cat.name|lower %}
+                            <i class="fas fa-map-marker-alt"></i>
+                        {% elif 'office' in cat.name|lower %}
+                            <i class="fas fa-chair"></i>
+                        {% else %}
+                            <i class="fas fa-building"></i>
+                        {% endif %}
+
+                    </div>
+
+                    <h4>{{ cat.name }}</h4>
+
+                </a>
+            {% empty %}
+                <p>No categories available.</p>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==========================================
+        FEATURED PROJECTS START
+=========================================== -->
+
+<section class="featured-projects">
+
+    <div class="container">
+
+        <!-- Heading -->
+        <div class="section-header">
+
+            <h2>Featured Projects</h2>
+
+            <a href="{% url 'projects' %}">
+                View All <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="project-grid">
+            <div class="project-track">
+
+            {% for project in projects %}
+
+            <div class="project-card">
+
+                <div class="project-image">
+                    <img src="{{ project.image.url }}"
+                         alt="{{ project.title }}">
+                    <span class="property-status-badge">{{ project.status_text }}</span>
+                </div>
+
+                <div class="project-content">
+                    <h3>{{ project.title }}</h3>
+
+                    <p class="location">
+                        <i class="fa-solid fa-location-dot"></i>
+                        {{ project.location }}
+                    </p>
+
+                    <ul>
+                        <li>
+                            <i class="fa-solid fa-building"></i>
+                            {{ project.description|truncatewords:8 }}
+                        </li>
+
+                        <li>
+                            <i class="fa-solid fa-square-check"></i>
+                            {{ project.amenities }}
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <p>No projects available at the moment.</p>
+
+            {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ========================================== -->
+<!-- MEET OUR AGENTS START (Compact / Small) -->
+<!-- ========================================== -->
+
+<!-- Meet Our Agents Section Start -->
+<section id="agents" class="our-agents-section">
+
+    <div class="agent-container">
+
+        <!-- Section Heading -->
+        <div class="agent-heading-wrapper">
+            <h2 class="section-title">Meet Our Agents</h2>
+            <div class="title-underline"></div>
+        </div>
+
+        <!-- Agents Grid Cards -->
+        <div class="agent-grid">
+
+            {% for agent in agents %}
+
+            <div class="agent-card">
+
+                <div class="agent-img-box"
+                     style="background-image: url('{{ agent.image.url }}');">
+                </div>
+
+                <div class="agent-info">
+
+                    <h3>{{ agent.name }}</h3>
+
+                    <p class="agent-role">
+                        {{ agent.role }}
+                    </p>
+
+                    <div class="agent-socials">
+
+                        <a href="tel:{{ agent.phone }}" title="Call">
+                            <i class="fa-solid fa-phone"></i>
+                        </a>
+
+                        <a href="mailto:{{ agent.email }}" title="Email">
+                            <i class="fa-solid fa-envelope"></i>
+                        </a>
+
+                        <a href="https://wa.me/{{ agent.phone }}"
+                           target="_blank"
+                           title="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <p>No agents available at the moment.</p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Meet Our Agents Section End -->
+
+<!-- ========================================== -->
+<!-- WHAT OUR CUSTOMERS SAY START (Multiple Slides) -->
+<!-- ========================================== -->
+<section class="testimonial-section">
+    <div class="container">
+        
+        <!-- Section Heading -->
+        <div class="section-header">
+            <h2>What Our Customers Say</h2>
+        </div>
+
+        <div class="testimonial-box">
+            <button class="testimonial-arrow prev">❮</button>
+            
+            <div class="testimonial-slider-container">
+                
+                <!-- Slide 1 -->
+                <div class="testimonial-slide active">
+                    <div class="quote-icon">❝</div>
+                    <p class="review-text">
+                        Excellent service and great support from the team. Found my dream home without any hassle. Highly recommended!
+                    </p>
+                    <div class="customer-info">
+                        <img src="{% static 'images/properties/boy.png' %}" alt="Customer">
+                        <h4>Ramesh Kumar</h4>
+                        <div class="rating-stars">★★★★★</div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="testimonial-slide">
+                    <div class="quote-icon">❝</div>
+                    <p class="review-text">
+                        Very professional agents! They understood my requirements quickly and showed me properties within my budget.
+                    </p>
+                    <div class="customer-info">
+                        <img src="{% static 'images/properties/girl.png' %}" alt="Customer">
+                        <h4>Sunita Sharma</h4>
+                        <div class="rating-stars">★★★★★</div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="testimonial-slide">
+                    <div class="quote-icon">❝</div>
+                    <p class="review-text">
+                        Transparent paperwork and smooth loan assistance. DreamHome made buying my first property completely stress-free.
+                    </p>
+                    <div class="customer-info">
+                        <img src="{% static 'images/properties/boys.png' %}" alt="Customer">
+                        <h4>Vikram Malhotra</h4>
+                        <div class="rating-stars">★★★★★</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="testimonial-arrow next">❯</button>
+        </div>
+
+        <!-- Dots Indicator -->
+        <div class="testimonial-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+    </div>
+</section>
+
+<!-- ==========================
+      LATEST BLOGS START
+=========================== -->
+
+<section class="latest-blog-section">
+
+    <div class="latest-blog-container">
+
+        <div class="section-title">
+            <h2>Latest Blogs</h2>
+            <a href="{% url 'blogs' %}">
+                View All <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="blog-grid">
+
+            {% for blog in blogs %}
+
+            <div class="blog-card">
+
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+
+                <div class="blog-content">
+
+                    <h3>{{ blog.title }}</h3>
+
+                    <span>
+                        <i class="fa-regular fa-calendar"></i>
+                        {{ blog.created_at|date:"F d, Y" }}
+                    </span>
+
+                    <a href="#">
+                        Read More
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <p>No blogs available at the moment.</p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =====================
+OUR PARTNERS START
+====================== -->
+
+<section class="partner-section">
+
+    <div class="partner-container">
+
+        <div class="section-title">
+
+            <h2>Our Partners</h2>
+
+        </div>
+
+        <div class="partner-grid">
+
+            <div class="partner-card">
+                <img src="{% static 'images/properties/godrej.png' %}" alt="">
+            </div>
+
+            <div class="partner-card">
+                <img src="{% static 'images/properties/dlf.png' %}" alt="">
+            </div>
+
+            <div class="partner-card">
+                <img src="{% static 'images/properties/emaar2.png' %}" alt="">
+            </div>
+
+            <div class="partner-card">
+                <img src="{% static 'images/properties/lodha1.png' %}" alt="">
+            </div>
+
+            <div class="partner-card">
+                <img src="{% static 'images/properties/tata.png' %}" alt="">
+            </div>
+
+            <div class="partner-card">
+                <img src="{% static 'images/properties/prestige.png' %}" alt="">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+        CALL TO ACTION START
+=================================== -->
+
+<section class="cta-section">
+
+    <div class="cta-container">
+
+        <div class="cta-left">
+
+            <div class="cta-icon">
+                <i class="fa-solid fa-house"></i>
+            </div>
+
+            <div class="cta-text">
+                <h2>Ready to Buy or Sell Your Property?</h2>
+                <p>
+                    Contact our experts today and get the best property deals
+                    with trusted guidance.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="cta-buttons">
+
+            <a href="{% url 'contact' %}" class="contact-btn">
+                Contact Us
+            </a>
+
+            <a href="#" class="btn-schedule-visit">
+                Schedule a Visit
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= 1. LET'S TALK / ENQUIRY SECTION ================= -->
+
+<section class="contact-section" id="contact">
+    <div class="contact-title-area">
+        <span class="pill-tag">CONTACT US</span>
+        <h2>Let's <span>Talk</span></h2>
+        <p>Have a query or want to learn more about our properties? We're just a message away.</p>
+    </div>
+
+    <div class="contact-container">
+        <!-- Left Side: Information Cards -->
+        <div class="contact-info-cards">
+            <div class="info-card">
+                <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+                <div class="info-details">
+                    <h4>Email Us</h4>
+                    <p>info@dreamhome.com</p>
+                    
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                <div class="info-details">
+                    <h4>Call Us</h4>
+                    <p>+91 9876543210</p>
+                    <p class="sub-text">Mon – Sat, 9:00 AM – 7:00 PM</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="info-details">
+                    <h4>Visit Us</h4>
+                    <p>Gomti Nagar, Lucknow</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="info-details">
+                    <h4>WhatsApp</h4>
+                    <p>+91 9876543210</p>
+                    <p class="sub-text">Quick responses for urgent queries</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Contact / Enquiry Form -->
+        <div class="contact-form-box">
+            <!-- YAHAN 'id="enquiryForm"' ADD KAR DIYA GAYA HAI -->
+            <form id="enquiryForm" action="{% url 'submit_enquiry' %}" method="POST" class="page-enquiry-form">
+                {% csrf_token %}
+
+                <div class="form-group full-width">
+                    <label>Full Name *</label>
+                    <input type="text" name="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" name="phone" placeholder="Enter phone number" required pattern="[0-9]{10}">
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Service / Requirement *</label>
+                    <select name="property_type" required>
+                        <option value="" disabled selected>Select a Service</option>
+                        <option value="Buy Apartment">Buy Residential Apartment / House</option>
+                        <option value="Commercial Space">Commercial Shop / Office</option>
+                        <option value="Plots">Buy Plot / Land</option>
+                        <option value="Rent Property">Rent Property</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Write your Message *</label>
+                    <textarea name="message" rows="4" placeholder="Type your query here..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-send-message">
+                    <span><i class="fa-solid fa-paper-plane"></i> Send Message</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FAQ SECTION ================= -->
+
+<section class="faq-section" id="faq-section">
+    <div class="faq-header-banner">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about our services and solutions</p>
+    </div>
+
+    <div class="faq-container">
+        
+        <!-- Item 1 -->
+        <div class="faq-item">
+            <input type="checkbox" id="faq-1" class="faq-toggle">
+            <label for="faq-1" class="faq-question">
+                <span>Where is your company located?</span>
+                <span class="faq-icon">+</span>
+            </label>
+            <div class="faq-answer">
+                <p>We are located at GLOBEX INFOTECH PVT LTD Near Mera Maan Guest House, Sultanpur Road, Malik Mau, Raebareli, UP – 229001.</p>
+            </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="faq-item">
+            <input type="checkbox" id="faq-2" class="faq-toggle">
+            <label for="faq-2" class="faq-question">
+                <span>How much does a property inquiry or consultation cost?</span>
+                <span class="faq-icon">+</span>
+            </label>
+            <div class="faq-answer">
+                <p>Our initial consultation and property inquiry services are completely free of cost.</p>
+            </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="faq-item">
+            <input type="checkbox" id="faq-3" class="faq-toggle">
+            <label for="faq-3" class="faq-question">
+                <span>Do you provide assistance with home loans and documentation?</span>
+                <span class="faq-icon">+</span>
+            </label>
+            <div class="faq-answer">
+                <p>Yes, we offer complete support for property registration, verification, and home loan processing.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    {% include 'website/footer.html' %}
+<!-- Property Details Popup Modal -->
+
+<div class="property-popup-overlay" id="propertyPopupModal">
+    <div class="property-popup-content">
+        <span class="popup-close-btn" id="closePopupBtn">&times;</span>
+        
+        <div class="popup-modal-grid">
+            <!-- Left Side: Image Slider -->
+            <div class="popup-modal-slider">
+                <div class="popup-modal-track" id="modalSliderTrack">
+                    <!-- JS will load slides here -->
+                </div>
+                <button class="modal-nav-btn modal-prev" id="modalPrevBtn">&#10094;</button>
+                <button class="modal-nav-btn modal-next" id="modalNextBtn">&#10095;</button>
+            </div>
+
+            <!-- Right Side: Details -->
+            <div class="popup-modal-details">
+                <h2 id="modalTitle">Property Title</h2>
+                <p id="modalLocation" class="popup-modal-loc">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Location</span>
+                </p>
+                
+                <div class="popup-modal-price-box">
+                    <span id="modalPrice">₹ 0</span>
+                </div>
+
+                <div class="popup-modal-specs">
+                    <span id="modalBeds"><i class="fa-solid fa-bed"></i> 0 Beds</span>
+                    <span id="modalBaths"><i class="fa-solid fa-bath"></i> 0 Baths</span>
+                    <span id="modalArea"><i class="fa-solid fa-ruler-combined"></i> 0 Sq.Ft.</span>
+                </div>
+                
+                <p id="modalDesc" class="popup-modal-desc">Detailed description goes here...</p>
+
+                <a href="tel:+918736917988" id="projectRequestCallBtn" class="project-request-call-btn">
+                    <i class="fa-solid fa-phone"></i> Request a Call
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

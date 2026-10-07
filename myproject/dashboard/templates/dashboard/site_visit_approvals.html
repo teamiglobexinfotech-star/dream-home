@@ -1,0 +1,1836 @@
+<!-- ========================================================= -->
+<!-- SITE VISIT SUMMARY CARDS -->
+<!-- ========================================================= -->
+
+<style>
+    .visit-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .visit-summary-card {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        min-width: 0;
+    }
+
+    .visit-summary-card-inner {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        min-height: 145px;
+        height: 100%;
+        box-sizing: border-box;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .visit-summary-card-inner:hover {
+        transform: translateY(-3px);
+    }
+
+    .visit-detail-section {
+        display: none;
+        padding: 24px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow:
+            0 4px 6px -1px rgba(0,0,0,0.05),
+            0 2px 4px -1px rgba(0,0,0,0.03);
+        margin-bottom: 24px;
+        border: 1px solid #e5e7eb;
+    }
+
+    @media (max-width: 1200px) {
+        .visit-summary-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 700px) {
+        .visit-summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 450px) {
+        .visit-summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="visit-summary-grid">
+
+    <!-- ===================================================== -->
+    <!-- TOTAL VISITS -->
+    <!-- ===================================================== -->
+
+    <a href="#total-visits"
+       class="visit-summary-card">
+
+        <div class="visit-summary-card-inner">
+
+            <div style="
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+                background: #eff6ff;
+                color: #2563eb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+                font-size: 18px;
+            ">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+
+            <div style="
+                font-size: 28px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 7px;
+            ">
+                {{ total_visits }}
+            </div>
+
+            <div style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                Total Visits
+            </div>
+
+        </div>
+    </a>
+
+
+    <!-- ===================================================== -->
+    <!-- COMPLETED VISITS -->
+    <!-- ===================================================== -->
+
+    <a href="#completed-visits"
+       class="visit-summary-card">
+
+        <div class="visit-summary-card-inner">
+
+            <div style="
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+                background: #ecfdf5;
+                color: #059669;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+                font-size: 18px;
+            ">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div style="
+                font-size: 28px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 7px;
+            ">
+                {{ completed_visits }}
+            </div>
+
+            <div style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                Completed Visits
+            </div>
+
+        </div>
+    </a>
+
+
+    <!-- ===================================================== -->
+    <!-- PENDING VISITS -->
+    <!-- ===================================================== -->
+
+    <a href="#pending-visits"
+       class="visit-summary-card">
+
+        <div class="visit-summary-card-inner">
+
+            <div style="
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+                background: #fff7ed;
+                color: #ea580c;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+                font-size: 18px;
+            ">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <div style="
+                font-size: 28px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 7px;
+            ">
+                {{ pending_visits }}
+            </div>
+
+            <div style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                Pending Visits
+            </div>
+
+        </div>
+    </a>
+
+
+    <!-- ===================================================== -->
+    <!-- UPCOMING VISITS -->
+    <!-- ===================================================== -->
+
+    <a href="#upcoming-visits"
+       class="visit-summary-card">
+
+        <div class="visit-summary-card-inner">
+
+            <div style="
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+                background: #f5f3ff;
+                color: #7c3aed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+                font-size: 18px;
+            ">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+
+            <div style="
+                font-size: 28px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 7px;
+            ">
+                {{ upcoming_visits }}
+            </div>
+
+            <div style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                Upcoming Visits
+            </div>
+
+        </div>
+    </a>
+
+
+    <!-- ===================================================== -->
+    <!-- APPROVED VISITS -->
+    <!-- ===================================================== -->
+
+    <a href="#approved-visits"
+       class="visit-summary-card">
+
+        <div class="visit-summary-card-inner">
+
+            <div style="
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+                background: #ecfdf5;
+                color: #059669;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+                font-size: 18px;
+            ">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+
+            <div style="
+                font-size: 28px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 7px;
+            ">
+                {{ approved_visits }}
+            </div>
+
+            <div style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                Approved Visits
+            </div>
+
+        </div>
+    </a>
+
+
+    <!-- ===================================================== -->
+    <!-- REJECTED VISITS -->
+    <!-- ===================================================== -->
+
+    <a href="#rejected-visits"
+       class="visit-summary-card">
+
+        <div class="visit-summary-card-inner">
+
+            <div style="
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+                background: #fef2f2;
+                color: #dc2626;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+                font-size: 18px;
+            ">
+                <i class="fa-solid fa-user-xmark"></i>
+            </div>
+
+            <div style="
+                font-size: 28px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 7px;
+            ">
+                {{ rejected_visits }}
+            </div>
+
+            <div style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                Rejected Visits
+            </div>
+
+        </div>
+    </a>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- TOTAL VISITS SECTION -->
+<!-- ========================================================= -->
+
+<div id="total-visits"
+     class="visit-detail-section">
+
+    <div style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f3f4f6;
+    ">
+
+        <div>
+            <h3 style="
+                margin: 0;
+                font-size: 18px;
+                font-weight: 600;
+                color: #1f2937;
+            ">
+                Total Site Visits
+            </h3>
+
+            <p style="
+                margin: 5px 0 0;
+                font-size: 13px;
+                color: #6b7280;
+            ">
+                All scheduled site visits
+            </p>
+        </div>
+
+        <button type="button"
+                onclick="closeVisitSection('total-visits')"
+                style="
+                    border: none;
+                    background: #f3f4f6;
+                    color: #4b5563;
+                    padding: 7px 12px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 500;
+                ">
+            Close
+        </button>
+
+    </div>
+
+
+    <div style="overflow-x: auto;">
+
+        <table style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            color: #374151;
+        ">
+
+            <thead>
+                <tr style="
+                    background: #f9fafb;
+                    text-align: left;
+                ">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Property
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Visit Date
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for visit in total_visit_list %}
+
+                <tr style="border-bottom:1px solid #f3f4f6;">
+
+                    <td style="padding:12px 16px;">
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {{ visit.name|default:"-" }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {{ visit.property.title|default:"-" }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {% if visit.visit_date %}
+                            {{ visit.visit_date|date:"d M Y, h:i A" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+
+                        {% if visit.agent %}
+                            {{ visit.agent.full_name|default:visit.agent.email }}
+                        {% else %}
+                            <span style="color:#9ca3af;">
+                                Not Assigned
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+                    <td style="padding:12px 16px;">
+
+                        {% if visit.status == 'Completed' %}
+
+                            <span style="
+                                background:#d1e7dd;
+                                color:#0f5132;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Completed
+                            </span>
+
+                        {% elif visit.status == 'Cancelled' %}
+
+                            <span style="
+                                background:#f8d7da;
+                                color:#842029;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Cancelled
+                            </span>
+
+                        {% else %}
+
+                            <span style="
+                                background:#fff7ed;
+                                color:#c2410c;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Pending
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6"
+                        style="
+                            text-align:center;
+                            padding:32px;
+                            color:#6b7280;
+                            font-style:italic;
+                        ">
+                        No site visits found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- COMPLETED VISITS SECTION -->
+<!-- ========================================================= -->
+
+<div id="completed-visits"
+     class="visit-detail-section">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:16px;
+        padding-bottom:12px;
+        border-bottom:1px solid #f3f4f6;
+    ">
+
+        <div>
+
+            <h3 style="
+                margin:0;
+                font-size:18px;
+                font-weight:600;
+                color:#1f2937;
+            ">
+                Completed Visits
+            </h3>
+
+            <p style="
+                margin:5px 0 0;
+                font-size:13px;
+                color:#6b7280;
+            ">
+                All completed site visits
+            </p>
+
+        </div>
+
+        <button type="button"
+                onclick="closeVisitSection('completed-visits')"
+                style="
+                    border:none;
+                    background:#f3f4f6;
+                    color:#4b5563;
+                    padding:7px 12px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-size:13px;
+                    font-weight:500;
+                ">
+            Close
+        </button>
+
+    </div>
+
+
+    <div style="overflow-x:auto;">
+
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+            color:#374151;
+        ">
+
+            <thead>
+
+                <tr style="
+                    background:#f9fafb;
+                    text-align:left;
+                ">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Property
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Visit Date
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for visit in total_visit_list %}
+
+                    {% if visit.status == 'Completed' %}
+
+                    <tr style="border-bottom:1px solid #f3f4f6;">
+
+                        <td style="padding:12px 16px;">
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.name|default:"-" }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.property.title|default:"-" }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.visit_date|date:"d M Y, h:i A" }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+
+                            {% if visit.agent %}
+                                {{ visit.agent.full_name|default:visit.agent.email }}
+                            {% else %}
+                                <span style="color:#9ca3af;">
+                                    Not Assigned
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                        <td style="padding:12px 16px;">
+
+                            <span style="
+                                background:#d1e7dd;
+                                color:#0f5132;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Completed
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endif %}
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6"
+                        style="
+                            text-align:center;
+                            padding:32px;
+                            color:#6b7280;
+                        ">
+                        No completed visits found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- PENDING VISITS SECTION -->
+<!-- ========================================================= -->
+
+<div id="pending-visits"
+     class="visit-detail-section">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:16px;
+        padding-bottom:12px;
+        border-bottom:1px solid #f3f4f6;
+    ">
+
+        <div>
+
+            <h3 style="
+                margin:0;
+                font-size:18px;
+                font-weight:600;
+                color:#1f2937;
+            ">
+                Pending Visits
+            </h3>
+
+            <p style="
+                margin:5px 0 0;
+                font-size:13px;
+                color:#6b7280;
+            ">
+                Visits that are pending completion
+            </p>
+
+        </div>
+
+        <button type="button"
+                onclick="closeVisitSection('pending-visits')"
+                style="
+                    border:none;
+                    background:#f3f4f6;
+                    color:#4b5563;
+                    padding:7px 12px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-size:13px;
+                    font-weight:500;
+                ">
+            Close
+        </button>
+
+    </div>
+
+
+    <div style="overflow-x:auto;">
+
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+            color:#374151;
+        ">
+
+            <thead>
+
+                <tr style="background:#f9fafb;text-align:left;">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Property
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Visit Date
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for visit in total_visit_list %}
+
+                    {% if visit.visit_date and visit.status != 'Completed' and visit.status != 'Cancelled' and visit.agent %}
+
+                    <tr style="border-bottom:1px solid #f3f4f6;">
+
+                        <td style="padding:12px 16px;">
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.name|default:"-" }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.property.title|default:"-" }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.visit_date|date:"d M Y, h:i A" }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.agent.full_name|default:visit.agent.email }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+
+                            <span style="
+                                background:#fff7ed;
+                                color:#c2410c;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Pending
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endif %}
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6"
+                        style="text-align:center;padding:32px;color:#6b7280;">
+                        No pending visits found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- UPCOMING VISITS SECTION -->
+<!-- ========================================================= -->
+
+<div id="upcoming-visits"
+     class="visit-detail-section">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:16px;
+        padding-bottom:12px;
+        border-bottom:1px solid #f3f4f6;
+    ">
+
+        <div>
+
+            <h3 style="
+                margin:0;
+                font-size:18px;
+                font-weight:600;
+                color:#1f2937;
+            ">
+                Upcoming Visits
+            </h3>
+
+            <p style="
+                margin:5px 0 0;
+                font-size:13px;
+                color:#6b7280;
+            ">
+                Future scheduled site visits
+            </p>
+
+        </div>
+
+        <button type="button"
+                onclick="closeVisitSection('upcoming-visits')"
+                style="
+                    border:none;
+                    background:#f3f4f6;
+                    color:#4b5563;
+                    padding:7px 12px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-size:13px;
+                    font-weight:500;
+                ">
+            Close
+        </button>
+
+    </div>
+
+
+    <div style="overflow-x:auto;">
+
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+            color:#374151;
+        ">
+
+            <thead>
+
+                <tr style="background:#f9fafb;text-align:left;">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Property
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Visit Date
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+    {% for visit in upcoming_visit_list %}
+
+    <tr style="border-bottom:1px solid #f3f4f6;">
+
+        <td style="padding:12px 16px;">
+            {{ forloop.counter }}
+        </td>
+
+        <td style="padding:12px 16px;">
+            {{ visit.name|default:"-" }}
+        </td>
+
+        <td style="padding:12px 16px;">
+            {{ visit.property.title|default:"-" }}
+        </td>
+
+        <td style="padding:12px 16px;">
+            {{ visit.visit_date|date:"d M Y, h:i A" }}
+        </td>
+
+        <td style="padding:12px 16px;">
+
+            {% if visit.agent %}
+                {{ visit.agent.full_name|default:visit.agent.email }}
+            {% else %}
+                <span style="color:#9ca3af;">
+                    Not Assigned
+                </span>
+            {% endif %}
+
+        </td>
+
+        <td style="padding:12px 16px;">
+
+            <span style="
+                background:#ede9fe;
+                color:#6d28d9;
+                padding:4px 10px;
+                border-radius:20px;
+                font-size:12px;
+                font-weight:600;
+            ">
+                Upcoming
+            </span>
+
+        </td>
+
+    </tr>
+
+    {% empty %}
+
+    <tr>
+        <td colspan="6"
+            style="
+                text-align:center;
+                padding:32px;
+                color:#6b7280;
+            ">
+            No upcoming visits found.
+        </td>
+    </tr>
+
+    {% endfor %}
+
+</tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- APPROVED VISITS SECTION -->
+<!-- ========================================================= -->
+
+<div id="approved-visits"
+     class="visit-detail-section">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:16px;
+        padding-bottom:12px;
+        border-bottom:1px solid #f3f4f6;
+    ">
+
+        <div>
+
+            <h3 style="
+                margin:0;
+                font-size:18px;
+                font-weight:600;
+                color:#1f2937;
+            ">
+                Approved Visits
+            </h3>
+
+            <p style="
+                margin:5px 0 0;
+                font-size:13px;
+                color:#6b7280;
+            ">
+                Agent site visits approved by admin
+            </p>
+
+        </div>
+
+        <button type="button"
+                onclick="closeVisitSection('approved-visits')"
+                style="
+                    border:none;
+                    background:#f3f4f6;
+                    color:#4b5563;
+                    padding:7px 12px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-size:13px;
+                    font-weight:500;
+                ">
+            Close
+        </button>
+
+    </div>
+
+
+    <div style="overflow-x:auto;">
+
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+            color:#374151;
+        ">
+
+            <thead>
+
+                <tr style="background:#f9fafb;text-align:left;">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Location Visited
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for visit in history_visits %}
+
+                    {% if visit.status == 'Approved' %}
+
+                    <tr style="border-bottom:1px solid #f3f4f6;">
+
+                        <td style="padding:12px 16px;">
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td style="padding:12px 16px;font-weight:500;">
+                            {{ visit.agent.full_name|default:visit.agent.email }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.schedule.name }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.location_visited }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+
+                            <span style="
+                                background:#d1e7dd;
+                                color:#0f5132;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Approved
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endif %}
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5"
+                        style="text-align:center;padding:32px;color:#6b7280;">
+                        No approved visits found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- REJECTED VISITS SECTION -->
+<!-- ========================================================= -->
+
+<div id="rejected-visits"
+     class="visit-detail-section">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:16px;
+        padding-bottom:12px;
+        border-bottom:1px solid #f3f4f6;
+    ">
+
+        <div>
+
+            <h3 style="
+                margin:0;
+                font-size:18px;
+                font-weight:600;
+                color:#1f2937;
+            ">
+                Rejected Visits
+            </h3>
+
+            <p style="
+                margin:5px 0 0;
+                font-size:13px;
+                color:#6b7280;
+            ">
+                Agent site visits rejected by admin
+            </p>
+
+        </div>
+
+        <button type="button"
+                onclick="closeVisitSection('rejected-visits')"
+                style="
+                    border:none;
+                    background:#f3f4f6;
+                    color:#4b5563;
+                    padding:7px 12px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-size:13px;
+                    font-weight:500;
+                ">
+            Close
+        </button>
+
+    </div>
+
+
+    <div style="overflow-x:auto;">
+
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:14px;
+            color:#374151;
+        ">
+
+            <thead>
+
+                <tr style="background:#f9fafb;text-align:left;">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Location Visited
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for visit in history_visits %}
+
+                    {% if visit.status == 'Rejected' %}
+
+                    <tr style="border-bottom:1px solid #f3f4f6;">
+
+                        <td style="padding:12px 16px;">
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td style="padding:12px 16px;font-weight:500;">
+                            {{ visit.agent.full_name|default:visit.agent.email }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.schedule.name }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+                            {{ visit.location_visited }}
+                        </td>
+
+                        <td style="padding:12px 16px;">
+
+                            <span style="
+                                background:#f8d7da;
+                                color:#842029;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Rejected
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endif %}
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5"
+                        style="text-align:center;padding:32px;color:#6b7280;">
+                        No rejected visits found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- SITE VISIT APPROVALS - EXISTING SECTION -->
+<!-- ========================================================= -->
+
+<div id="approval-visits"
+     class="card"
+     style="
+        padding:24px;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:
+            0 4px 6px -1px rgba(0,0,0,0.05),
+            0 2px 4px -1px rgba(0,0,0,0.03);
+        margin-bottom:24px;
+        border:1px solid #e5e7eb;
+     ">
+
+    <div class="card-header"
+         style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:16px;
+            padding-bottom:12px;
+            border-bottom:1px solid #f3f4f6;
+         ">
+
+        <h3 style="
+            margin:0;
+            font-size:18px;
+            font-weight:600;
+            color:#1f2937;
+        ">
+            Site Visit Approvals (Agent Submissions)
+        </h3>
+
+        <a href="{% url 'admin_dashboard' %}"
+           class="ajax-link btn btn-secondary"
+           style="
+                font-size:13px;
+                text-decoration:none;
+                padding:6px 12px;
+                background:#f3f4f6;
+                color:#4b5563;
+                border-radius:6px;
+                font-weight:500;
+           ">
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="table-responsive" style="overflow-x:auto;">
+
+        <table class="table"
+               style="
+                    width:100%;
+                    border-collapse:collapse;
+                    font-size:14px;
+                    color:#374151;
+               ">
+
+            <thead>
+
+                <tr style="background:#f9fafb;text-align:left;">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Location Visited
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Photo Proof
+                    </th>
+
+                    <th style="
+                        padding:12px 16px;
+                        border-bottom:1px solid #e5e7eb;
+                        text-align:center;
+                    ">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="visit-table-body">
+
+                {% for visit in pending_site_visits %}
+
+                <tr id="visit-row-{{ visit.id }}"
+                    style="border-bottom:1px solid #f3f4f6;">
+
+                    <td style="padding:12px 16px;">
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td style="
+                        padding:12px 16px;
+                        font-weight:500;
+                        color:#111827;
+                    ">
+                        {{ visit.agent.full_name|default:visit.agent.email }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {{ visit.schedule.name }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {{ visit.location_visited }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+
+                        {% if visit.visit_image %}
+
+                            <button type="button"
+                                    onclick="openSiteVisitModal('{{ visit.visit_image.url }}')"
+                                    style="
+                                        background:none;
+                                        border:none;
+                                        color:#2563eb;
+                                        cursor:pointer;
+                                        padding:0;
+                                        text-decoration:underline;
+                                        font-weight:500;
+                                    ">
+                                View Photo
+                            </button>
+
+                        {% else %}
+
+                            <span style="color:#9ca3af;">
+                                No Image
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td style="
+                        padding:12px 16px;
+                        text-align:center;
+                    ">
+
+                        <button
+                            data-url="{% url 'visit_action_ajax' visit.id 'approve' %}"
+                            class="action-btn btn btn-success"
+                            style="
+                                background:#10b981;
+                                color:white;
+                                border:none;
+                                padding:6px 14px;
+                                border-radius:6px;
+                                cursor:pointer;
+                                margin-right:6px;
+                                font-weight:500;
+                                font-size:13px;
+                            ">
+                            Accept
+                        </button>
+
+                        <button
+                            data-url="{% url 'visit_action_ajax' visit.id 'reject' %}"
+                            class="action-btn btn btn-danger"
+                            style="
+                                background:#ef4444;
+                                color:white;
+                                border:none;
+                                padding:6px 14px;
+                                border-radius:6px;
+                                cursor:pointer;
+                                font-weight:500;
+                                font-size:13px;
+                            ">
+                            Reject
+                        </button>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="6"
+                        style="
+                            text-align:center;
+                            padding:32px;
+                            color:#6b7280;
+                            font-style:italic;
+                        ">
+                        No pending site visits to review.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- HISTORY TABLE -->
+<!-- ========================================================= -->
+
+<div class="card"
+     style="
+        padding:24px;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:
+            0 4px 6px -1px rgba(0,0,0,0.05),
+            0 2px 4px -1px rgba(0,0,0,0.03);
+        border:1px solid #e5e7eb;
+     ">
+
+    <div class="card-header"
+         style="
+            margin-bottom:16px;
+            padding-bottom:12px;
+            border-bottom:1px solid #f3f4f6;
+         ">
+
+        <h3 style="
+            margin:0;
+            font-size:18px;
+            font-weight:600;
+            color:#1f2937;
+        ">
+            Site Visit History (Approved / Rejected)
+        </h3>
+
+    </div>
+
+
+    <div class="table-responsive" style="overflow-x:auto;">
+
+        <table class="table"
+               style="
+                    width:100%;
+                    border-collapse:collapse;
+                    font-size:14px;
+                    color:#374151;
+               ">
+
+            <thead>
+
+                <tr style="background:#f9fafb;text-align:left;">
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        #
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Agent Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Client Name
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Location Visited
+                    </th>
+
+                    <th style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                        Status
+                    </th>
+
+                    <th style="
+                        padding:12px 16px;
+                        border-bottom:1px solid #e5e7eb;
+                        text-align:center;
+                    ">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for visit in history_visits %}
+
+                <tr style="border-bottom:1px solid #f3f4f6;">
+
+                    <td style="padding:12px 16px;">
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td style="
+                        padding:12px 16px;
+                        font-weight:500;
+                        color:#111827;
+                    ">
+                        {{ visit.agent.full_name|default:visit.agent.email }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {{ visit.schedule.name }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+                        {{ visit.location_visited }}
+                    </td>
+
+                    <td style="padding:12px 16px;">
+
+                        {% if visit.status == 'Approved' %}
+
+                            <span style="
+                                background:#d1e7dd;
+                                color:#0f5132;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Approved
+                            </span>
+
+                        {% else %}
+
+                            <span style="
+                                background:#f8d7da;
+                                color:#842029;
+                                padding:4px 10px;
+                                border-radius:20px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                                Rejected
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td style="
+                        padding:12px 16px;
+                        text-align:center;
+                    ">
+
+                        <button
+                            data-url="{% url 'delete_site_visit' visit.id %}"
+                            class="action-btn btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this record?');"
+                            style="
+                                background:#dc3545;
+                                color:white;
+                                border:none;
+                                padding:6px 12px;
+                                border-radius:6px;
+                                cursor:pointer;
+                                font-size:13px;
+                                font-weight:500;
+                            ">
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="6"
+                        style="
+                            text-align:center;
+                            padding:32px;
+                            color:#6b7280;
+                            font-style:italic;
+                        ">
+                        No history records found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- SITE VISIT IMAGE MODAL -->
+<!-- ========================================================= -->
+
+<div id="siteVisitModal"
+     style="
+        display:none;
+        position:fixed;
+        z-index:9999;
+        left:0;
+        top:0;
+        width:100%;
+        height:100%;
+        background-color:rgba(0,0,0,0.8);
+        justify-content:center;
+        align-items:center;
+     ">
+
+    <div style="
+        position:relative;
+        max-width:90%;
+        max-height:90%;
+    ">
+
+        <span onclick="closeSiteVisitModal()"
+              style="
+                position:absolute;
+                top:-40px;
+                right:0;
+                color:#fff;
+                font-size:35px;
+                font-weight:bold;
+                cursor:pointer;
+              ">
+            &times;
+        </span>
+
+        <img id="siteVisitModalImg"
+             src=""
+             style="
+                max-width:100%;
+                max-height:80vh;
+                border-radius:8px;
+                box-shadow:0 4px 12px rgba(0,0,0,0.3);
+             ">
+
+    </div>
+
+</div>
