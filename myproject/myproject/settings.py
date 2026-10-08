@@ -142,7 +142,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR / "dashboard",
+    BASE_DIR / "dashboard/static/dashboard",
 
 ]
 
