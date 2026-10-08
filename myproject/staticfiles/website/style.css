@@ -1,0 +1,343 @@
+/* --- Global Styles --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+/* --- Header Navbar --- */
+.header {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 32px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #4b5563;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover, .nav-links .active {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+/* Dropdown Menu Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  top: 100%;
+  left: 0;
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.dropdown-content a {
+  color: #1f2937;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 13px;
+}
+
+.dropdown-content a:hover {
+  background-color: #f3f4f6;
+  color: #ea580c;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Header Actions & Buttons */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.wishlist-icon {
+  position: relative;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.wishlist-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ea580c;
+  color: white;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 50%;
+}
+
+.btn-outline {
+  border: 1px solid #ea580c;
+  color: #ea580c;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+}
+
+.btn-solid {
+  background-color: #ea580c;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- Hero Carousel Section --- */
+.hero-carousel {
+  position: relative;
+  height: 480px;
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80') center/cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 60px;
+  color: white;
+}
+
+.hero-content h1 {
+  font-size: 44px;
+  font-weight: bold;
+  max-width: 600px;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  margin-top: 12px;
+  font-size: 16px;
+  color: #e5e7eb;
+}
+
+.hero-buttons {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+}
+
+.btn-explore {
+  background-color: #ea580c;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-contact {
+  background-color: white;
+  color: #1f2937;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- Search Filter Bar --- */
+.search-container {
+  max-width: 1100px;
+  margin: -40px auto 40px;
+  padding: 0 16px;
+  position: relative;
+  z-index: 10;
+}
+
+.search-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.search-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.search-field select, .search-field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-btn {
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 18px;
+  width: 100%;
+}
+
+/* ================================================================= */
+/* 5. FEATURED PROPERTIES SECTION */
+/* ================================================================= */
+.properties-section{
+    max-width:1200px;
+    margin:0 auto 30px;
+    padding:0 15px;
+    background:transparent;
+}
+
+.properties-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.properties-header h2 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #111827;
+}
+
+.view-all-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ea580c;
+  text-decoration: none;
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.property-card {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.property-img-container {
+  position: relative;
+  height: 180px;
+  background: #e5e7eb;
+}
+
+.property-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.property-status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #2563eb;
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.property-details {
+  padding: 16px;
+}
+
+.property-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.property-location {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.property-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ea580c;
+  margin-top: 8px;
+}
+
+.property-specs {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.no-properties {
+  color: #6b7280;
+  grid-column: span 4;
+}
