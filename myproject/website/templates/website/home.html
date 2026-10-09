@@ -87,6 +87,7 @@
      data-beds="{{ prop.bedrooms }}"
      data-baths="{{ prop.bathrooms }}"
      data-area="{{ prop.area }}"
+     data-description="{{ prop.description|default:'' }}"
      data-main="{{ prop.image.url }}"
      data-gallery='[{% for img in prop.images.all %}"{{ img.image.url }}"{% if not forloop.last %},{% endif %}{% endfor %}]'>
      
@@ -205,7 +206,10 @@
 
             {% for project in projects %}
 
-            <div class="project-card">
+            <div class="project-card"
+                 data-description="{{ project.description|default:'' }}"
+                 data-amenities="{{ project.amenities|default:'' }}"
+                 data-status="{{ project.status_text|default:'' }}">
 
                 <div class="project-image">
                     <img src="{{ project.image.url }}"
@@ -541,7 +545,9 @@ OUR PARTNERS START
         <!-- Left Side: Information Cards -->
         <div class="contact-info-cards">
             <div class="info-card">
-                <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+                <a class="info-icon" href="mailto:info@dreamhome.com" aria-label="Email DreamHome">
+                    <i class="fa-solid fa-envelope"></i>
+                </a>
                 <div class="info-details">
                     <h4>Email Us</h4>
                     <p>info@dreamhome.com</p>
@@ -550,7 +556,9 @@ OUR PARTNERS START
             </div>
 
             <div class="info-card">
-                <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                <a class="info-icon" href="tel:+919876543210" aria-label="Call DreamHome">
+                    <i class="fa-solid fa-phone"></i>
+                </a>
                 <div class="info-details">
                     <h4>Call Us</h4>
                     <p>+91 9876543210</p>
@@ -559,7 +567,9 @@ OUR PARTNERS START
             </div>
 
             <div class="info-card">
-                <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <a class="info-icon" href="https://maps.google.com/?q=Gomti+Nagar,+Lucknow" target="_blank" rel="noopener noreferrer" aria-label="View DreamHome on Google Maps">
+                    <i class="fa-solid fa-location-dot"></i>
+                </a>
                 <div class="info-details">
                     <h4>Visit Us</h4>
                     <p>Gomti Nagar, Lucknow</p>
@@ -567,7 +577,9 @@ OUR PARTNERS START
             </div>
 
             <div class="info-card">
-                <div class="info-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <a class="info-icon" href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" aria-label="Chat with DreamHome on WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
                 <div class="info-details">
                     <h4>WhatsApp</h4>
                     <p>+91 9876543210</p>

@@ -402,3 +402,13 @@ def submit_visit_schedule(request):
             messages.success(request, "Your site visit has been scheduled successfully!")
             return redirect(request.META.get('HTTP_REFERER', 'home'))
     return redirect('home')
+
+
+
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({
+        "status": "healthy",
+        "message": "Dream Home is running"
+    })

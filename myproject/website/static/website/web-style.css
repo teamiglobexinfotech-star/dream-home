@@ -1374,8 +1374,29 @@ Individual Agent Card
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.agent-socials a:hover {
-    background-color: #2563eb;
+.agent-socials a:nth-child(1) {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.agent-socials a:nth-child(2) {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.agent-socials a:nth-child(3) {
+    background-color: #dcfce7;
+    color: #25d366;
+}
+
+.agent-socials a:hover,
+.agent-socials a:focus-visible {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+.agent-socials a:hover i,
+.agent-socials a:focus-visible i {
     color: #ffffff;
 }
 
@@ -1781,6 +1802,22 @@ OUR PARTNERS
 
 }
 
+.cta-buttons .btn-schedule-visit {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 32px !important;
+    background: #ff8c00 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    text-align: center;
+}
+
+.cta-buttons .btn-schedule-visit:hover {
+    background: #ff7300 !important;
+}
+
 .contact-btn:hover{
 
     background:#ff7300;
@@ -1844,7 +1881,8 @@ width:100%;
 }
 
 .contact-btn,
-.visit-btn{
+.visit-btn,
+.cta-buttons .btn-schedule-visit {
 
 display:block;
 width:100%;
@@ -3043,7 +3081,7 @@ body {
 /* Floating Right-Side Button */
 .floating-enquiry-btn {
     position: fixed;
-    right: -35px;
+    right: -60px;
     top: 50%;
     transform: translateY(-50%) rotate(-90deg);
     background-color: #f97316;
@@ -3060,7 +3098,7 @@ body {
 
 .floating-enquiry-btn:hover {
     background-color: #ea580c;
-    right: -30px;
+    right: -55px;
 }
 
 /* Modal Background Overlay */
@@ -3254,6 +3292,53 @@ body {
     align-items: center;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
+    color: #0d6efd;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-info-cards .info-card:nth-child(1) .info-icon {
+    color: #2563eb;
+}
+
+.contact-info-cards .info-card:nth-child(2) .info-icon {
+    color: #16a34a;
+}
+
+.contact-info-cards .info-card:nth-child(3) .info-icon {
+    color: #ea580c;
+}
+
+.contact-info-cards .info-card:nth-child(4) .info-icon {
+    color: #25d366;
+}
+
+.contact-info-cards .info-icon:hover,
+.contact-info-cards .info-icon:focus-visible {
+    background: #0d6efd;
+    color: #ffffff;
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.contact-info-cards .info-icon:hover i,
+.contact-info-cards .info-icon:focus-visible i {
+    color: #ffffff !important;
+}
+
+.contact-info-cards .info-card:nth-child(2) .info-icon:hover,
+.contact-info-cards .info-card:nth-child(2) .info-icon:focus-visible {
+    background: #16a34a;
+}
+
+.contact-info-cards .info-card:nth-child(3) .info-icon:hover,
+.contact-info-cards .info-card:nth-child(3) .info-icon:focus-visible {
+    background: #ea580c;
+}
+
+.contact-info-cards .info-card:nth-child(4) .info-icon:hover,
+.contact-info-cards .info-card:nth-child(4) .info-icon:focus-visible {
+    background: #25d366;
 }
 
 .info-details h4 {
@@ -3511,6 +3596,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
+    margin-top: 15px;
     border-bottom: 2px solid #f1f5f9;
     padding-bottom: 8px;
 }
@@ -3875,10 +3961,26 @@ body {
     transition: 0.2s;
 }
 
-.team-social-icons a:hover {
+.team-social-icons a:nth-child(1) {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.team-social-icons a:nth-child(2) {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.team-social-icons a:hover,
+.team-social-icons a:focus-visible {
     background: #0056d6;
     color: #ffffff;
     border-color: #0056d6;
+}
+
+.team-social-icons a:hover i,
+.team-social-icons a:focus-visible i {
+    color: #ffffff;
 }
 
 .prop-badge-count {
@@ -4456,10 +4558,66 @@ body {
     margin-bottom: 20px;
 }
 
-.contact-info-item i {
+.contact-info-item-icon {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #fff7ed;
     color: #f97316;
     font-size: 20px;
-    margin-top: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-info-item-icon i {
+    color: inherit;
+}
+
+.contact-info-item-icon:hover i,
+.contact-info-item-icon:focus-visible i {
+    color: #ffffff !important;
+}
+
+.contact-info-item-icon:hover,
+.contact-info-item-icon:focus-visible {
+    color: #ffffff;
+    background: #f97316;
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.contact-info-item-icon.contact-icon-location {
+    background: #fff1f2;
+    color: #e11d48;
+}
+
+.contact-info-item-icon.contact-icon-location:hover,
+.contact-info-item-icon.contact-icon-location:focus-visible {
+    background: #e11d48;
+}
+
+.contact-info-item-icon.contact-icon-phone {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.contact-info-item-icon.contact-icon-phone:hover,
+.contact-info-item-icon.contact-icon-phone:focus-visible {
+    background: #16a34a;
+}
+
+.contact-info-item-icon.contact-icon-email {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.contact-info-item-icon.contact-icon-email:hover,
+.contact-info-item-icon.contact-icon-email:focus-visible {
+    background: #2563eb;
 }
 
 .contact-info-item h4 {
@@ -5901,6 +6059,7 @@ body {
     gap: 7px;
     text-decoration: none;
     cursor: pointer;
+    color: #000000 !important;
 }
 
 .login-arrow {
@@ -6830,15 +6989,6 @@ body {
         font-size: 27px;
     }
 
-    .floating-enquiry-btn {
-        top: auto;
-        right: 12px;
-        bottom: 12px;
-        transform: none;
-        padding: 9px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-    }
 }
 
 @media (max-width: 360px) {
@@ -8374,6 +8524,73 @@ body {
     color: #ffffff;
 }
 
+.property-popup-overlay {
+    z-index: 1100;
+}
+
+@media (max-width: 768px) {
+    .property-popup-overlay {
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    .property-popup-content {
+        width: min(650px, 90vw);
+        max-width: 100%;
+        max-height: 85vh;
+        max-height: 85dvh;
+        overflow-y: auto;
+        padding: 0;
+        border-radius: 12px;
+    }
+
+    .popup-modal-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    .popup-modal-slider {
+        height: clamp(190px, 34vh, 260px);
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    .popup-modal-track,
+    .popup-modal-slide {
+        height: 100%;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .popup-modal-slide img {
+        display: block;
+        object-position: center top;
+    }
+
+    .popup-modal-details {
+        padding: 18px;
+    }
+
+    .popup-modal-details h2 {
+        padding-right: 28px;
+        font-size: 20px;
+    }
+
+    .popup-modal-specs {
+        flex-wrap: wrap;
+        gap: 10px 14px;
+    }
+}
+
+.our-agents-section .agent-socials a:hover i {
+    color: #ffffff;
+}
+
 .featured-projects .project-card {
     display: flex;
     flex: 0 0 calc((100% - 72px) / 4);
@@ -8493,4 +8710,244 @@ body {
 
 .our-agents-section .agent-socials a:nth-child(3):hover {
     color: #25d366;
+}
+
+
+/* ===== Desktop dropdown: iGlobex style ===== */
+@media (min-width: 1231px) {
+
+  .nav-links .dropdown {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+  }
+
+  /* Arrow button: koi box/border nahi */
+  .nav-links .dropdown > .dropdown-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    color: #4b5563;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .nav-links .dropdown > .dropdown-toggle:focus-visible {
+    outline: 2px solid #ea580c;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .nav-links .dropdown > .dropdown-toggle i {
+    font-size: 10px;
+    transition: transform 0.25s ease;
+  }
+
+  .nav-links .dropdown:hover > a,
+  .nav-links .dropdown:hover > .dropdown-toggle {
+    color: #ea580c;
+  }
+
+  .nav-links .dropdown:hover > .dropdown-toggle i {
+    transform: rotate(180deg);
+  }
+
+  /* Menu panel: smooth fade + slide (display:none ki jagah) */
+  .nav-links .dropdown-content {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    top: calc(100% + 10px);
+    min-width: 190px;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Hover gap bridge: mouse link se menu tak jaate waqt menu band na ho */
+  .nav-links .dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    width: 100%;
+    height: 12px;
+  }
+
+  .nav-links .dropdown:hover > .dropdown-content,
+  .nav-links .dropdown:focus-within > .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .nav-links .dropdown-content a {
+    padding: 10px 12px;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .nav-links .dropdown-content a:hover {
+    background: #fff4ec;
+    color: #ea580c;
+  }
+}
+
+
+
+.header .login-profile-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 26px;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50%;
+  background: #1f2937 !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  line-height: 1;
+  overflow: hidden;
+  animation: none !important;
+  transform: none !important;
+  pointer-events: none;
+}
+
+/* Font Awesome ka glyph circle ke andar perfectly center ho */
+.header .login-profile-icon::before {
+  display: block;
+  line-height: 1;
+}
+
+.header .login-dropdown:hover .login-profile-icon {
+  background: #ea580c !important;
+}
+
+
+
+/* ===== WhatsApp + Call Floating Buttons ===== */
+.float-contact {
+  position: fixed;
+  right: 10px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 998; /* modals (2000+) ke neeche rahega */
+}
+
+.float-btn {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff !important;
+  font-size: 24px;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.float-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
+}
+
+.float-btn i {
+  color: #ffffff;
+  transition: color 0.2s ease;
+}
+
+.float-btn:hover i,
+.float-btn:focus-visible i {
+  color: #ffffff !important;
+}
+
+.float-whatsapp { background: #25d366; }
+.float-call { background: #2563EB; font-size: 20px; }
+
+/* Hover par label (desktop) */
+.float-label {
+  position: absolute;
+  right: 62px;
+  background: #1f2937;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(6px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.float-btn:hover .float-label {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* WhatsApp pulse */
+.float-whatsapp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #25d366;
+  z-index: -1;
+  animation: floatPulse 2s infinite;
+}
+
+@keyframes floatPulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-whatsapp::before { animation: none; }
+}
+
+/* Mobile: Instant Enquiry button bottom-right me aa jata hai, to upar shift */
+@media (max-width: 600px) {
+  .float-contact {
+    right: 12px;
+    bottom: 70px;
+  }
+  .float-btn {
+    width: 48px;
+    height: 48px;
+  }
+  .float-label { display: none; }
+}
+
+
+.footer-contact-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-contact-link:hover,
+.footer-contact-link:hover i {
+    color: #ffffff;
 }

@@ -61,14 +61,24 @@ document.addEventListener("DOMContentLoaded", function () {
     propertyCards.forEach(card => {
         card.style.cursor = "pointer";
         card.addEventListener("click", function () {
-            modalLocation.innerHTML = '<i class="fa-solid fa-location-dot"></i> ' + card.getAttribute("data-location");
+            if (!modal || !modalTrack) return;
 
-            modalPrice.innerText = "₹ " + card.getAttribute("data-price");
-
-           modalBeds.textContent = card.getAttribute("data-beds") + " Beds";
-           modalBaths.textContent = card.getAttribute("data-baths") + " Baths";
-           modalArea.textContent = card.getAttribute("data-area") + " Sq.Ft.";
-            modalDesc.innerText = "Spacious property located at " + card.getAttribute("data-location") + " featuring modern amenities.";
+            const location = card.getAttribute("data-location") || "";
+            const locationText = modalLocation && modalLocation.querySelector("span");
+            if (modalTitle) modalTitle.textContent = card.getAttribute("data-title") || "Property Details";
+            if (locationText) {
+                locationText.textContent = location;
+            } else if (modalLocation) {
+                modalLocation.textContent = location;
+            }
+            if (modalPrice) modalPrice.textContent = "₹ " + (card.getAttribute("data-price") || "On Request");
+            if (modalBeds) modalBeds.textContent = (card.getAttribute("data-beds") || "0") + " Beds";
+            if (modalBaths) modalBaths.textContent = (card.getAttribute("data-baths") || "0") + " Baths";
+            if (modalArea) modalArea.textContent = (card.getAttribute("data-area") || "0") + " Sq.Ft.";
+            if (modalDesc) {
+                modalDesc.textContent = card.getAttribute("data-description")
+                    || "Spacious property located at " + location + " featuring modern amenities.";
+            }
 
             // Properties ke liye arrows show karein
             if (nextBtn) nextBtn.style.display = "flex";
@@ -90,13 +100,18 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
                     }
                 }
-            } catch (e) { console.log(e); }
+            } catch (e) {
+                console.error("Unable to load property image gallery.", e);
+            }
 
             modalTrack.innerHTML = "";
             imageList.forEach(url => {
                 const slide = document.createElement("div");
                 slide.classList.add("popup-modal-slide");
-                slide.innerHTML = `<img src="${url}" alt="Property Image" style="width:100%; height:100%; object-fit:cover;">`;
+                const image = document.createElement("img");
+                image.src = url;
+                image.alt = "Property Image";
+                slide.appendChild(image);
                 modalTrack.appendChild(slide);
             });
 
@@ -110,13 +125,21 @@ document.addEventListener("DOMContentLoaded", function () {
     projectCards.forEach(card => {
         card.style.cursor = "pointer";
         card.addEventListener("click", function () {
-            modalTitle.innerText = card.querySelector("h3").innerText;
-            modalLocation.innerText = card.querySelector(".location").innerText;
-            modalPrice.innerText = "₹ On Request";
-            modalBeds.innerText = "🏢 Project Overview";
-            modalBaths.innerText = "";
-            modalArea.innerText = card.querySelector("ul li").innerText;
-            modalDesc.innerText = "Explore exclusive features, modern architecture, and high-class construction standards for this project.";
+            if (!modal || !modalTrack) return;
+
+            const title = card.querySelector("h3");
+            const location = card.querySelector(".location");
+            const overview = card.querySelector("ul li");
+            const projectImage = card.querySelector(".project-image img");
+            if (modalTitle) modalTitle.textContent = title ? title.textContent.trim() : "Project Details";
+            if (modalLocation) modalLocation.textContent = location ? location.textContent.trim() : "";
+            if (modalPrice) modalPrice.textContent = "₹ On Request";
+            if (modalBeds) modalBeds.textContent = "Project Overview";
+            if (modalBaths) modalBaths.textContent = "";
+            if (modalArea) modalArea.textContent = card.getAttribute("data-amenities")
+                || (overview ? overview.textContent.trim() : "");
+            if (modalDesc) modalDesc.textContent = card.getAttribute("data-description")
+                || "Explore exclusive features, modern architecture, and high-class construction standards for this project.";
 
             // Projects ke liye arrows hide kar dein taaki slider na chale
             if (nextBtn) nextBtn.style.display = "none";
@@ -124,12 +147,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (requestCallBtn) requestCallBtn.style.display = "inline-flex";
 
-            const mainImg = card.querySelector(".project-image img").getAttribute("src");
             modalTrack.innerHTML = "";
-            const slide = document.createElement("div");
-            slide.classList.add("popup-modal-slide");
-            slide.innerHTML = `<img src="${mainImg}" alt="Project Image" style="width:100%; height:100%; object-fit:cover;">`;
-            modalTrack.appendChild(slide);
+            if (projectImage) {
+                const slide = document.createElement("div");
+                slide.classList.add("popup-modal-slide");
+                const image = document.createElement("img");
+                image.src = projectImage.currentSrc || projectImage.src;
+                image.alt = title ? title.textContent.trim() : "Project Image";
+                slide.appendChild(image);
+                modalTrack.appendChild(slide);
+            }
 
             currentSlide = 0;
             updateModalSlider();
@@ -167,9 +194,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (closeBtn) {
         closeBtn.onclick = () => { if (modal) modal.style.display = "none"; };
     }
-    window.onclick = (e) => {
-        if (e.target === modal) modal.style.display = "none";
-    };
+    if (modal) {
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) modal.style.display = "none";
+        });
+    }
 });
 
 // Latest Blog
@@ -213,9 +242,10 @@ document.addEventListener("DOMContentLoaded", function () {
             position: absolute;
             top: 12px; right: 18px;
             font-size: 28px; font-weight: bold;
-            color: #333; cursor: pointer; z-index: 10;
+            color: #ffffff; cursor: pointer; z-index: 10;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.75);
         }
-        .js-blog-close:hover { color: #ea580c; }
+        .js-blog-close:hover { color: #ffffff; }
         .js-blog-img { width: 100%; height: 260px; object-fit: cover; }
         .js-blog-body { padding: 20px; }
         .js-blog-date { font-size: 13px; color: #ea580c; font-weight: 600; display: block; margin-bottom: 6px; }
@@ -1106,6 +1136,39 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             return;
         }
+
+        
+if (password.length < 8) {
+    Swal.fire({
+        title: "Weak Password",
+        text: "Password must be at least 8 characters long.",
+        icon: "warning",
+        confirmButtonText: "OK"
+    });
+    return;
+}
+
+if (/^\d+$/.test(password)) {
+    Swal.fire({
+        title: "Weak Password",
+        text: "Password cannot contain only numbers.",
+        icon: "warning",
+        confirmButtonText: "OK"
+    });
+    return;
+}
+
+if (/^[a-zA-Z]+$/.test(password)) {
+    Swal.fire({
+        title: "Weak Password",
+        text: "Password cannot contain only letters.",
+        icon: "warning",
+        confirmButtonText: "OK"
+    });
+    return;
+}
+
+
 
         const formData = new FormData(form);
 
@@ -2562,6 +2625,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('.faq-item')) return;
+
+        faqToggles.forEach(toggle => {
+            if (toggle.checked) {
+                toggle.checked = false;
+                toggle.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    });
+
     // ================================================================= //
     // 5. PROPERTY CARD POPUP/MODAL
     // ================================================================= //
@@ -2751,20 +2825,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ================================================================= //
-    // 12. HANDLE WINDOW RESIZE
-    // ================================================================= //
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            // Close hamburger menu on resize to desktop
-            if (window.innerWidth > 768) {
-                if (hamburgerMenu) hamburgerMenu.classList.remove('active');
-                if (navLinks) navLinks.classList.remove('active');
-            }
-        }, 250);
-    });
 });
 
 
@@ -2778,7 +2838,7 @@ function initializeResponsiveHeader() {
   var navLinks = document.querySelector('.nav-links');
   if (!header || !burger || !navLinks) return;
 
-  var mq = window.matchMedia('(max-width: 1100px)');
+  var mq = window.matchMedia('(max-width: 1230px)');
 
   function setMenu(open) {
     header.classList.toggle('menu-open', open);

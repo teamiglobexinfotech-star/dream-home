@@ -26,11 +26,11 @@
                 <h3>Customer Registration</h3>
                 <p class="reg-card-sub">Fill in the details below to create your account</p>
 
-                {% if messages %}
+                <!-- {% if messages %}
                     {% for message in messages %}
                         <div class="reg-alert">{{ message }}</div>
                     {% endfor %}
-                {% endif %}
+                {% endif %} -->
 
                 <form method="POST" data-login-url="{% url 'login' %}" novalidate>
                     {% csrf_token %}
