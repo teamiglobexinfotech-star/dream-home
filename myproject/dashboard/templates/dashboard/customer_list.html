@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container admin-list-container">
         <div class="header">
             <h2>Customer Management</h2>
             <div>
@@ -25,6 +25,7 @@
             </div>
         </div>
         
+        <div class="admin-table-wrap">
         <table>
             <thead>
                 <tr>
@@ -39,7 +40,7 @@
             <tbody>
                 {% for customer in customers %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
+                    <td>{{ customers.start_index|add:forloop.counter0 }}</td>
                     <td>{{ customer.full_name }}</td>
                     <td>{{ customer.email }}</td>
                     <td>{{ customer.mobile_number }}</td>
@@ -56,6 +57,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
+        {% include "dashboard/_pagination.html" with page_obj=customers page_param="page" %}
     </div>
 </body>
 </html>

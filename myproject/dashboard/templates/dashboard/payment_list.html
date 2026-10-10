@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container admin-list-container">
         <div class="header">
             <h2>Payment Management</h2>
             <div>
@@ -27,6 +27,7 @@
             </div>
         </div>
         
+        <div class="admin-table-wrap">
         <table>
             <thead>
                 <tr>
@@ -43,7 +44,7 @@
             <tbody>
                 {% for payment in payments %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
+                    <td>{{ payments.start_index|add:forloop.counter0 }}</td>
                     <td><b>{{ payment.customer_name }}</b></td>
                     <td>{{ payment.property.title|default:"N/A" }}</td>
                     <td>₹ {{ payment.amount }}</td>
@@ -81,6 +82,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
+        {% include "dashboard/_pagination.html" with page_obj=payments page_param="page" %}
     </div>
 </body>
 </html>

@@ -1,0 +1,66 @@
+<div
+    id="savedPropertyDetailsModal"
+    class="customer-property-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="savedPropertyModalName"
+    aria-hidden="true"
+    tabindex="-1"
+>
+    <section class="customer-property-modal-card">
+        <header class="customer-property-modal-header">
+            <h2>Property Details</h2>
+            <button type="button" class="customer-property-modal-close" aria-label="Close property details">
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <div class="customer-property-modal-body">
+            <div class="customer-property-modal-gallery">
+                <img id="savedPropertyModalImage" class="customer-property-modal-image" alt="Property">
+                <div id="savedPropertyModalGallery" class="customer-property-modal-thumbnails" aria-label="Property image gallery"></div>
+            </div>
+
+            <div class="customer-property-modal-title-row">
+                <div>
+                    <h3 id="savedPropertyModalName"></h3>
+                    <p class="customer-property-modal-location">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                        <span id="savedPropertyModalLocation"></span>
+                    </p>
+                </div>
+                <span id="savedPropertyModalStatus" class="customer-property-modal-status"></span>
+            </div>
+
+            <p id="savedPropertyModalPrice" class="customer-property-modal-price"></p>
+
+            <div class="customer-property-modal-details">
+                <div class="booking-modal-info">
+                    <small>Property Type</small>
+                    <strong id="savedPropertyModalType">-</strong>
+                </div>
+                <div class="booking-modal-info">
+                    <small>Area</small>
+                    <strong id="savedPropertyModalArea">-</strong>
+                </div>
+                <div class="booking-modal-info">
+                    <small>Bedrooms</small>
+                    <strong id="savedPropertyModalBedrooms">-</strong>
+                </div>
+                <div class="booking-modal-info">
+                    <small>Bathrooms</small>
+                    <strong id="savedPropertyModalBathrooms">-</strong>
+                </div>
+            </div>
+
+            <div id="savedPropertyModalFeatured" class="customer-property-modal-featured"></div>
+
+            <section class="customer-property-modal-description">
+                <h4>Description</h4>
+                <p id="savedPropertyModalDescription"></p>
+            </section>
+
+            <p id="savedPropertyModalCreated" class="customer-property-modal-created"></p>
+        </div>
+    </section>
+</div>

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container admin-list-container">
 
     <!-- Header -->
     <div class="header">
@@ -19,7 +19,7 @@
 
 
     <!-- Scheduling Table -->
-    <div style="overflow-x: auto;">
+    <div class="admin-table-wrap" style="overflow-x: auto;">
 
         <table id="scheduleTable">
 
@@ -59,7 +59,7 @@
                     <!-- ================================= -->
 
                     <td>
-                        #{{ forloop.counter }}
+                        #{{ schedules.start_index|add:forloop.counter0 }}
                     </td>
 
 
@@ -192,6 +192,7 @@
                                 </button>
 
                             </div>
+
                         </div>
 
                     </td>
@@ -438,6 +439,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=schedules page_param="page" %}
 
 </div>
 
@@ -1501,4 +1503,3 @@ document.addEventListener('click', function (e) {
 });
 
 </script>  -->
-

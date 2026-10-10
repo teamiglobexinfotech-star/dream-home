@@ -1,4 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.querySelector(".menu-toggle");
+    const sidebarBackdrop = document.querySelector(".sidebar-backdrop");
+
+    function closeSidebar() {
+        document.body.classList.remove("sidebar-open");
+        if (menuToggle) {
+            menuToggle.setAttribute("aria-expanded", "false");
+        }
+    }
+
+    if (menuToggle) {
+        menuToggle.addEventListener("click", function () {
+            const isOpen = document.body.classList.toggle("sidebar-open");
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+        });
+    }
+
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener("click", closeSidebar);
+    }
+
+    document.querySelectorAll(".sidebar .nav-links a").forEach(function (link) {
+        link.addEventListener("click", closeSidebar);
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeSidebar();
+        }
+    });
+
     const enquiryLink = document.getElementById("enquiryMenuLink");
 
     if (enquiryLink) {
@@ -1509,6 +1540,123 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+let savedPropertyModalPreviousOverflow = "";
+let savedPropertyModalTrigger = null;
+
+function closeSavedPropertyDetailsModal() {
+    const modal = document.getElementById("savedPropertyDetailsModal");
+    if (!modal || !modal.classList.contains("is-open")) return;
+
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = savedPropertyModalPreviousOverflow;
+
+    if (savedPropertyModalTrigger && savedPropertyModalTrigger.isConnected) {
+        savedPropertyModalTrigger.focus();
+    }
+}
+
+document.addEventListener("click", function (e) {
+    const modal = document.getElementById("savedPropertyDetailsModal");
+    if (!modal) return;
+
+    if (e.target.closest(".customer-property-modal-close") || e.target === modal) {
+        closeSavedPropertyDetailsModal();
+        return;
+    }
+
+    const thumbnail = e.target.closest(".customer-property-thumbnail");
+    if (thumbnail) {
+        const image = document.getElementById("savedPropertyModalImage");
+        if (image) {
+            image.src = thumbnail.dataset.imageSrc;
+            image.alt = thumbnail.dataset.imageAlt;
+            modal.querySelectorAll(".customer-property-thumbnail").forEach(function (item) {
+                item.classList.toggle("is-active", item === thumbnail);
+            });
+        }
+        return;
+    }
+
+    const button = e.target.closest(".customer-property-view-btn");
+    if (!button) return;
+
+    const property = button.dataset;
+    const card = button.closest(".customer-saved-property-card");
+    const modalImage = document.getElementById("savedPropertyModalImage");
+    const gallery = document.getElementById("savedPropertyModalGallery");
+    const setText = function (id, value) {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value || "-";
+    };
+
+    setText("savedPropertyModalName", property.propertyName);
+    setText(
+        "savedPropertyModalLocation",
+        [property.propertyLocation, property.propertyCity].filter(Boolean).join(", ")
+    );
+    setText("savedPropertyModalStatus", property.propertyStatus);
+    setText("savedPropertyModalPrice", "₹ " + (property.propertyPrice || ""));
+    setText("savedPropertyModalType", property.propertyCategory);
+    setText("savedPropertyModalArea", property.propertyArea);
+    setText("savedPropertyModalBedrooms", property.propertyBedrooms);
+    setText("savedPropertyModalBathrooms", property.propertyBathrooms);
+    setText("savedPropertyModalDescription", property.propertyDescription);
+    document.getElementById("savedPropertyModalFeatured").textContent = property.propertyFeatured || "";
+    document.getElementById("savedPropertyModalCreated").textContent =
+        property.propertyCreated ? "Listed on " + property.propertyCreated : "";
+
+    if (gallery) {
+        gallery.replaceChildren();
+        const seenImages = new Set();
+        const images = card ? card.querySelectorAll(".customer-property-gallery-data [data-image-src]") : [];
+
+        images.forEach(function (sourceImage) {
+            const imageSrc = sourceImage.dataset.imageSrc;
+            if (!imageSrc || seenImages.has(imageSrc)) return;
+            seenImages.add(imageSrc);
+
+            const thumbnail = document.createElement("button");
+            thumbnail.type = "button";
+            thumbnail.className = "customer-property-thumbnail";
+            thumbnail.setAttribute("aria-label", "Show property image");
+            thumbnail.dataset.imageSrc = imageSrc;
+            thumbnail.dataset.imageAlt = sourceImage.dataset.imageAlt || property.propertyName;
+
+            const thumbnailImage = document.createElement("img");
+            thumbnailImage.src = imageSrc;
+            thumbnailImage.alt = sourceImage.dataset.imageAlt || property.propertyName;
+            thumbnail.appendChild(thumbnailImage);
+            gallery.appendChild(thumbnail);
+        });
+
+        const firstThumbnail = gallery.querySelector(".customer-property-thumbnail");
+        if (firstThumbnail && modalImage) {
+            modalImage.src = firstThumbnail.dataset.imageSrc;
+            modalImage.alt = firstThumbnail.dataset.imageAlt;
+            firstThumbnail.classList.add("is-active");
+            gallery.hidden = gallery.children.length < 2;
+        } else if (modalImage) {
+            modalImage.removeAttribute("src");
+            gallery.hidden = true;
+        }
+    }
+
+    savedPropertyModalTrigger = button;
+    savedPropertyModalPreviousOverflow = document.body.style.overflow;
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    modal.querySelector(".customer-property-modal-close").focus();
+});
+
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        closeSavedPropertyDetailsModal();
+    }
+});
+
+
 document.addEventListener("click", function (e) {
 
     const btn = e.target.closest(".customer-booking-view-btn");
@@ -1613,4 +1761,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
-

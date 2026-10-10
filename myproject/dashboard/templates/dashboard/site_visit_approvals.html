@@ -442,7 +442,7 @@
                 <tr style="border-bottom:1px solid #f3f4f6;">
 
                     <td style="padding:12px 16px;">
-                        {{ forloop.counter }}
+                        {{ total_visit_list.start_index|add:forloop.counter0 }}
                     </td>
 
                     <td style="padding:12px 16px;">
@@ -541,6 +541,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=total_visit_list page_param="total_page" section_id="total-visits" %}
 
 </div>
 
@@ -646,14 +647,14 @@
 
             <tbody>
 
-                {% for visit in total_visit_list %}
+                {% for visit in completed_visit_list %}
 
                     {% if visit.status == 'Completed' %}
 
                     <tr style="border-bottom:1px solid #f3f4f6;">
 
                         <td style="padding:12px 16px;">
-                            {{ forloop.counter }}
+                            {{ completed_visit_list.start_index|add:forloop.counter0 }}
                         </td>
 
                         <td style="padding:12px 16px;">
@@ -719,6 +720,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=completed_visit_list page_param="completed_page" section_id="completed-visits" %}
 
 </div>
 
@@ -821,14 +823,12 @@
 
             <tbody>
 
-                {% for visit in total_visit_list %}
-
-                    {% if visit.visit_date and visit.status != 'Completed' and visit.status != 'Cancelled' and visit.agent %}
+                {% for visit in pending_section_list %}
 
                     <tr style="border-bottom:1px solid #f3f4f6;">
 
                         <td style="padding:12px 16px;">
-                            {{ forloop.counter }}
+                            {{ pending_section_list.start_index|add:forloop.counter0 }}
                         </td>
 
                         <td style="padding:12px 16px;">
@@ -864,8 +864,6 @@
 
                     </tr>
 
-                    {% endif %}
-
                 {% empty %}
 
                 <tr>
@@ -882,6 +880,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=pending_section_list page_param="pending_page" section_id="pending-visits" %}
 
 </div>
 
@@ -989,7 +988,7 @@
     <tr style="border-bottom:1px solid #f3f4f6;">
 
         <td style="padding:12px 16px;">
-            {{ forloop.counter }}
+            {{ upcoming_visit_list.start_index|add:forloop.counter0 }}
         </td>
 
         <td style="padding:12px 16px;">
@@ -1053,6 +1052,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=upcoming_visit_list page_param="upcoming_page" section_id="upcoming-visits" %}
 
 </div>
 
@@ -1151,14 +1151,14 @@
 
             <tbody>
 
-                {% for visit in history_visits %}
+                {% for visit in approved_visit_list %}
 
                     {% if visit.status == 'Approved' %}
 
                     <tr style="border-bottom:1px solid #f3f4f6;">
 
                         <td style="padding:12px 16px;">
-                            {{ forloop.counter }}
+                            {{ approved_visit_list.start_index|add:forloop.counter0 }}
                         </td>
 
                         <td style="padding:12px 16px;font-weight:500;">
@@ -1208,6 +1208,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=approved_visit_list page_param="approved_page" section_id="approved-visits" %}
 
 </div>
 
@@ -1306,14 +1307,14 @@
 
             <tbody>
 
-                {% for visit in history_visits %}
+                {% for visit in rejected_visit_list %}
 
                     {% if visit.status == 'Rejected' %}
 
                     <tr style="border-bottom:1px solid #f3f4f6;">
 
                         <td style="padding:12px 16px;">
-                            {{ forloop.counter }}
+                            {{ rejected_visit_list.start_index|add:forloop.counter0 }}
                         </td>
 
                         <td style="padding:12px 16px;font-weight:500;">
@@ -1363,6 +1364,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=rejected_visit_list page_param="rejected_page" section_id="rejected-visits" %}
 
 </div>
 
@@ -1475,7 +1477,7 @@
                     style="border-bottom:1px solid #f3f4f6;">
 
                     <td style="padding:12px 16px;">
-                        {{ forloop.counter }}
+                        {{ pending_site_visits.start_index|add:forloop.counter0 }}
                     </td>
 
                     <td style="
@@ -1588,6 +1590,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=pending_site_visits page_param="approval_page" %}
 
 </div>
 
@@ -1680,7 +1683,7 @@
                 <tr style="border-bottom:1px solid #f3f4f6;">
 
                     <td style="padding:12px 16px;">
-                        {{ forloop.counter }}
+                        {{ history_visits.start_index|add:forloop.counter0 }}
                     </td>
 
                     <td style="
@@ -1781,6 +1784,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=history_visits page_param="history_page" %}
 
 </div>
 

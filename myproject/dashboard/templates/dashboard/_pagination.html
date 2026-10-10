@@ -1,0 +1,49 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="admin-pagination" aria-label="List pagination">
+    {% if page_obj.has_previous %}
+        <a class="admin-pagination-link admin-pagination-arrow nav-link-ajax"
+           href="{{ page_obj.previous_url }}{% if section_id %}#{{ section_id }}{% endif %}"
+           aria-label="Previous page">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            <span>Previous</span>
+        </a>
+    {% else %}
+        <span class="admin-pagination-link admin-pagination-arrow is-disabled"
+              aria-disabled="true">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            <span>Previous</span>
+        </span>
+    {% endif %}
+
+    <div class="admin-pagination-pages" aria-label="Page numbers">
+        {% for page_link in page_obj.pagination_links %}
+            {% if page_link.is_ellipsis %}
+                <span class="admin-pagination-ellipsis" aria-hidden="true">&hellip;</span>
+            {% elif page_link.is_current %}
+                <span class="admin-pagination-link is-active"
+                      aria-current="page"
+                      aria-label="Page {{ page_link.number }}">{{ page_link.number }}</span>
+            {% else %}
+                <a class="admin-pagination-link nav-link-ajax"
+                   href="{{ page_link.url }}{% if section_id %}#{{ section_id }}{% endif %}"
+                   aria-label="Page {{ page_link.number }}">{{ page_link.number }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_next %}
+        <a class="admin-pagination-link admin-pagination-arrow nav-link-ajax"
+           href="{{ page_obj.next_url }}{% if section_id %}#{{ section_id }}{% endif %}"
+           aria-label="Next page">
+            <span>Next</span>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </a>
+    {% else %}
+        <span class="admin-pagination-link admin-pagination-arrow is-disabled"
+              aria-disabled="true">
+            <span>Next</span>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </span>
+    {% endif %}
+</nav>
+{% endif %}

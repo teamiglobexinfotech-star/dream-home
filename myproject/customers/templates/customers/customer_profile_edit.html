@@ -1,7 +1,7 @@
 <div class="card-section" style="max-width: 750px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; font-family: inherit;">
     
     <!-- Top Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+    <div class="customer-profile-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
         <h3 style="margin: 0; font-size: 18px; color: #1e293b; font-weight: 650;">Edit Profile</h3>
         <button onclick="loadProfileView()" style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 5px;">
             <i class="fa-solid fa-arrow-left"></i> Cancel / View Profile
@@ -16,7 +16,7 @@
         {% csrf_token %}
         
         <!-- Profile Picture Section -->
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #fff; padding: 12px 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div class="customer-profile-picture" style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #fff; padding: 12px 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
             <div>
                 {% if user.profile_image %}
                     <img id="profileImagePreview" src="{{ user.profile_image.url }}" alt="Profile Picture" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1;">
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="customer-profile-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div>
                 <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Full Name</label>
                 <input type="text" name="full_name" value="{{ user.full_name }}" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box;">
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="customer-profile-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div>
                 <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">Mobile Number</label>
                 <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box;">

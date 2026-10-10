@@ -1,9 +1,9 @@
 <div class="card-section" style="max-width: 750px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; font-family: inherit;">
     
     <!-- Top Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+    <div class="customer-profile-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
         <h3 style="margin: 0; font-size: 18px; color: #1e293b; font-weight: 650;">My Profile</h3>
-        <div style="display: flex; gap: 8px;">
+        <div class="customer-profile-actions" style="display: flex; gap: 8px;">
             <button onclick="loadProfileEditForm()" style="background: #2563eb; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                 <i class="fa-solid fa-pen-to-square"></i> Edit Profile
             </button>
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Info Grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="customer-profile-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div style="background: #fff; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
                 <span style="display: block; font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase;">Full Name</span>
                 <span style="font-size: 13px; color: #1e293b; font-weight: 500;">{{ user.full_name }}</span>
@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="customer-profile-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div style="background: #fff; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
                 <span style="display: block; font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase;">Mobile Number</span>
                 <span style="font-size: 13px; color: #1e293b; font-weight: 500;">{{ user.mobile_number|default:"Not Provided" }}</span>
@@ -66,6 +66,5 @@
 
     </div>
 </div>
-
 
 

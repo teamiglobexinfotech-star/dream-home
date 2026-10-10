@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from properties.models import Property, PropertyImage, Agent, Enquiry, Project, Payment, BlogPost, SiteVisit, Commission,VisitSchedule
 from django.contrib.auth import update_session_auth_hash, login, get_backends
 from django.template.loader import render_to_string
@@ -26,11 +27,55 @@ from properties.models import Booking
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.conf import settings
 from properties.forms import ProjectForm,BlogPostForm
 from django.db import transaction
 
 User = get_user_model()
+
+
+def paginate_list(request, queryset, page_param='page', page_path=None):
+    page_obj = Paginator(queryset, 10).get_page(request.GET.get(page_param))
+    query_params = request.GET.copy()
+    list_path = page_path or request.path
+
+    def page_url(page_number):
+        query_params[page_param] = page_number
+        return f'{list_path}?{query_params.urlencode()}'
+
+    page_obj.previous_url = (
+        page_url(page_obj.previous_page_number()) if page_obj.has_previous() else None
+    )
+    page_obj.next_url = (
+        page_url(page_obj.next_page_number()) if page_obj.has_next() else None
+    )
+
+    total_pages = page_obj.paginator.num_pages
+    if total_pages <= 7:
+        page_numbers = list(page_obj.paginator.page_range)
+    elif page_obj.number <= 4:
+        page_numbers = [1, 2, 3, 4, 5, total_pages]
+    elif page_obj.number >= total_pages - 3:
+        page_numbers = [1, *range(total_pages - 4, total_pages + 1)]
+    else:
+        page_numbers = [1, page_obj.number - 1, page_obj.number,
+                        page_obj.number + 1, total_pages]
+
+    page_links = []
+    previous_number = None
+    for page_number in page_numbers:
+        if previous_number is not None and page_number - previous_number > 1:
+            page_links.append({'is_ellipsis': True})
+        page_links.append({
+            'number': page_number,
+            'url': page_url(page_number),
+            'is_current': page_number == page_obj.number,
+        })
+        previous_number = page_number
+    page_obj.pagination_links = page_links
+    return page_obj
+
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -301,7 +346,11 @@ def add_property_view(request):
                     'x-requested-with'
                 ) == 'XMLHttpRequest':
 
-                    properties = Property.objects.all().order_by('-id')
+                    properties = paginate_list(
+                        request,
+                        Property.objects.all().order_by('-id'),
+                        page_path=reverse('property_list'),
+                    )
 
                     return render(
                         request,
@@ -544,8 +593,10 @@ def edit_property_view(request, pk):
                     'x-requested-with'
                 ) == 'XMLHttpRequest':
 
-                    properties = Property.objects.all().order_by(
-                        '-id'
+                    properties = paginate_list(
+                        request,
+                        Property.objects.all().order_by('-id'),
+                        page_path=reverse('property_list'),
                     )
 
                     return render(
@@ -598,7 +649,11 @@ def delete_property_view(request, pk):
     property_item = get_object_or_404(Property, pk=pk)
     property_item.delete()
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        properties = Property.objects.all().order_by('-id')
+        properties = paginate_list(
+            request,
+            Property.objects.all().order_by('-id'),
+            page_path=reverse('property_list'),
+        )
         return render(request, 'dashboard/property_list.html', {'properties': properties})
     return redirect('admin_dashboard')
 
@@ -629,7 +684,9 @@ def all_activities_view(request):
             })
 
     all_activities = sorted(all_activities, key=lambda x: x['time'], reverse=True)
-    context = {'all_activities': all_activities}
+    context = {
+        'all_activities': paginate_list(request, all_activities)
+    }
     
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/all_activities.html', context)
@@ -637,14 +694,16 @@ def all_activities_view(request):
 
 # 5. Property Management List View
 def property_list_view(request):
-    properties = Property.objects.all().order_by('-id')
+    properties = paginate_list(
+        request, Property.objects.all().order_by('-id')
+    )
     context = {'properties': properties}
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/property_list.html', context)
     return render(request, 'dashboard/property_list.html', context)
 
 def project_list_view(request):
-    projects = Project.objects.all().order_by('-id')
+    projects = paginate_list(request, Project.objects.all().order_by('-id'))
 
     context = {
         'projects': projects
@@ -663,7 +722,11 @@ def add_project_view(request):
             form.save()
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                projects = Project.objects.all().order_by('-id')
+                projects = paginate_list(
+                    request,
+                    Project.objects.all().order_by('-id'),
+                    page_path=reverse('project_list'),
+                )
                 return render(
                     request,
                     'dashboard/project_list.html',
@@ -695,7 +758,11 @@ def edit_project_view(request, pk):
             form.save()
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                projects = Project.objects.all().order_by('-id')
+                projects = paginate_list(
+                    request,
+                    Project.objects.all().order_by('-id'),
+                    page_path=reverse('project_list'),
+                )
 
                 return render(
                     request,
@@ -724,7 +791,11 @@ def delete_project_view(request, pk):
     project.delete()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        projects = Project.objects.all().order_by('-id')
+        projects = paginate_list(
+            request,
+            Project.objects.all().order_by('-id'),
+            page_path=reverse('project_list'),
+        )
         return render(
             request,
             'dashboard/project_list.html',
@@ -735,7 +806,7 @@ def delete_project_view(request, pk):
 
 # 6. Lead Management List View
 def lead_list_view(request):
-    leads = Enquiry.objects.all().order_by('-created_at')
+    leads = paginate_list(request, Enquiry.objects.all().order_by('-created_at'))
     #all_agents = User.objects.filter(role='agent')
     context = {'leads': leads}
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -753,7 +824,11 @@ def edit_lead_view(request, pk):
         lead_item.save()
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            leads = Enquiry.objects.all().order_by('-id')
+            leads = paginate_list(
+                request,
+                Enquiry.objects.all().order_by('-id'),
+                page_path=reverse('lead_list'),
+            )
             #all_agents = User.objects.filter(role='agent')
             return render(request, 'dashboard/lead_list.html', {'leads': leads})
             
@@ -771,7 +846,11 @@ def delete_lead_view(request, pk):
     
     # Agar request AJAX hai toh dashboard ke andar hi updated lead list bhej do
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        leads = Enquiry.objects.all().order_by('-created_at')
+        leads = paginate_list(
+            request,
+            Enquiry.objects.all().order_by('-created_at'),
+            page_path=reverse('lead_list'),
+        )
         #all_agents = User.objects.filter(role='agent')
         return render(request, 'dashboard/lead_list.html', {'leads': leads})
         
@@ -779,7 +858,11 @@ def delete_lead_view(request, pk):
 
 # 9. Customer Management List View
 def customer_list_view(request):
-    customers = User.objects.filter(role='customer').order_by('-id')
+    customers = paginate_list(
+        request,
+        User.objects.filter(role='customer').order_by('-id'),
+        page_path=reverse('customer_list'),
+    )
     context = {'customers': customers}
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/customer_list.html', context)
@@ -801,7 +884,11 @@ def add_customer_view(request):
             role='customer'
         )
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            customers = User.objects.filter(role='customer').order_by('-id')
+            customers = paginate_list(
+                request,
+                User.objects.filter(role='customer').order_by('-id'),
+                page_path=reverse('customer_list'),
+            )
             return render(request, 'dashboard/customer_list.html', {'customers': customers})
         return redirect('customer_list')
     
@@ -819,7 +906,11 @@ def edit_customer_view(request, pk):
         customer.save()
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            customers = User.objects.filter(role='customer').order_by('-id')
+            customers = paginate_list(
+                request,
+                User.objects.filter(role='customer').order_by('-id'),
+                page_path=reverse('customer_list'),
+            )
             return render(request, 'dashboard/customer_list.html', {'customers': customers})
         return redirect('customer_list')
         
@@ -833,13 +924,19 @@ def delete_customer_view(request, pk):
     customer = get_object_or_404(User, pk=pk, role='customer')
     customer.delete()
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        customers = User.objects.filter(role='customer').order_by('-id')
+        customers = paginate_list(
+            request, User.objects.filter(role='customer').order_by('-id')
+        )
         return render(request, 'dashboard/customer_list.html', {'customers': customers})
     return redirect('customer_list')
 
 # 13. Agent Management List View
 def agent_list_view(request):
-    agents = Agent.objects.all().order_by('-id')
+    agents = paginate_list(
+        request,
+        Agent.objects.all().order_by('-id'),
+        page_path=reverse('agent_list'),
+    )
     context = {'agents': agents}
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/agent_list.html', context)
@@ -881,7 +978,11 @@ def add_agent_view(request):
             pan_document=pan_document
         )
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            agents = Agent.objects.all().order_by('-id')
+            agents = paginate_list(
+                request,
+                Agent.objects.all().order_by('-id'),
+                page_path=reverse('agent_list'),
+            )
             return render(request, 'dashboard/agent_list.html', {'agents': agents})
         return redirect('agent_list')
         
@@ -935,7 +1036,11 @@ def edit_agent_view(request, pk):
                 )
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            agents = Agent.objects.all().order_by('-id')
+            agents = paginate_list(
+                request,
+                Agent.objects.all().order_by('-id'),
+                page_path=reverse('agent_list'),
+            )
             return render(request, 'dashboard/agent_list.html', {'agents': agents})
         return redirect('agent_list')
         
@@ -956,13 +1061,21 @@ def delete_agent_view(request, pk):
     agent = get_object_or_404(Agent, pk=pk)
     agent.delete()
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        agents = Agent.objects.all().order_by('-id')
+        agents = paginate_list(
+            request,
+            Agent.objects.all().order_by('-id'),
+            page_path=reverse('agent_list'),
+        )
         return render(request, 'dashboard/agent_list.html', {'agents': agents})
     return redirect('agent_list')
 
 # Payment Management List View
 def payment_list_view(request):
-    payments = Payment.objects.all().order_by('-id')
+    payments = paginate_list(
+        request,
+        Payment.objects.all().order_by('-id'),
+        page_path=reverse('payment_list'),
+    )
     context = {'payments': payments}
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/payment_list.html', context)
@@ -988,7 +1101,11 @@ def add_payment_view(request):
             transaction_id=transaction_id
         )
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            payments = Payment.objects.all().order_by('-id')
+            payments = paginate_list(
+                request,
+                Payment.objects.all().order_by('-id'),
+                page_path=reverse('payment_list'),
+            )
             return render(request, 'dashboard/payment_list.html', {'payments': payments})
         return redirect('payment_list')
         
@@ -1002,7 +1119,11 @@ def delete_payment_view(request, pk):
     payment = get_object_or_404(Payment, pk=pk)
     payment.delete()
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        payments = Payment.objects.all().order_by('-id')
+        payments = paginate_list(
+            request,
+            Payment.objects.all().order_by('-id'),
+            page_path=reverse('payment_list'),
+        )
         return render(request, 'dashboard/payment_list.html', {'payments': payments})
     return redirect('payment_list')
 
@@ -1012,7 +1133,11 @@ def update_payment_status(request, pk):
         payment.status = request.POST.get('status')
         payment.save()
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        payments = Payment.objects.all().order_by('-id')
+        payments = paginate_list(
+            request,
+            Payment.objects.all().order_by('-id'),
+            page_path=reverse('payment_list'),
+        )
         return render(request, 'dashboard/payment_list.html', {'payments': payments})
     return redirect('payment_list')
 
@@ -1029,7 +1154,11 @@ def edit_payment_view(request, pk):
         payment.save()
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            payments = Payment.objects.all().order_by('-id')
+            payments = paginate_list(
+                request,
+                Payment.objects.all().order_by('-id'),
+                page_path=reverse('payment_list'),
+            )
             return render(request, 'dashboard/payment_list.html', {'payments': payments})
         return redirect('payment_list')
         
@@ -1256,13 +1385,13 @@ def mark_ajax_read(request):
 @login_required
 def admin_booking_management(request):
 
-    all_bookings = Booking.objects.select_related(
+    all_bookings = paginate_list(request, Booking.objects.select_related(
         'user',
         'property',
         'property__category'
-    ).all().order_by('-id')
+    ).all().order_by('-id'))
 
-    total_bookings_count = all_bookings.count()
+    total_bookings_count = Booking.objects.count()
 
     context = {
         'bookings': all_bookings,
@@ -1444,6 +1573,16 @@ def site_visit_approvals_view(request):
 
     upcoming_visits = upcoming_visit_list.count()
 
+    pending_section_list = VisitSchedule.objects.select_related(
+        'property',
+        'agent'
+    ).filter(
+        agent__isnull=False,
+        visit_date__isnull=False,
+    ).exclude(
+        status__in=['Completed', 'Cancelled']
+    ).order_by('visit_date')
+
 
     # =========================================================
     # 5. APPROVED SITE VISITS
@@ -1487,6 +1626,27 @@ def site_visit_approvals_view(request):
         status='Pending'
     ).order_by('-created_at')
 
+    total_visit_list = paginate_list(request, total_visit_list, 'total_page')
+    completed_visit_list = paginate_list(
+        request, completed_visit_list, 'completed_page'
+    )
+    pending_visit_list = paginate_list(request, pending_visit_list, 'pending_page')
+    upcoming_visit_list = paginate_list(
+        request, upcoming_visit_list, 'upcoming_page'
+    )
+    pending_section_list = paginate_list(
+        request, pending_section_list, 'pending_page'
+    )
+    approved_visit_list = paginate_list(
+        request, approved_visit_list, 'approved_page'
+    )
+    rejected_visit_list = paginate_list(
+        request, rejected_visit_list, 'rejected_page'
+    )
+    pending_site_visits = paginate_list(
+        request, pending_site_visits, 'approval_page'
+    )
+    history_visits = paginate_list(request, history_visits, 'history_page')
 
     # =========================================================
     # CONTEXT
@@ -1512,6 +1672,7 @@ def site_visit_approvals_view(request):
         # Pending
         # -------------------------
         'pending_visit_list': pending_visit_list,
+        'pending_section_list': pending_section_list,
         'pending_visits': pending_visits,
 
 
@@ -1583,7 +1744,9 @@ def delete_site_visit(request, visit_id):
 
 @staff_member_required
 def admin_commission_management(request):
-    commissions = Commission.objects.all().order_by('-id')
+    commissions = paginate_list(
+        request, Commission.objects.all().order_by('-id'), 'commission_page'
+    )
     agents = User.objects.filter(is_staff=False)
 
     if request.method == 'POST':
@@ -1620,14 +1783,17 @@ def update_commission_status(request, pk):
         if new_status in ['Pending', 'Paid']:
             commission.status = new_status
             commission.save()
-    return redirect('admin_commission_management')
+    list_url = reverse('admin_commission_management')
+    if request.GET:
+        list_url = f'{list_url}?{request.GET.urlencode()}'
+    return redirect(list_url)
 
 
 def visit_schedule_list_view(request):
-    schedules = VisitSchedule.objects.select_related(
+    schedules = paginate_list(request, VisitSchedule.objects.select_related(
         'property',
         'agent'
-    ).all().order_by('-created_at')
+    ).all().order_by('-created_at'))
 
     agents = User.objects.filter(role='agent').order_by('full_name', 'email')
 
@@ -1887,11 +2053,11 @@ def agent_details_ajax(request, pk):
 
 # Blog Management List View
 def blog_list_view(request):
-    blogs = BlogPost.objects.select_related(
+    blogs = paginate_list(request, BlogPost.objects.select_related(
         'category'
     ).prefetch_related(
         'tags'
-    ).all().order_by('-created_at')
+    ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
     context = {
         'blogs': blogs
@@ -1919,11 +2085,11 @@ def add_blog_view(request):
             form.save()
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                blogs = BlogPost.objects.select_related(
+                blogs = paginate_list(request, BlogPost.objects.select_related(
                     'category'
                 ).prefetch_related(
                     'tags'
-                ).all().order_by('-created_at')
+                ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
                 return render(
                     request,
@@ -1957,11 +2123,11 @@ def edit_blog_view(request, pk):
             form.save()
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                blogs = BlogPost.objects.select_related(
+                blogs = paginate_list(request, BlogPost.objects.select_related(
                     'category'
                 ).prefetch_related(
                     'tags'
-                ).all().order_by('-created_at')
+                ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
                 return render(
                     request,
@@ -1992,11 +2158,11 @@ def delete_blog_view(request, pk):
     blog.delete()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        blogs = BlogPost.objects.select_related(
+        blogs = paginate_list(request, BlogPost.objects.select_related(
             'category'
         ).prefetch_related(
             'tags'
-        ).all().order_by('-created_at')
+        ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
         return render(
             request,

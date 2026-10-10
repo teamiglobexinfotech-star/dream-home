@@ -18,7 +18,7 @@
 
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="admin-sidebar">
             <div class="sidebar-brand">
                 <i class="fa-solid fa-building-user brand-icon"></i>
                 <div class="brand-text">
@@ -141,13 +141,14 @@
                 <button class="btn-upgrade">Upgrade Plan</button>
             </div>
         </aside>
+        <button class="sidebar-backdrop" type="button" aria-label="Close navigation"></button>
 
         <!-- Main Content Area -->
         <main class="main-content">
             <!-- Top Navbar -->
             <header class="top-navbar">
                 <div class="nav-left">
-                  <button id="sidebar-toggle" type="button" aria-label="Open Sidebar">
+                  <button id="sidebar-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="admin-sidebar">
                     <i class="fa-solid fa-bars"></i>
                   </button> 
                     
@@ -815,6 +816,14 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(html => {
                 mainArea.innerHTML = html;
+                const requestedSection = new URL(url, window.location.href).hash;
+                if (requestedSection) {
+                    const section = mainArea.querySelector(requestedSection);
+                    if (section && section.classList.contains('visit-detail-section')) {
+                        section.style.display = 'block';
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
 
                 // ==========================================
 // EDIT PROPERTY - MAIN IMAGE + GALLERY

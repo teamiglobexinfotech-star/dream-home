@@ -5,24 +5,42 @@ document.addEventListener("DOMContentLoaded", function() {
     // Mobile Sidebar Toggle
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
+    const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
 
     if (sidebarToggle && sidebar) {
+        const setSidebarOpen = function(isOpen) {
+            const shouldOpen = isOpen && window.innerWidth <= 992;
+            sidebar.classList.toggle('active', shouldOpen);
+            sidebarToggle.setAttribute('aria-expanded', String(shouldOpen));
+            if (sidebarBackdrop) {
+                sidebarBackdrop.classList.toggle('is-visible', shouldOpen);
+            }
+            document.body.classList.toggle('sidebar-open', shouldOpen);
+        };
+
         sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
+            setSidebarOpen(!sidebar.classList.contains('active'));
+        });
+
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', function() {
+                setSidebarOpen(false);
+            });
+        }
+
+        // Close the drawer after navigating, but leave dropdown toggles usable.
+        document.querySelectorAll('.sidebar a.nav-link-ajax').forEach(function (link) {
+            link.addEventListener('click', function () {
+                setSidebarOpen(false);
+            });
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                setSidebarOpen(false);
+            }
         });
     }
-
-
-    // Close sidebar automatically after clicking a sidebar menu item on mobile
-    document.querySelectorAll('.sidebar a').forEach(function (link) {
-        link.addEventListener('click', function () {
-
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('active');
-            }
-
-        });
-    });
 
 
     // Dark mode toggle logic
@@ -354,7 +372,6 @@ $(document).on('submit', '#adminCommissionForm, .updateCommissionForm', function
         }
     });
 });
-
 
 
 

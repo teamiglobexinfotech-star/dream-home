@@ -198,7 +198,7 @@
 
 <body>
 
-<div class="container">
+<div class="container admin-list-container">
 
     <div class="header">
         <h2>Enquiry Management</h2>
@@ -216,6 +216,7 @@
         Add New Enquiry
     </a> -->
 
+    <div class="admin-table-wrap">
     <table>
 
         <thead>
@@ -237,7 +238,7 @@
 
         <tr>
 
-            <td>{{ forloop.counter }}</td>
+            <td>{{ leads.start_index|add:forloop.counter0 }}</td>
 
             <td>{{ lead.name }}</td>
 
@@ -335,6 +336,8 @@
         </tbody>
 
     </table>
+    </div>
+    {% include "dashboard/_pagination.html" with page_obj=leads page_param="page" %}
 
 </div>
 

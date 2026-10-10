@@ -570,7 +570,7 @@
          TABLE
     ========================= -->
 
-    <div class="table-wrapper">
+    <div class="table-wrapper admin-table-wrap">
 
         <table class="blog-table">
 
@@ -604,7 +604,7 @@
                     <!-- NUMBER -->
 
                     <td>
-                        {{ forloop.counter }}
+                        {{ blogs.start_index|add:forloop.counter0 }}
                     </td>
 
 
@@ -763,6 +763,7 @@
         </table>
 
     </div>
+    {% include "dashboard/_pagination.html" with page_obj=blogs page_param="page" %}
 
 </div>
 

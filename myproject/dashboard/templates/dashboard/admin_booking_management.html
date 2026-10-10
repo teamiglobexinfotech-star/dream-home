@@ -382,7 +382,7 @@
 <body>
 
 
-<div class="container">
+<div class="container admin-list-container">
 
 
     <!-- =========================
@@ -411,6 +411,7 @@
          BOOKING TABLE
     ========================== -->
 
+    <div class="admin-table-wrap">
     <table>
 
         <thead>
@@ -447,7 +448,7 @@
             <!-- Serial Number -->
 
             <td>
-                {{ forloop.counter }}
+                {{ bookings.start_index|add:forloop.counter0 }}
             </td>
 
 
@@ -605,6 +606,8 @@
         </tbody>
 
     </table>
+    </div>
+    {% include "dashboard/_pagination.html" with page_obj=bookings page_param="page" %}
 
 </div>
 

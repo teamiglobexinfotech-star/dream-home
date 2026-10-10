@@ -1858,6 +1858,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.openPropertyBooking = function (propertyId) {
 
         selectedPropertyId = propertyId;
+        window.selectedPropertyId = propertyId;
 
         // const propertyBtn = document.querySelector(
         //     '.book-property-btn[data-property-id="' + propertyId + '"]'
@@ -2240,7 +2241,10 @@ document.addEventListener("DOMContentLoaded", function () {
             e.stopImmediatePropagation();
 
 
-            if (!selectedPropertyId) {
+            const propertyId =
+                window.selectedPropertyId || selectedPropertyId;
+
+            if (!propertyId) {
 
                 Swal.fire({
 
@@ -2264,7 +2268,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const bookingUrl =
                 "/customers/book-property/" +
-                selectedPropertyId +
+                propertyId +
                 "/";
 
 

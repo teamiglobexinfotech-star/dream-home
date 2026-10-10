@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container admin-list-container">
     <div class="header">
         <h2>All Properties Management</h2>
         <!-- Back button ki ab zarurat nahi hai kyunki yeh dashboard ke andar hi khulega -->
@@ -10,6 +10,7 @@
     <!-- Add button me nav-link-ajax class lagayein -->
     <a href="{% url 'add_property' %}" class="btn btn-add nav-link-ajax"><i class="fa fa-plus"></i> Add New Property</a>
     
+    <div class="admin-table-wrap">
     <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
         <thead>
             <tr style="background: #343a40; color: white;">
@@ -26,7 +27,7 @@
         <tbody>
             {% for prop in properties %}
             <tr>
-                <td style="border: 1px solid #ddd; padding: 12px;">#{{ forloop.counter }}</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">#{{ properties.start_index|add:forloop.counter0 }}</td>
                 <td style="border: 1px solid #ddd; padding: 12px;">{{ prop.title }}</td>
                 <td style="border: 1px solid #ddd; padding: 12px;">{{ prop.category }}</td>
                 <td style="border: 1px solid #ddd; padding: 12px;">₹{{ prop.price }}</td>
@@ -75,6 +76,8 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
+    {% include "dashboard/_pagination.html" with page_obj=properties page_param="page" %}
 </div>
 
 

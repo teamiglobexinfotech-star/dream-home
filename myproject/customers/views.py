@@ -657,7 +657,11 @@ def toggle_save_property(request, property_id):
 
 @login_required
 def ajax_all_saved_properties(request):
-    saved_items = SavedProperty.objects.filter(user=request.user).select_related('property')
+    saved_items = (
+        SavedProperty.objects.filter(user=request.user)
+        .select_related('property', 'property__category')
+        .prefetch_related('property__images')
+    )
     
     # Aapka jo saved properties wala HTML template hai, use render karna
     html_content = render_to_string('customers/saved_properties.html', {

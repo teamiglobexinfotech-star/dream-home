@@ -77,7 +77,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container admin-list-container">
         <div class="header">
             <h2>Agent Management</h2>
             <div>
@@ -86,6 +86,7 @@
             </div>
         </div>
         
+        <div class="admin-table-wrap">
         <table>
             <thead>
                 <tr>
@@ -103,7 +104,7 @@
             <tbody>
                 {% for agent in agents %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
+                    <td>{{ agents.start_index|add:forloop.counter0 }}</td>
                     <td>
                         {% if agent.image %}
                             <img src="{{ agent.image.url }}" class="agent-img" alt="{{ agent.name }}">
@@ -162,6 +163,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
+        {% include "dashboard/_pagination.html" with page_obj=agents page_param="page" %}
     </div>
 
 

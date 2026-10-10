@@ -43,6 +43,7 @@
             <li style="padding: 20px; text-align: center; color: #777;">No activities found.</li>
             {% endfor %}
         </ul>
+        {% include "dashboard/_pagination.html" with page_obj=all_activities page_param="page" %}
     </div>
 
 </body>
