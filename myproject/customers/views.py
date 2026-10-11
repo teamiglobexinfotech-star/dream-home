@@ -329,6 +329,8 @@ def add_agent_view(request):
                 role='agent'
             )
 
+            print("POST DATA:", request.POST, "FILES:", request.FILES)
+
         Agent.objects.create(
             name=name,
             father_name=father_name,

@@ -14,43 +14,48 @@
         
         <div class="edit-agent-group">
             <label>Agent Name</label>
-            <input type="text" name="name" value="{{ agent.name }}" required>
+            <input type="text" name="name" value="{{ agent.name }}" maxlength="100" pattern=".*\S.*" title="Enter an agent name." required>
         </div>
 
         <div class="edit-agent-group">
             <label>Father Name</label>
-            <input type="text" name="father_name" value="{{ agent.father_name|default:'' }}">
+            <input type="text" name="father_name" value="{{ agent.father_name|default:'' }}" maxlength="100" pattern=".*\S.*" title="Enter a valid father name or leave this field blank.">
         </div>
 
         
         <div class="edit-agent-group">
             <label>Role / Designation</label>
-            <input type="text" name="role" value="{{ agent.role }}">
+            <input type="text" name="role" value="{{ agent.role }}" maxlength="100" pattern=".*\S.*" title="Enter the agent's role or designation." required>
         </div>
         
         <div class="edit-agent-group">
             <label>Experience</label>
-            <input type="text" name="experience" value="{{ agent.experience }}">
+            <input type="text" name="experience" value="{{ agent.experience }}" maxlength="50" pattern=".*\S.*" title="Enter the agent's experience." required>
         </div>
         
         <div class="edit-agent-group">
             <label>Email Address</label>
-            <input type="email" name="email" value="{{ agent.email }}" required>
+            <input type="email" name="email" value="{{ agent.email }}" maxlength="254" title="Enter a valid email address." required>
         </div>
 
        <div class="edit-agent-group">
             <label>Password (Naya password set karne ke liye bharein, warna khali chhod dein)</label>
-            <input type="password" name="password" placeholder="Leave blank to keep old password">
+           <div class="edit-agent-password-field">
+               <input id="agentPassword" type="password" name="password" minlength="8" title="If changing the password, enter at least 8 characters." placeholder="Leave blank to keep old password">
+               <button type="button" class="edit-agent-password-toggle" aria-label="Show password" aria-pressed="false" title="Show password">
+                   <i class="fa fa-eye" aria-hidden="true"></i>
+               </button>
+           </div>
         </div>
         
         <div class="edit-agent-group">
             <label>Phone Number</label>
-            <input type="text" name="phone" value="{{ agent.phone }}" required>
+            <input type="tel" name="phone" value="{{ agent.phone }}" minlength="7" maxlength="20" pattern="[+0-9() -]{7,20}" title="Enter a phone number with 7 to 20 digits or phone symbols." required>
         </div>
 
         <div class="edit-agent-group">
             <label>Aadhaar Card</label>
-            <input type="file" name="aadhaar_document">
+            <input type="file" name="aadhaar_document" accept=".pdf,.jpg,.jpeg,.png">
 
             {% if agent.aadhaar_document %}
                 <p style="font-size: 13px; color: #666; margin-top: 6px;">
@@ -61,7 +66,7 @@
 
         <div class="edit-agent-group">
             <label>PAN Card</label>
-            <input type="file" name="pan_document">
+            <input type="file" name="pan_document" accept=".pdf,.jpg,.jpeg,.png">
 
             {% if agent.pan_document %}
                 <p style="font-size: 13px; color: #666; margin-top: 6px;">
@@ -72,7 +77,7 @@
         
         <div class="edit-agent-group">
             <label>Change Profile Image (Optional)</label>
-            <input type="file" name="image">
+            <input type="file" name="image" accept="image/*">
             {% if agent.image %}
                 <p style="font-size: 13px; color: #666; margin-top: 6px;">Current Image:</p>
                 <img src="{{ agent.image.url }}" class="edit-agent-current-img" alt="Agent Image">
@@ -151,6 +156,26 @@
         font-size: 14px;
     }
 
+    .edit-agent-container .edit-agent-password-field {
+        position: relative;
+    }
+
+    .edit-agent-container .edit-agent-password-field input {
+        padding-right: 42px;
+    }
+
+    .edit-agent-container .edit-agent-password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        border: 0;
+        padding: 4px;
+        color: #666;
+        background: transparent;
+        cursor: pointer;
+    }
+
     .edit-agent-container input:focus {
         border-color: #28a745;
         outline: none;
@@ -184,3 +209,15 @@
         background: #e0a800;
     }
 </style>
+
+<script>
+    document.querySelector('.edit-agent-password-toggle').addEventListener('click', function () {
+        const password = document.getElementById('agentPassword');
+        const visible = password.type === 'password';
+        password.type = visible ? 'text' : 'password';
+        this.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+        this.setAttribute('title', visible ? 'Hide password' : 'Show password');
+        this.setAttribute('aria-pressed', String(visible));
+        this.querySelector('i').className = visible ? 'fa fa-eye-slash' : 'fa fa-eye';
+    });
+</script>
