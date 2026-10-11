@@ -33,11 +33,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 DEBUG = os.environ.get("DEBUG").strip().lower() == "true"
+HOST = os.environ.get("HOST").strip().lower()
 
 if DEBUG:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 else:
-    ALLOWED_HOSTS = ["dream-home-xz3m.onrender.com"]
+    ALLOWED_HOSTS = [HOST]
 
 
 # Application definition
