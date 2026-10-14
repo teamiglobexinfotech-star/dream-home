@@ -97,7 +97,8 @@ def dashboard_view(request):
     rented_properties = Property.objects.filter(status='Rent').count() 
     
     total_agents = Agent.objects.count()
-    total_leads = Enquiry.objects.count()  
+    total_leads = Enquiry.objects.count()
+    total_bookings = Booking.objects.count()  
     total_enquiries = Enquiry.objects.count()
     total_projects = Project.objects.count()
 
@@ -106,6 +107,10 @@ def dashboard_view(request):
     
     todays_enquiries = Enquiry.objects.filter(created_at__date=today).order_by('-created_at')
     todays_enquiries_count = todays_enquiries.count()
+
+    today_total_schedule = VisitSchedule.objects.filter(
+        visit_date__date=today
+    ).count()
     
     # 2. Table & List Data (Latest entries fetch karna)
     latest_properties = Property.objects.all().order_by('-created_at')[:5]
@@ -270,7 +275,9 @@ def dashboard_view(request):
         'recent_activities': recent_activities,
         'todays_enquiries': todays_enquiries,            
         'todays_enquiries_count': todays_enquiries_count,
-        'upcoming_visits': upcoming_visits,    
+        'upcoming_visits': upcoming_visits,
+        'total_bookings': total_bookings,
+        'today_total_schedule': today_total_schedule,    
     }
     
     return render(request, 'dashboard/admin_dashboard.html', context)

@@ -268,38 +268,38 @@
                 
                <!-- 1. Top Stats Row -->
 <div class="stats-grid">
-    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+    <a href="{% url 'lead_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
         <div class="stat-header">
-            <span class="stat-title">Total Properties</span>
-            <div class="stat-icon blue"><i class="fa-solid fa-building"></i></div>
+            <span class="stat-title">Total Leads</span>
+            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
         </div>
-        <h2 class="stat-value">{{ total_properties }}</h2>
+        <h2 class="stat-value">{{ total_leads }}</h2>
         <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> this month</span>
     </a>
     <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
         <div class="stat-header">
-            <span class="stat-title">Available Properties</span>
+            <span class="stat-title">Total Properties</span>
             <div class="stat-icon green"><i class="fa-solid fa-house-chimney"></i></div>
+        </div>
+        <h2 class="stat-value">{{ total_properties }}</h2>
+        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
+    </a>
+    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+
+        <div class="stat-header">
+            <span class="stat-title">Available Properties</span>
+            <div class="stat-icon red"><i class="fa-solid fa-handshake"></i></div>
         </div>
         <h2 class="stat-value">{{ available_properties }}</h2>
         <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
     </a>
-    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+    <a href="{% url 'admin_bookings' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
 
         <div class="stat-header">
-            <span class="stat-title">Sold Properties</span>
-            <div class="stat-icon red"><i class="fa-solid fa-handshake"></i></div>
-        </div>
-        <h2 class="stat-value">{{ sold_properties }}</h2>
-        <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
-    </a>
-    <a href="{% url 'property_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
-
-        <div class="stat-header">
-            <span class="stat-title">Rented Properties</span>
+            <span class="stat-title">Total Bookings</span>
             <div class="stat-icon yellow"><i class="fa-solid fa-key"></i></div>
         </div>
-        <h2 class="stat-value">{{ rented_properties }}</h2>
+        <h2 class="stat-value">{{ total_bookings }}</h2>
         <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> this month</span>
     </a>
     <a href="{% url 'agent_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
@@ -310,12 +310,12 @@
         <h2 class="stat-value">{{ total_agents }}</h2>
         <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
     </a>
-    <a href="{% url 'lead_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
+    <a href="{% url 'visit_schedule_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
         <div class="stat-header">
-            <span class="stat-title">Total Leads</span>
+            <span class="stat-title">Today's Total Schedule</span>
             <div class="stat-icon teal"><i class="fa-solid fa-bullhorn"></i></div>
         </div>
-        <h2 class="stat-value">{{ total_leads }}</h2>
+        <h2 class="stat-value">{{ today_total_schedule }}</h2>
         <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i>  this month</span>
     </a>
     <a href="{% url 'payment_list' %}" class="stat-card nav-link-ajax" style="text-decoration: none; color: inherit;">
@@ -800,6 +800,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const link = e.target.closest('.nav-link-ajax');
             if (!link) return;
 
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        link.closest('li')?.classList.add('active');
+
             e.preventDefault();
             const url = link.getAttribute('href');
 
@@ -830,7 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // UPLOAD + 4:3 CROP
 // ==========================================
 
-{
+(function (){
 
     const editPropertyForm =
         document.getElementById('edit-property-form');
@@ -2883,7 +2889,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateEditImageCount();
 
-}
+})();
                 
                 
                 // ==========================================

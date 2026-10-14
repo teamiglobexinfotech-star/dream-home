@@ -3,12 +3,12 @@
     <div class="logo">🏠 DREAMHOME</div>
     
     <ul class="nav-links" id="primaryNavigation">
-        <li><a href="{% url 'home' %}" class="active">Home</a></li>
-        <li><a href="{% url 'about' %}">About Us</a></li>
+        <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+        <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a></li>
         
         <!-- Properties Dropdown -->
         <li class="dropdown">
-            <a href="{% url 'properties' %}">Properties</a>
+            <a href="{% url 'properties' %}" class="{% if request.resolver_match.url_name == 'properties' %}active{% endif %}">Properties</a>
             <button class="dropdown-toggle" type="button" aria-label="Show property links"
                     aria-expanded="false">
                 <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -20,10 +20,10 @@
             </div>
         </li>
 
-        <li><a href="{% url 'projects' %}">Projects</a></li>
-        <li><a href="{% url 'agents'%}">Agents</a></li>
-        <li><a href="{% url 'blogs'%}">Blog</a></li>
-        <li><a href="{% url 'contact'%}">Contact Us</a></li>
+        <li><a href="{% url 'projects' %}" class="{% if request.resolver_match.url_name == 'projects' %}active{% endif %}">Projects</a></li>
+        <li><a href="{% url 'agents'%}" class="{% if request.resolver_match.url_name == 'agents' %}active{% endif %}">Agents</a></li>
+        <li><a href="{% url 'blogs'%}" class="{% if request.resolver_match.url_name == 'blogs' %}active{% endif %}">Blog</a></li>
+        <li><a href="{% url 'contact'%}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact Us</a></li>
         
     </ul>
 
