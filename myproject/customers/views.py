@@ -88,6 +88,21 @@ def login_view(request):
 
         user = None
         if user_obj is not None:
+
+            if (
+                login_role == 'agent'
+                and getattr(user_obj, 'role', '') == 'agent'
+                and not user_obj.is_active
+                and user_obj.check_password(password)
+            ):
+                messages.error(
+                    request,
+                    'Your account has been deactivated by admin. Please contact administrator.'
+                )
+                return redirect('login')
+
+            
+
             username_field = user_obj.USERNAME_FIELD
             user = authenticate(request, **{username_field: getattr(user_obj, username_field), 'password': password})
 

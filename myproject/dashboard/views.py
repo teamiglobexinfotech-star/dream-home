@@ -1056,12 +1056,39 @@ def edit_agent_view(request, pk):
         return render(request, 'dashboard/edit_agent.html', context)
     return render(request, 'dashboard/edit_agent.html', context)
 
+# def toggle_agent_status(request, pk):
+#     agent = get_object_or_404(Agent, pk=pk)
+#     agent.is_active = not agent.is_active
+#     agent.save()
+
+#     return redirect('agent_list')
+
+
+
 def toggle_agent_status(request, pk):
     agent = get_object_or_404(Agent, pk=pk)
-    agent.is_active = not agent.is_active
-    agent.save()
+
+    user_obj = User.objects.filter(
+        email__iexact=agent.email,
+        role='agent'
+    ).first()
+
+    new_status = not agent.is_active
+
+    agent.is_active = new_status
+    agent.save(update_fields=['is_active'])
+
+    if user_obj:
+        user_obj.is_active = new_status
+        user_obj.save(update_fields=['is_active'])
+
+    if new_status:
+        messages.success(request, 'Agent activated successfully.')
+    else:
+        messages.success(request, 'Agent deactivated successfully.')
 
     return redirect('agent_list')
+
 
 # 16. Delete Agent View
 def delete_agent_view(request, pk):
