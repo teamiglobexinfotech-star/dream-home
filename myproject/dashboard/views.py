@@ -6,10 +6,11 @@ from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import JsonResponse
+from django.http import HttpResponseForbidden
 from django.contrib.auth import logout
 #from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from customers.models import User,Notification
+from customers.models import User,Notification,SupportTicket
 from django.db.models.functions import ExtractMonth, Lower
 from django.db.models import Count, Sum
 from customers.forms import PropertyForm 
@@ -31,6 +32,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from properties.forms import ProjectForm,BlogPostForm
 from django.db import transaction
+from django.views.decorators.http import require_POST
 
 User = get_user_model()
 
@@ -2474,3 +2476,137 @@ def delete_blog_view(request, pk):
         extra_tags='dashboard_toast',
     )
     return redirect('admin_dashboard')
+
+
+@login_required(login_url='login')
+def support_ticket_list_view(request):
+    # Sirf admin ko access milega
+    if not (
+        request.user.role == 'admin'
+        or request.user.is_superuser
+    ):
+        return HttpResponseForbidden(
+            "You are not authorized to access support tickets."
+        )
+
+    tickets = SupportTicket.objects.select_related(
+        'customer'
+    ).order_by('-created_at')
+
+    # Status filter; search nahi rakhenge
+    status = request.GET.get('status', '').strip()
+
+    if status in ['Pending', 'In Progress', 'Resolved']:
+        tickets = tickets.filter(status=status)
+
+    context = {
+        'tickets': paginate_list(request, tickets),
+        'selected_status': status,
+        'total_tickets': tickets.count(),
+    }
+
+    return render(
+        request,
+        'dashboard/support_ticket_list.html',
+        context
+    )
+
+
+
+@login_required(login_url='login')
+def support_ticket_detail_view(request, ticket_id):
+    if not (
+        request.user.role == 'admin'
+        or request.user.is_superuser
+    ):
+        return HttpResponseForbidden("Not authorized.")
+
+    ticket = get_object_or_404(
+        SupportTicket.objects.select_related('customer'),
+        pk=ticket_id
+    )
+
+    return render(
+        request,
+        'dashboard/support_ticket_detail.html',
+        {
+            'ticket': ticket,
+            'return_query': request.GET.urlencode(),
+        }
+    )
+
+
+@login_required(login_url='login')
+@require_POST
+def support_ticket_update_status_view(request, ticket_id):
+    if not (
+        request.user.role == 'admin'
+        or request.user.is_superuser
+    ):
+        return HttpResponseForbidden("Not authorized.")
+
+    ticket = get_object_or_404(
+        SupportTicket.objects.select_related('customer'),
+        pk=ticket_id,
+    )
+    new_status = request.POST.get('status', '').strip()
+
+    allowed_statuses = ['Pending', 'In Progress', 'Resolved']
+
+    if new_status not in allowed_statuses:
+        return HttpResponseForbidden("Invalid ticket status.")
+
+    if ticket.status != new_status:
+        with transaction.atomic():
+            ticket.status = new_status
+            ticket.save(update_fields=['status'])
+            Notification.objects.create(
+                user=ticket.customer,
+                title='Support ticket status updated',
+                message=f'Ticket #{ticket.pk} status changed to {new_status}.',
+            )
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        response = render(
+            request,
+            'dashboard/support_ticket_detail.html',
+            {
+                'ticket': ticket,
+                'return_query': request.POST.get('return_query', ''),
+            },
+        )
+        response['X-Dashboard-Toast'] = 'Support ticket status updated successfully.'
+        response['X-Dashboard-Ticket-Status'] = ticket.status
+        return response
+
+    return_url = reverse('support_ticket_detail', args=[ticket.pk])
+    return_query = request.POST.get('return_query', '')
+    if return_query:
+        return_url = f'{return_url}?{return_query}'
+    return redirect(return_url)
+
+
+@login_required(login_url='login')
+@require_POST
+def support_ticket_delete_view(request, ticket_id):
+    if not (
+        request.user.role == 'admin'
+        or request.user.is_superuser
+    ):
+        return HttpResponseForbidden("Not authorized.")
+
+    ticket = get_object_or_404(SupportTicket, pk=ticket_id)
+    ticket.delete()
+
+    list_url = reverse('support_ticket_list')
+    return_query = request.POST.get('return_query', '')
+    if return_query:
+        list_url = f'{list_url}?{return_query}'
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': 'Support ticket deleted successfully.',
+            'redirect_url': list_url,
+        })
+    return redirect(list_url)

@@ -94,6 +94,12 @@
                     <a href="{% url 'agent_list' %}" class="nav-link-ajax"><i class="fa-solid fa-id-badge"></i> Agent Management</a>
                 </li>
                 <li>
+                    <a href="{% url 'support_ticket_list' %}" class="nav-link-ajax">
+                        <i class="fa-solid fa-ticket"></i>
+                        Support Tickets
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'admin_bookings' %}" class="nav-link-ajax"><i class="fa-solid fa-bookmark"></i> Booking Management</a>
                 </li>
                 <li>
@@ -888,6 +894,116 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Site visit action failed:', error);
                 button.disabled = false;
                 Swal.fire('Error', error.message, 'error');
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            const modal = mainArea.querySelector('#support-ticket-modal');
+            const closeButton = e.target.closest('[data-close-ticket-modal]');
+
+            if (closeButton && modal) {
+                modal.hidden = true;
+                modal.setAttribute('aria-hidden', 'true');
+                return;
+            }
+
+            const trigger = e.target.closest('.support-ticket-detail-trigger');
+            if (!trigger) return;
+
+            e.preventDefault();
+            const ticketModal = mainArea.querySelector('#support-ticket-modal');
+            const modalContent = mainArea.querySelector('#support-ticket-modal-content');
+            if (!ticketModal || !modalContent) return;
+
+            ticketModal.hidden = false;
+            ticketModal.setAttribute('aria-hidden', 'false');
+            modalContent.innerHTML = '<div style="padding:30px;text-align:center;">Loading ticket details...</div>';
+
+            fetch(trigger.dataset.url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Unable to load ticket details.');
+                return response.text();
+            })
+            .then(html => {
+                modalContent.innerHTML = html;
+                ticketModal.querySelector('.support-ticket-modal-close').focus();
+            })
+            .catch(error => {
+                console.error('Support ticket details failed to load:', error);
+                modalContent.textContent = error.message;
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Escape') return;
+            const modal = mainArea.querySelector('#support-ticket-modal');
+            if (!modal || modal.hidden) return;
+            modal.hidden = true;
+            modal.setAttribute('aria-hidden', 'true');
+        });
+
+        document.addEventListener('submit', function(e) {
+            const statusForm = e.target.closest('.support-ticket-status-form');
+            if (!statusForm) return;
+
+            e.preventDefault();
+            const modal = mainArea.querySelector('#support-ticket-modal');
+            const modalContent = mainArea.querySelector('#support-ticket-modal-content');
+            const submitButton = statusForm.querySelector('[type="submit"]');
+            if (submitButton) submitButton.disabled = true;
+
+            fetch(statusForm.action, {
+                method: 'POST',
+                body: new FormData(statusForm),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Unable to update ticket status.');
+                return response.text().then(html => ({
+                    html,
+                    toastMessage: response.headers.get('X-Dashboard-Toast'),
+                    status: response.headers.get('X-Dashboard-Ticket-Status')
+                }));
+            })
+            .then(result => {
+                modalContent.innerHTML = result.html;
+
+                const ticketDetails = modalContent.querySelector('[data-ticket-id]');
+                const row = ticketDetails
+                    ? mainArea.querySelector(`[data-ticket-row="${ticketDetails.dataset.ticketId}"]`)
+                    : null;
+                const statusLabel = row && row.querySelector('[data-ticket-status-label]');
+                if (statusLabel && result.status) {
+                    statusLabel.className = 'ticket-status';
+                    if (result.status === 'Pending') {
+                        statusLabel.classList.add('status-pending');
+                        statusLabel.innerHTML = '<i class="fa fa-clock"></i> Pending';
+                    } else if (result.status === 'In Progress') {
+                        statusLabel.classList.add('status-progress');
+                        statusLabel.innerHTML = '<i class="fa fa-spinner"></i> In Progress';
+                    } else if (result.status === 'Resolved') {
+                        statusLabel.classList.add('status-resolved');
+                        statusLabel.innerHTML = '<i class="fa fa-check-circle"></i> Resolved';
+                    } else {
+                        statusLabel.classList.add('status-other');
+                        statusLabel.textContent = result.status;
+                    }
+                }
+
+                if (result.toastMessage && typeof window.showDashboardToast === 'function') {
+                    window.showDashboardToast(result.toastMessage);
+                }
+            })
+            .catch(error => {
+                console.error('Support ticket status update failed:', error);
+                Swal.fire('Error', error.message, 'error');
+                if (submitButton) submitButton.disabled = false;
             });
         });
 
@@ -4465,6 +4581,79 @@ updateImageCount();
 
         // 3. Global AJAX Form submit listener
         document.addEventListener('submit', function(e) {
+            const ticketDeleteForm = e.target.closest('.support-ticket-delete-form');
+            if (ticketDeleteForm) {
+                e.preventDefault();
+                if (!window.confirm(
+                    ticketDeleteForm.dataset.confirm || 'Delete this support ticket?'
+                )) {
+                    return;
+                }
+
+                fetch(ticketDeleteForm.action, {
+                    method: 'POST',
+                    body: new FormData(ticketDeleteForm),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json().then(data => {
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Unable to delete ticket.');
+                    }
+                    return data;
+                }))
+                .then(data => fetch(data.redirect_url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ticket deleted, but the ticket list failed to load.');
+                    }
+                    return response.text();
+                }).then(html => {
+                    mainArea.innerHTML = html;
+                    if (typeof window.showDashboardToast === 'function') {
+                        window.showDashboardToast(data.message);
+                    }
+                }))
+                .catch(error => {
+                    console.error('Support ticket deletion failed:', error);
+                    Swal.fire('Error', error.message, 'error');
+                });
+                return;
+            }
+
+            const ticketFilterForm = e.target.closest('.ticket-filter-form');
+            if (ticketFilterForm) {
+                e.preventDefault();
+                const url = new URL(ticketFilterForm.action, window.location.href);
+                url.search = new URLSearchParams(
+                    new FormData(ticketFilterForm)
+                ).toString();
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Unable to filter support tickets.');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    mainArea.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Support ticket filter failed:', error);
+                    Swal.fire('Error', error.message, 'error');
+                });
+                return;
+            }
+
             const form = e.target.closest('.ajax-form');
             if (!form) return;
 

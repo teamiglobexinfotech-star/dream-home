@@ -67,4 +67,18 @@ urlpatterns = [
     path('blog/edit/<int:pk>/', views.edit_blog_view, name='edit_blog'),
     path('blog/delete/<int:pk>/', views.delete_blog_view, name='delete_blog'),
 
+    path('support-tickets/', views.support_ticket_list_view, name='support_ticket_list'),
+    path('support-tickets/<int:ticket_id>/', views.support_ticket_detail_view, name='support_ticket_detail'),
+    path(
+        'support-tickets/<int:ticket_id>/status/',
+        views.support_ticket_update_status_view,
+        name='support_ticket_update_status',
+    ),
+    path(
+        'support-tickets/<int:ticket_id>/delete/',
+        views.support_ticket_delete_view,
+        name='support_ticket_delete',
+    ),
+
+
 ]

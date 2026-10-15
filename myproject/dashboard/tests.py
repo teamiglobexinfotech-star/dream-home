@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 
-from customers.models import User
+from customers.models import User, Notification, SupportTicket
 from properties.models import Agent, VisitSchedule
 from .views import paginate_list
 
@@ -229,3 +229,167 @@ class SchedulingAgentEligibilityTests(TestCase):
         self.assertEqual(response.status_code, 404)
         schedule.refresh_from_db()
         self.assertIsNone(schedule.agent)
+
+
+class AdminSupportTicketIntegrationTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            email='admin-ticket@example.com',
+            full_name='Ticket Admin',
+            mobile_number='9876543220',
+            password='admin-password',
+            role='admin',
+        )
+        self.customer = User.objects.create_user(
+            email='customer-ticket@example.com',
+            full_name='Ticket Customer',
+            mobile_number='9876543221',
+            password='customer-password',
+            role='customer',
+        )
+        self.ticket = SupportTicket.objects.create(
+            customer=self.customer,
+            subject='Booking support',
+            message='Please help with my booking.',
+        )
+        session = self.client.session
+        session['admin_user_id'] = self.admin.pk
+        session.save()
+
+    def test_customer_submitted_ticket_is_available_to_admin(self):
+        session = self.client.session
+        session['customer_user_id'] = self.customer.pk
+        session.save()
+
+        submit_response = self.client.post(
+            reverse('customer_support'),
+            {
+                'subject': 'New customer ticket',
+                'message': 'Submitted through customer support.',
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+        self.assertEqual(submit_response.status_code, 200)
+
+        created_ticket = SupportTicket.objects.get(
+            subject='New customer ticket',
+        )
+        session = self.client.session
+        session['admin_user_id'] = self.admin.pk
+        session.save()
+
+        admin_response = self.client.get(
+            reverse('support_ticket_list'),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(admin_response.status_code, 200)
+        self.assertContains(admin_response, f'#{created_ticket.pk}')
+        self.assertContains(admin_response, 'New customer ticket')
+        self.assertContains(admin_response, 'Submitted through customer support.')
+
+    def test_admin_can_view_ticket_from_ajax_list_and_details(self):
+        list_response = self.client.get(
+            reverse('support_ticket_list'),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertContains(list_response, f'#{self.ticket.pk}')
+        self.assertContains(list_response, 'Ticket Customer')
+        self.assertContains(list_response, 'Booking support')
+        self.assertContains(list_response, 'View details')
+        self.assertContains(list_response, 'support-ticket-detail-trigger')
+        self.assertContains(list_response, 'id="support-ticket-modal"')
+        self.assertNotContains(
+            list_response,
+            'support-ticket-detail-trigger nav-link-ajax',
+        )
+
+        detail_response = self.client.get(
+            reverse('support_ticket_detail', args=[self.ticket.pk]),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertContains(detail_response, self.customer.full_name)
+        self.assertContains(detail_response, self.customer.email)
+        self.assertContains(detail_response, 'Booking support')
+        self.assertContains(detail_response, 'Please help with my booking.')
+        self.assertContains(
+            detail_response,
+            self.ticket.created_at.strftime('%d %b %Y'),
+        )
+
+    def test_admin_can_update_status_from_ajax_detail(self):
+        response = self.client.post(
+            reverse('support_ticket_update_status', args=[self.ticket.pk]),
+            {'status': 'In Progress', 'return_query': 'status=Pending&page=2'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.ticket.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response['X-Dashboard-Toast'],
+            'Support ticket status updated successfully.',
+        )
+        self.assertEqual(response['X-Dashboard-Ticket-Status'], 'In Progress')
+        self.assertContains(response, 'In Progress')
+        self.assertEqual(self.ticket.status, 'In Progress')
+        notification = Notification.objects.get(user=self.customer)
+        self.assertIn(f'#{self.ticket.pk}', notification.message)
+        self.assertIn('In Progress', notification.message)
+
+        session = self.client.session
+        session['customer_user_id'] = self.customer.pk
+        session.save()
+        customer_response = self.client.get(
+            reverse('customer_support'),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+        self.assertEqual(customer_response.status_code, 200)
+        self.assertContains(customer_response, 'In Progress')
+
+    def test_admin_can_delete_ticket_with_post(self):
+        delete_url = reverse('support_ticket_delete', args=[self.ticket.pk])
+        get_response = self.client.get(delete_url)
+        self.assertEqual(get_response.status_code, 405)
+
+        response = self.client.post(
+            delete_url,
+            {'return_query': 'status=Pending&page=2'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['success'])
+        self.assertIn('status=Pending&page=2', response.json()['redirect_url'])
+        self.assertFalse(SupportTicket.objects.filter(pk=self.ticket.pk).exists())
+
+    def test_ticket_delete_form_contains_confirmation(self):
+        response = self.client.get(
+            reverse('support_ticket_detail', args=[self.ticket.pk]),
+        )
+
+        self.assertContains(response, 'support-ticket-delete-form')
+        self.assertContains(
+            response,
+            f'Delete support ticket #{self.ticket.pk}? This cannot be undone.',
+        )
+
+    def test_non_admin_cannot_view_or_update_ticket(self):
+        session = self.client.session
+        session['admin_user_id'] = self.customer.pk
+        session.save()
+
+        detail_response = self.client.get(
+            reverse('support_ticket_detail', args=[self.ticket.pk]),
+        )
+        update_response = self.client.post(
+            reverse('support_ticket_update_status', args=[self.ticket.pk]),
+            {'status': 'Resolved'},
+        )
+
+        self.assertEqual(detail_response.status_code, 302)
+        self.assertEqual(update_response.status_code, 302)

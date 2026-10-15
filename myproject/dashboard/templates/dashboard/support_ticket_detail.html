@@ -1,0 +1,321 @@
+
+<article class="ticket-detail-card" data-ticket-id="{{ ticket.pk }}">
+    <header class="ticket-detail-header">
+        <div>
+            <span class="ticket-detail-eyebrow">SUPPORT REQUEST</span>
+            <h2>Ticket #{{ ticket.id }}</h2>
+            <p class="ticket-detail-subject">{{ ticket.subject }}</p>
+        </div>
+        <span class="ticket-detail-status status-{{ ticket.status|slugify }}">
+            {{ ticket.status }}
+        </span>
+    </header>
+
+    <section class="ticket-detail-meta" aria-label="Ticket information">
+        <div class="ticket-meta-item">
+            <span class="ticket-meta-icon"><i class="fa fa-user" aria-hidden="true"></i></span>
+            <div>
+                <span class="ticket-meta-label">Customer</span>
+                <strong>{{ ticket.customer.full_name|default:ticket.customer.email }}</strong>
+            </div>
+        </div>
+        <div class="ticket-meta-item">
+            <span class="ticket-meta-icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+            <div>
+                <span class="ticket-meta-label">Email address</span>
+                <strong class="ticket-meta-email">{{ ticket.customer.email }}</strong>
+            </div>
+        </div>
+        <div class="ticket-meta-item">
+            <span class="ticket-meta-icon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+            <div>
+                <span class="ticket-meta-label">Submitted</span>
+                <strong>{{ ticket.created_at|date:"d M Y, h:i A" }}</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="ticket-message-section">
+        <div class="ticket-section-heading">
+            <span class="ticket-section-icon"><i class="fa fa-comment-dots" aria-hidden="true"></i></span>
+            <div>
+                <h3>Customer message</h3>
+                <p>Message provided with this support request</p>
+            </div>
+        </div>
+        <div class="ticket-message-full">{{ ticket.message }}</div>
+    </section>
+
+    <footer class="ticket-detail-actions">
+        <form method="POST"
+              class="support-ticket-status-form"
+              action="{% url 'support_ticket_update_status' ticket.id %}">
+            {% csrf_token %}
+            {% if return_query %}
+                <input type="hidden" name="return_query" value="{{ return_query }}">
+            {% endif %}
+            <label for="ticket-status-{{ ticket.id }}">Update status</label>
+            <div class="ticket-status-controls">
+                <select id="ticket-status-{{ ticket.id }}" name="status" required>
+                    <option value="Pending" {% if ticket.status == "Pending" %}selected{% endif %}>Pending</option>
+                    <option value="In Progress" {% if ticket.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                    <option value="Resolved" {% if ticket.status == "Resolved" %}selected{% endif %}>Resolved</option>
+                </select>
+                <button type="submit" class="ticket-btn ticket-btn-filter">
+                    <i class="fa fa-save" aria-hidden="true"></i> Save status
+                </button>
+            </div>
+        </form>
+
+        <form method="POST"
+              class="support-ticket-delete-form"
+              action="{% url 'support_ticket_delete' ticket.id %}"
+              data-confirm="Delete support ticket #{{ ticket.id }}? This cannot be undone.">
+            {% csrf_token %}
+            {% if return_query %}
+                <input type="hidden" name="return_query" value="{{ return_query }}">
+            {% endif %}
+            <button type="submit" class="ticket-delete-button">
+                <i class="fa fa-trash" aria-hidden="true"></i> Delete ticket
+            </button>
+        </form>
+    </footer>
+</article>
+
+<style>
+.ticket-detail-card {
+    --ticket-ink: #172b4d;
+    --ticket-muted: #718096;
+    margin: 0;
+    overflow: hidden;
+    color: var(--ticket-ink);
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(23, 43, 77, .08);
+    font-family: inherit;
+}
+.ticket-detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 28px 20px;
+    background: linear-gradient(135deg, #f8fbff, #f1f6fc);
+    border-bottom: 1px solid #e8edf3;
+}
+.ticket-detail-eyebrow {
+    display: block;
+    margin-bottom: 7px;
+    color: #52739b;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+}
+.ticket-detail-header h2 {
+    margin: 0;
+    color: var(--ticket-ink);
+    font-size: 22px;
+    line-height: 1.25;
+}
+.ticket-detail-subject {
+    margin: 5px 0 0;
+    color: #596b82;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+.ticket-detail-status {
+    flex: 0 0 auto;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.ticket-detail-status.status-pending {
+    color: #946200;
+    background: #fff1c2;
+}
+.ticket-detail-status.status-in-progress {
+    color: #126278;
+    background: #d9f2f7;
+}
+.ticket-detail-status.status-resolved {
+    color: #26734d;
+    background: #dff4e8;
+}
+.ticket-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 20px 28px;
+}
+.ticket-meta-item {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 11px;
+    padding: 13px;
+    background: #f8fafc;
+    border: 1px solid #edf1f5;
+    border-radius: 9px;
+}
+.ticket-meta-icon,
+.ticket-section-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    color: #4275ad;
+    background: #eaf2fb;
+}
+.ticket-meta-item > div {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+}
+.ticket-meta-label {
+    color: var(--ticket-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .35px;
+    text-transform: uppercase;
+}
+.ticket-meta-item strong {
+    overflow-wrap: anywhere;
+    color: #26384e;
+    font-size: 12px;
+    font-weight: 600;
+}
+.ticket-message-section {
+    padding: 2px 28px 22px;
+}
+.ticket-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 12px;
+}
+.ticket-section-heading h3 {
+    margin: 0;
+    color: var(--ticket-ink);
+    font-size: 14px;
+}
+.ticket-section-heading p {
+    margin: 3px 0 0;
+    color: var(--ticket-muted);
+    font-size: 11px;
+}
+.ticket-message-full {
+    min-height: 86px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding: 15px 16px;
+    color: #394b61;
+    background: #f8fafc;
+    border: 1px solid #e8edf3;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.65;
+}
+.ticket-detail-actions {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 17px 28px 22px;
+    background: #fbfcfe;
+    border-top: 1px solid #edf1f5;
+}
+.support-ticket-status-form {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.support-ticket-status-form > label {
+    display: block;
+    margin-bottom: 7px;
+    color: #53657b;
+    font-size: 11px;
+    font-weight: 700;
+}
+.ticket-status-controls {
+    display: flex;
+    gap: 9px;
+}
+.ticket-status-controls select {
+    width: min(220px, 100%);
+    min-height: 40px;
+    padding: 0 11px;
+    color: #2c3e53;
+    background: #fff;
+    border: 1px solid #d9e1ea;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 12px;
+}
+.ticket-status-controls .ticket-btn {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.ticket-delete-button {
+    min-height: 40px;
+    padding: 0 12px;
+    color: #b54747;
+    background: #fff;
+    border: 1px solid #f0d3d3;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.ticket-delete-button:hover {
+    color: #fff;
+    background: #c84d4d;
+    border-color: #c84d4d;
+}
+.ticket-status-controls button:disabled {
+    cursor: wait;
+    opacity: .65;
+}
+@media (max-width: 620px) {
+    .ticket-detail-header {
+        padding: 21px 18px 17px;
+    }
+    .ticket-detail-header h2 {
+        font-size: 19px;
+    }
+    .ticket-detail-meta {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 15px 18px;
+    }
+    .ticket-message-section {
+        padding: 2px 18px 18px;
+    }
+    .ticket-detail-actions {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 16px 18px 18px;
+    }
+    .ticket-status-controls {
+        flex-wrap: wrap;
+    }
+    .ticket-status-controls select {
+        flex: 1 1 150px;
+    }
+    .ticket-delete-button {
+        align-self: flex-start;
+    }
+}
+</style>

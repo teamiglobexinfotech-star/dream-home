@@ -1189,7 +1189,11 @@ def customer_site_visits_page(request):
     )
 
 #Customer Support View
+@login_required(login_url='login')
 def customer_support_view(request):
+    if request.user.role != 'customer':
+        return HttpResponseForbidden("Customer access required.")
+
     if request.method == 'POST':
         subject = request.POST.get('subject')
         message = request.POST.get('message')
