@@ -135,8 +135,8 @@
                     <!-- ========================= -->
 
                     <a href="{% url 'delete_project' project.pk %}"
-                       class="btn btn-del"
-                       onclick="return confirm('Kya aap is project ko delete karna chahte hain?');">
+                       class="btn btn-del ajax-delete-link"
+                       data-confirm="Kya aap is project ko delete karna chahte hain?">
 
                         <i class="fa fa-trash"></i>
 

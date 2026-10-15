@@ -19,6 +19,9 @@
     </style>
 </head>
 <body>
+    {% if show_dashboard_toast %}
+        {% include "dashboard/_toast.html" %}
+    {% endif %}
     <div class="container">
         <div class="header">
             <h2><i class="fa fa-user-circle"></i> Admin Profile</h2>

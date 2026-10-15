@@ -198,6 +198,10 @@
 
 <body>
 
+{% if include_dashboard_toast %}
+    {% include "dashboard/_toast.html" %}
+{% endif %}
+
 <div class="container admin-list-container">
 
     <div class="header">
@@ -304,7 +308,8 @@
 </button>
 
                 <a href="{% url 'delete_lead' lead.pk %}"
-                   class="btn nav-link-ajax"
+                   class="btn ajax-delete-link"
+                   data-confirm="Kya aap is enquiry ko delete karna chahte hain?"
                    style="
                        background: #dc3545;
                        padding: 5px 10px;
@@ -312,8 +317,7 @@
                        border-radius: 3px;
                        text-decoration: none;
                        font-size: 12px;
-                   "
-                   onclick="return confirm('Kya aap is enquiry ko delete karna chahte hain?');">
+                   ">
                     <i class="fa fa-trash"></i>
                     Delete
                 </a>

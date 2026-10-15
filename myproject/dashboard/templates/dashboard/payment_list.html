@@ -18,6 +18,9 @@
     </style>
 </head>
 <body>
+    {% if show_dashboard_toast %}
+        {% include "dashboard/_toast.html" %}
+    {% endif %}
     <div class="container admin-list-container">
         <div class="header">
             <h2>Payment Management</h2>
@@ -61,9 +64,9 @@
                     <td>{{ payment.payment_date|date:"d M Y, H:i" }}</td>
                     <td>
                         <!-- Status Update Form -->
-                        <form action="{% url 'update_payment_status' payment.pk %}" method="POST" style="display:inline;">
+                        <form action="{% url 'update_payment_status' payment.pk %}" method="POST" class="ajax-form" style="display:inline;">
                             {% csrf_token %}
-                            <select name="status" onchange="this.form.submit()" style="padding: 5px; border-radius: 4px; font-size: 12px; margin-right: 5px; cursor: pointer;">
+                            <select name="status" onchange="this.form.requestSubmit()" style="padding: 5px; border-radius: 4px; font-size: 12px; margin-right: 5px; cursor: pointer;">
                                 <option value="Pending" {% if payment.status == 'Pending' %}selected{% endif %}>Pending</option>
                                 <option value="Completed" {% if payment.status == 'Completed' %}selected{% endif %}>Completed</option>
                                 <option value="Failed" {% if payment.status == 'Failed' %}selected{% endif %}>Failed</option>

@@ -5,24 +5,42 @@ document.addEventListener("DOMContentLoaded", function() {
     // Mobile Sidebar Toggle
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
+    const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
 
     if (sidebarToggle && sidebar) {
+        const setSidebarOpen = function(isOpen) {
+            const shouldOpen = isOpen && window.innerWidth <= 992;
+            sidebar.classList.toggle('active', shouldOpen);
+            sidebarToggle.setAttribute('aria-expanded', String(shouldOpen));
+            if (sidebarBackdrop) {
+                sidebarBackdrop.classList.toggle('is-visible', shouldOpen);
+            }
+            document.body.classList.toggle('sidebar-open', shouldOpen);
+        };
+
         sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
+            setSidebarOpen(!sidebar.classList.contains('active'));
+        });
+
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', function() {
+                setSidebarOpen(false);
+            });
+        }
+
+        // Close the drawer after navigating, but leave dropdown toggles usable.
+        document.querySelectorAll('.sidebar a.nav-link-ajax').forEach(function (link) {
+            link.addEventListener('click', function () {
+                setSidebarOpen(false);
+            });
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                setSidebarOpen(false);
+            }
         });
     }
-
-
-    // Close sidebar automatically after clicking a sidebar menu item on mobile
-    document.querySelectorAll('.sidebar a').forEach(function (link) {
-        link.addEventListener('click', function () {
-
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('active');
-            }
-
-        });
-    });
 
 
     // Dark mode toggle logic
@@ -211,55 +229,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//  Site Visit Actions
-document.addEventListener('click', function(event) {
-    var btn = event.target.closest('.action-btn');
-    if (!btn) return; // Agar click .action-btn par nahi hai toh kuch mat karo
-
-    event.preventDefault();
-    var url = btn.getAttribute('data-url');
-    var row = btn.closest('tr');
-
-    console.log("Vanilla JS caught click! URL:", url);
-
-    if (!url) {
-        alert("URL is missing on this button!");
-        return;
-    }
-
-    // Cookie se CSRF token nikalne ka secure tareeka
-    let csrftoken = '';
-    const name = 'csrftoken';
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) csrftoken = parts.pop().split(';').shift();
-
-    // Fetch API ke zariye AJAX request bhejna
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrftoken
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            if (row) {
-                row.style.transition = 'opacity 0.3s ease';
-                row.style.opacity = '0';
-                setTimeout(() => row.remove(), 300);
-            }
-        } else {
-            alert(data.message || "Action failed.");
-        }
-    })
-    .catch(error => {
-        console.error('AJAX Error:', error);
-        alert('Something went wrong. Check console.');
-    });
-});
-
 // --- Isolated Site Visit Image Modal Handlers ---
 function openSiteVisitModal(url) {
     const modal = document.getElementById('siteVisitModal');
@@ -283,39 +252,6 @@ document.addEventListener('click', function(event) {
     if (event.target === modal) {
         modal.style.display = 'none';
     }
-});
-
-//Site Visit History Modal Handlers
-$(document).off('click', '.action-btn').on('click', '.action-btn', function(e) {
-    e.preventDefault();
-    var url = $(this).attr('data-url');
-    
-    if (!url) {
-        alert("URL is missing!");
-        return;
-    }
-
-    // Django template ya DOM se CSRF token nikalne ka safe tareeka
-    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val() || '{{ csrf_token }}';
-
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: {
-            'csrfmiddlewaretoken': csrfToken
-        },
-        success: function(response) {
-            if(response.success) {
-                location.reload(); 
-            } else {
-                alert(response.message || "Action failed.");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", error);
-            alert("Something went wrong. Please try again.");
-        }
-    });
 });
 
 // Admin Commission Form & Status Update AJAX Handler
@@ -354,8 +290,6 @@ $(document).on('submit', '#adminCommissionForm, .updateCommissionForm', function
         }
     });
 });
-
-
 
 
 

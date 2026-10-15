@@ -359,14 +359,21 @@ def add_property_view(request):
                         page_path=reverse('property_list'),
                     )
 
-                    return render(
+                    response = render(
                         request,
                         'dashboard/property_list.html',
                         {
                             'properties': properties
                         }
                     )
+                    response['X-Dashboard-Toast'] = 'Property added successfully.'
+                    return response
 
+                messages.success(
+                    request,
+                    'Property added successfully.',
+                    extra_tags='dashboard_toast',
+                )
                 return redirect('admin_dashboard')
 
             except Exception as e:
@@ -606,14 +613,21 @@ def edit_property_view(request, pk):
                         page_path=reverse('property_list'),
                     )
 
-                    return render(
+                    response = render(
                         request,
                         'dashboard/property_list.html',
                         {
                             'properties': properties
                         }
                     )
+                    response['X-Dashboard-Toast'] = 'Property updated successfully.'
+                    return response
 
+                messages.success(
+                    request,
+                    'Property updated successfully.',
+                    extra_tags='dashboard_toast',
+                )
                 return redirect(
                     'admin_dashboard'
                 )
@@ -661,7 +675,18 @@ def delete_property_view(request, pk):
             Property.objects.all().order_by('-id'),
             page_path=reverse('property_list'),
         )
-        return render(request, 'dashboard/property_list.html', {'properties': properties})
+        response = render(
+            request,
+            'dashboard/property_list.html',
+            {'properties': properties},
+        )
+        response['X-Dashboard-Toast'] = 'Property deleted successfully.'
+        return response
+    messages.success(
+        request,
+        'Property deleted successfully.',
+        extra_tags='dashboard_toast',
+    )
     return redirect('admin_dashboard')
 
 # 4. View All Activities View
@@ -734,12 +759,19 @@ def add_project_view(request):
                     Project.objects.all().order_by('-id'),
                     page_path=reverse('project_list'),
                 )
-                return render(
+                response = render(
                     request,
                     'dashboard/project_list.html',
                     {'projects': projects}
                 )
+                response['X-Dashboard-Toast'] = 'Project added successfully.'
+                return response
 
+            messages.success(
+                request,
+                'Project added successfully.',
+                extra_tags='dashboard_toast',
+            )
             return redirect('admin_dashboard')
 
     else:
@@ -771,12 +803,19 @@ def edit_project_view(request, pk):
                     page_path=reverse('project_list'),
                 )
 
-                return render(
+                response = render(
                     request,
                     'dashboard/project_list.html',
                     {'projects': projects}
                 )
+                response['X-Dashboard-Toast'] = 'Project updated successfully.'
+                return response
 
+            messages.success(
+                request,
+                'Project updated successfully.',
+                extra_tags='dashboard_toast',
+            )
             return redirect('admin_dashboard')
 
     else:
@@ -803,19 +842,31 @@ def delete_project_view(request, pk):
             Project.objects.all().order_by('-id'),
             page_path=reverse('project_list'),
         )
-        return render(
+        response = render(
             request,
             'dashboard/project_list.html',
             {'projects': projects}
         )
+        response['X-Dashboard-Toast'] = 'Project deleted successfully.'
+        return response
 
+    messages.success(
+        request,
+        'Project deleted successfully.',
+        extra_tags='dashboard_toast',
+    )
     return redirect('admin_dashboard')
 
 # 6. Lead Management List View
 def lead_list_view(request):
     leads = paginate_list(request, Enquiry.objects.all().order_by('-created_at'))
     #all_agents = User.objects.filter(role='agent')
-    context = {'leads': leads}
+    context = {
+        'leads': leads,
+        'include_dashboard_toast': (
+            request.headers.get('x-requested-with') != 'XMLHttpRequest'
+        ),
+    }
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/lead_list.html', context)
     return render(request, 'dashboard/lead_list.html', context)
@@ -837,8 +888,19 @@ def edit_lead_view(request, pk):
                 page_path=reverse('lead_list'),
             )
             #all_agents = User.objects.filter(role='agent')
-            return render(request, 'dashboard/lead_list.html', {'leads': leads})
+            response = render(
+                request,
+                'dashboard/lead_list.html',
+                {'leads': leads},
+            )
+            response['X-Dashboard-Toast'] = 'Enquiry updated successfully.'
+            return response
             
+        messages.success(
+            request,
+            'Enquiry updated successfully.',
+            extra_tags='dashboard_toast',
+        )
         return redirect('lead_list')
         
     context = {'lead': lead_item}
@@ -859,8 +921,19 @@ def delete_lead_view(request, pk):
             page_path=reverse('lead_list'),
         )
         #all_agents = User.objects.filter(role='agent')
-        return render(request, 'dashboard/lead_list.html', {'leads': leads})
+        response = render(
+            request,
+            'dashboard/lead_list.html',
+            {'leads': leads},
+        )
+        response['X-Dashboard-Toast'] = 'Enquiry deleted successfully.'
+        return response
         
+    messages.success(
+        request,
+        'Enquiry deleted successfully.',
+        extra_tags='dashboard_toast',
+    )
     return redirect('lead_list')
 
 # 9. Customer Management List View
@@ -1110,7 +1183,10 @@ def payment_list_view(request):
         Payment.objects.all().order_by('-id'),
         page_path=reverse('payment_list'),
     )
-    context = {'payments': payments}
+    context = {
+        'payments': payments,
+        'show_dashboard_toast': request.headers.get('x-requested-with') != 'XMLHttpRequest',
+    }
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/payment_list.html', context)
     return render(request, 'dashboard/payment_list.html', context)
@@ -1140,7 +1216,18 @@ def add_payment_view(request):
                 Payment.objects.all().order_by('-id'),
                 page_path=reverse('payment_list'),
             )
-            return render(request, 'dashboard/payment_list.html', {'payments': payments})
+            response = render(
+                request,
+                'dashboard/payment_list.html',
+                {'payments': payments, 'show_dashboard_toast': False},
+            )
+            response['X-Dashboard-Toast'] = 'Payment recorded successfully.'
+            return response
+        messages.success(
+            request,
+            'Payment recorded successfully.',
+            extra_tags='dashboard_toast',
+        )
         return redirect('payment_list')
         
     context = {'properties': properties}
@@ -1158,7 +1245,18 @@ def delete_payment_view(request, pk):
             Payment.objects.all().order_by('-id'),
             page_path=reverse('payment_list'),
         )
-        return render(request, 'dashboard/payment_list.html', {'payments': payments})
+        response = render(
+            request,
+            'dashboard/payment_list.html',
+            {'payments': payments, 'show_dashboard_toast': False},
+        )
+        response['X-Dashboard-Toast'] = 'Payment deleted successfully.'
+        return response
+    messages.success(
+        request,
+        'Payment deleted successfully.',
+        extra_tags='dashboard_toast',
+    )
     return redirect('payment_list')
 
 def update_payment_status(request, pk):
@@ -1172,7 +1270,19 @@ def update_payment_status(request, pk):
             Payment.objects.all().order_by('-id'),
             page_path=reverse('payment_list'),
         )
-        return render(request, 'dashboard/payment_list.html', {'payments': payments})
+        response = render(
+            request,
+            'dashboard/payment_list.html',
+            {'payments': payments, 'show_dashboard_toast': False},
+        )
+        response['X-Dashboard-Toast'] = 'Payment status updated successfully.'
+        return response
+    if request.method == 'POST':
+        messages.success(
+            request,
+            'Payment status updated successfully.',
+            extra_tags='dashboard_toast',
+        )
     return redirect('payment_list')
 
 def edit_payment_view(request, pk):
@@ -1193,7 +1303,18 @@ def edit_payment_view(request, pk):
                 Payment.objects.all().order_by('-id'),
                 page_path=reverse('payment_list'),
             )
-            return render(request, 'dashboard/payment_list.html', {'payments': payments})
+            response = render(
+                request,
+                'dashboard/payment_list.html',
+                {'payments': payments, 'show_dashboard_toast': False},
+            )
+            response['X-Dashboard-Toast'] = 'Payment updated successfully.'
+            return response
+        messages.success(
+            request,
+            'Payment updated successfully.',
+            extra_tags='dashboard_toast',
+        )
         return redirect('payment_list')
         
     context = {'payment': payment, 'properties': properties}
@@ -1239,18 +1360,39 @@ def profile_view(request, edit=None):
         user.save()
         
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return render(request, 'dashboard/profile.html', {'user': user, 'success': True})
+            response = render(
+                request,
+                'dashboard/profile.html',
+                {
+                    'user': user,
+                    'success': True,
+                    'show_dashboard_toast': False,
+                },
+            )
+            response['X-Dashboard-Toast'] = 'Profile updated successfully.'
+            return response
+        messages.success(
+            request,
+            'Profile updated successfully.',
+            extra_tags='dashboard_toast',
+        )
         return redirect('admin_profile')
 
     # Agar URL se edit=true aaya hai ya kwargs mein edit='true' hai
     if request.GET.get('edit') == 'true' or edit == 'true':
-        context = {'user': user}
+        context = {
+            'user': user,
+            'show_dashboard_toast': request.headers.get('x-requested-with') != 'XMLHttpRequest',
+        }
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return render(request, 'dashboard/edit_profile.html', context)
         return render(request, 'dashboard/edit_profile.html', context)
 
     # Default Normal Profile View (Read-only)
-    context = {'user': user}
+    context = {
+        'user': user,
+        'show_dashboard_toast': request.headers.get('x-requested-with') != 'XMLHttpRequest',
+    }
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'dashboard/profile.html', context)
     return render(request, 'dashboard/profile.html', context)
@@ -1688,6 +1830,10 @@ def site_visit_approvals_view(request):
 
     context = {
 
+        'include_dashboard_toast': (
+            request.headers.get('x-requested-with') != 'XMLHttpRequest'
+        ),
+
         # -------------------------
         # Total
         # -------------------------
@@ -1772,7 +1918,10 @@ def delete_site_visit(request, visit_id):
     if request.method == 'POST':
         visit = get_object_or_404(SiteVisit, id=visit_id)
         visit.delete()
-        return JsonResponse({'success': True})
+        return JsonResponse({
+            'success': True,
+            'message': 'Site visit record deleted successfully.',
+        })
     return JsonResponse({'success': False, 'message': 'Invalid request.'}, status=400) 
 
 
@@ -1834,6 +1983,9 @@ def visit_schedule_list_view(request):
     context = {
         'schedules': schedules,
         'agents': agents,
+        'include_dashboard_toast': (
+            request.headers.get('x-requested-with') != 'XMLHttpRequest'
+        ),
     }
 
     return render(
@@ -2125,12 +2277,19 @@ def add_blog_view(request):
                     'tags'
                 ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
-                return render(
+                response = render(
                     request,
                     'dashboard/blog_list.html',
                     {'blogs': blogs}
                 )
+                response['X-Dashboard-Toast'] = 'Blog added successfully.'
+                return response
 
+            messages.success(
+                request,
+                'Blog added successfully.',
+                extra_tags='dashboard_toast',
+            )
             return redirect('admin_dashboard')
 
     else:
@@ -2163,12 +2322,19 @@ def edit_blog_view(request, pk):
                     'tags'
                 ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
-                return render(
+                response = render(
                     request,
                     'dashboard/blog_list.html',
                     {'blogs': blogs}
                 )
+                response['X-Dashboard-Toast'] = 'Blog updated successfully.'
+                return response
 
+            messages.success(
+                request,
+                'Blog updated successfully.',
+                extra_tags='dashboard_toast',
+            )
             return redirect('admin_dashboard')
 
     else:
@@ -2198,10 +2364,17 @@ def delete_blog_view(request, pk):
             'tags'
         ).all().order_by('-created_at'), page_path=reverse('blog_list'))
 
-        return render(
+        response = render(
             request,
             'dashboard/blog_list.html',
             {'blogs': blogs}
         )
+        response['X-Dashboard-Toast'] = 'Blog deleted successfully.'
+        return response
 
+    messages.success(
+        request,
+        'Blog deleted successfully.',
+        extra_tags='dashboard_toast',
+    )
     return redirect('admin_dashboard')
