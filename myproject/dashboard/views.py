@@ -10,7 +10,7 @@ from django.contrib.auth import logout
 #from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from customers.models import User,Notification
-from django.db.models.functions import ExtractMonth
+from django.db.models.functions import ExtractMonth, Lower
 from django.db.models import Count, Sum
 from customers.forms import PropertyForm 
 from datetime import timedelta
@@ -2054,13 +2054,31 @@ def update_commission_status(request, pk):
     return redirect(list_url)
 
 
+def get_assignable_agents():
+    active_agent_emails = Agent.objects.filter(is_active=True).annotate(
+        normalized_email=Lower('email')
+    ).values('normalized_email')
+
+    return User.objects.filter(
+        role='agent',
+        is_active=True,
+    ).annotate(
+        normalized_email=Lower('email')
+    ).filter(
+        normalized_email__in=active_agent_emails
+    ).order_by('full_name', 'email')
+
+
 def visit_schedule_list_view(request):
     schedules = paginate_list(request, VisitSchedule.objects.select_related(
         'property',
         'agent'
     ).all().order_by('-created_at'))
 
-    agents = User.objects.filter(role='agent').order_by('full_name', 'email')
+    agents = get_assignable_agents()
+    assignable_agent_ids = set(agents.values_list('id', flat=True))
+    for schedule in schedules:
+        schedule.agent_available = schedule.agent_id in assignable_agent_ids
 
     context = {
         'schedules': schedules,
@@ -2097,15 +2115,11 @@ def assign_schedule_agent(request, schedule_id):
             'message': 'Agent unassigned successfully.'
         })
 
-    try:
-        agent = User.objects.get(
-            id=agent_id,
-            role='agent'
-        )
-    except User.DoesNotExist:
+    agent = get_assignable_agents().filter(pk=agent_id).first()
+    if agent is None:
         return JsonResponse({
             'success': False,
-            'message': 'Agent not found.'
+            'message': 'Agent is not available for assignment.'
         }, status=404)
 
     schedule.agent = agent

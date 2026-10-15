@@ -1539,6 +1539,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const loginPath = window.location.pathname;
 
+            const responseDocument = new DOMParser().parseFromString(
+                data.html,
+                "text/html"
+            );
+            const deactivatedMessage = "Your account has been deactivated by admin.";
+            const loginError = responseDocument.querySelector(
+                '#login-message-data [data-level="error"]'
+            );
+
+            if (
+                loginError
+                && (loginError.dataset.message || loginError.textContent.trim()) === deactivatedMessage
+            ) {
+                authModal.style.display = "none";
+                showLoginToast(
+                    "Account Deactivated",
+                    deactivatedMessage,
+                    "error",
+                    3500
+                );
+                return;
+            }
 
             // ------------------------------------------
             // INVALID EMAIL / PASSWORD

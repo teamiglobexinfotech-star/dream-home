@@ -211,12 +211,12 @@
                         <select
                             class="schedule-agent-select"
                             data-schedule-id="{{ schedule.id }}"
-                            data-previous-value="{% if schedule.agent %}{{ schedule.agent.id }}{% endif %}"
+                            data-previous-value="{% if schedule.agent_available %}{{ schedule.agent.id }}{% endif %}"
                         >
 
                             <!-- Already assigned agent -->
 
-                            {% if schedule.agent %}
+                            {% if schedule.agent_available %}
 
                                 <option
                                     value="{{ schedule.agent.id }}"
@@ -278,7 +278,7 @@
 
                         <!-- Assigned label -->
 
-                        {% if schedule.agent %}
+                        {% if schedule.agent_available %}
 
                             <div class="assigned-label">
 

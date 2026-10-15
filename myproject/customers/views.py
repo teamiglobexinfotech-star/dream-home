@@ -97,7 +97,7 @@ def login_view(request):
             ):
                 messages.error(
                     request,
-                    'Your account has been deactivated by admin. Please contact administrator.'
+                    'Your account has been deactivated by admin.'
                 )
                 return redirect('login')
 
