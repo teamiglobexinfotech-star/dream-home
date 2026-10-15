@@ -6,115 +6,129 @@
     <meta charset="UTF-8">
     <title>Add New Blog</title>
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f4f7f6;
-            padding: 20px;
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        .container {
-            max-width: 600px;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: auto;
+        .blog-form-box {
+            max-width: 750px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
-        .header {
+        .blog-form-box .form-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
         }
 
-        .header h2 {
+        .blog-form-box h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
             margin: 0;
         }
 
-        .btn {
-            padding: 8px 15px;
-            text-decoration: none;
-            border-radius: 4px;
-            color: white;
-            display: inline-block;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-save {
-            background: #28a745;
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        .btn-save:hover {
-            background: #218838;
-        }
-
-        .btn-back {
-            background: #6c757d;
-            white-space: nowrap;
-        }
-
-        .btn-back:hover {
-            background: #5a6268;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
+        .blog-form-box .btn-back {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 6px 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.2s;
         }
 
-        input,
-        select,
-        textarea {
+        .blog-form-box .btn-back:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .blog-form-box .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .blog-form-box form label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .blog-form-box form input[type="text"],
+        .blog-form-box form input[type="number"],
+        .blog-form-box form input[type="email"],
+        .blog-form-box form input[type="password"],
+        .blog-form-box form input[type="file"],
+        .blog-form-box form select,
+        .blog-form-box form textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
+            padding: 10px 14px;
             font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
         }
 
-        select[multiple] {
+        .blog-form-box form input:focus,
+        .blog-form-box form select:focus,
+        .blog-form-box form textarea:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .blog-form-box form select[multiple] {
             min-height: 120px;
         }
 
-        textarea {
+        .blog-form-box form textarea {
+            min-height: 120px;
             resize: vertical;
         }
 
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #28a745;
+        .blog-form-box form button {
+            background-color: #22c55e;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
         }
 
-        .help-text {
+        .blog-form-box form button:hover {
+            background-color: #16a34a;
+        }
+
+        .blog-form-box .help-text {
             display: block;
-            color: #777;
+            color: #64748b;
             font-size: 13px;
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
-        .error-message {
+        .blog-form-box .error-message {
+            display: block;
             background: #fff3f3;
             border: 1px solid #f5c2c7;
             color: #842029;
@@ -124,31 +138,27 @@
             font-size: 14px;
         }
 
-        .field-error {
+        .blog-form-box .field-error {
             display: block;
-            color: red;
+            color: #dc2626;
             font-size: 13px;
             margin-top: 5px;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
+        @media (max-width: 768px) {
+            .blog-form-box {
+                margin: 15px;
+                padding: 24px;
             }
 
-            .container {
-                padding: 20px;
-            }
-
-            .header {
+            .blog-form-box .form-header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 12px;
             }
 
-            .btn-back {
-                width: 100%;
-                text-align: center;
-                box-sizing: border-box;
+            .blog-form-box .btn-back {
+                align-self: flex-start;
             }
         }
     </style>
@@ -156,17 +166,14 @@
 
 <body>
 
-<div class="container">
+<div class="blog-form-box">
 
-    <div class="header">
+    <div class="form-header">
         <h2>Add New Blog</h2>
 
         <a href="{% url 'blog_list' %}"
-           data-url="{% url 'blog_list' %}"
-           class="btn btn-back nav-link-ajax">
-
-            <i class="fa fa-arrow-left"></i>
-            Back
+           class="btn-back nav-link-ajax">
+            ← Back to Blogs
         </a>
     </div>
 
@@ -303,13 +310,7 @@
 
 
         <!-- Save Button -->
-        <button type="submit"
-                class="btn btn-save">
-
-            <i class="fa fa-save"></i>
-            Save Blog
-
-        </button>
+        <button type="submit">Save Blog</button>
 
     </form>
 

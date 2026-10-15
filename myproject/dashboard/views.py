@@ -1036,15 +1036,78 @@ def add_agent_view(request):
         aadhaar_document = request.FILES.get('aadhaar_document')
         pan_document = request.FILES.get('pan_document')
 
-        if email and password:
-            if not User.objects.filter(username=email).exists():
-                User.objects.create_user(
-                    username=email,  # Email ko username banaya gaya hai
-                    email=email,
-                    password=password,
-                    first_name=name,
-                    role='agent'
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+        agent_form_context = {
+            'agent_form_values': {
+                'name': name,
+                'father_name': father_name,
+                'role': role,
+                'experience': experience,
+                'email': email,
+                'phone': phone,
+            },
+            'show_dashboard_toast': not is_ajax,
+        }
+
+        if email and (
+            User.objects.filter(email__iexact=email).exists()
+            or Agent.objects.filter(email__iexact=email).exists()
+        ):
+            error_message = 'This email is already registered.'
+            if is_ajax:
+                response = render(
+                    request,
+                    'dashboard/add_agent.html',
+                    agent_form_context,
+                    status=409,
                 )
+                response['X-Dashboard-Toast'] = error_message
+                response['X-Dashboard-Toast-Type'] = 'error'
+                return response
+            messages.error(
+                request,
+                error_message,
+                extra_tags='dashboard_toast',
+            )
+            return render(
+                request,
+                'dashboard/add_agent.html',
+                agent_form_context,
+                status=409,
+            )
+
+        if phone and User.objects.filter(mobile_number=phone).exists():
+            error_message = 'This phone number is already registered.'
+            if is_ajax:
+                response = render(
+                    request,
+                    'dashboard/add_agent.html',
+                    agent_form_context,
+                    status=409,
+                )
+                response['X-Dashboard-Toast'] = error_message
+                response['X-Dashboard-Toast-Type'] = 'error'
+                return response
+            messages.error(
+                request,
+                error_message,
+                extra_tags='dashboard_toast',
+            )
+            return render(
+                request,
+                'dashboard/add_agent.html',
+                agent_form_context,
+                status=409,
+            )
+
+        if email and password:
+            User.objects.create_user(
+                email=email,
+                full_name=name,
+                mobile_number=phone,
+                password=password,
+                role='agent',
+            )
         
         Agent.objects.create(
             name=name,
@@ -1057,18 +1120,37 @@ def add_agent_view(request):
             aadhaar_document=aadhaar_document,
             pan_document=pan_document
         )
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        if is_ajax:
             agents = paginate_list(
                 request,
                 Agent.objects.all().order_by('-id'),
                 page_path=reverse('agent_list'),
             )
-            return render(request, 'dashboard/agent_list.html', {'agents': agents})
+            response = render(
+                request,
+                'dashboard/agent_list.html',
+                {'agents': agents},
+            )
+            response['X-Dashboard-Toast'] = 'Agent added successfully.'
+            return response
+        messages.success(
+            request,
+            'Agent added successfully.',
+            extra_tags='dashboard_toast',
+        )
         return redirect('agent_list')
         
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'dashboard/add_agent.html')
-    return render(request, 'dashboard/add_agent.html')
+        return render(
+            request,
+            'dashboard/add_agent.html',
+            {'show_dashboard_toast': False},
+        )
+    return render(
+        request,
+        'dashboard/add_agent.html',
+        {'show_dashboard_toast': True},
+    )
 
 # 15. Edit Agent View
 def edit_agent_view(request, pk):

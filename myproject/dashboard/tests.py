@@ -1,8 +1,13 @@
 from urllib.parse import parse_qs, urlparse
+from tempfile import TemporaryDirectory
 
-from django.test import RequestFactory, SimpleTestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.template.loader import render_to_string
+from django.urls import reverse
 
+from customers.models import User
+from properties.models import Agent
 from .views import paginate_list
 
 
@@ -80,3 +85,71 @@ class PaginationTests(SimpleTestCase):
             sum(link.get('is_ellipsis', False) for link in page_obj.pagination_links),
             2,
         )
+
+
+class AddAgentTests(TestCase):
+    def test_ajax_add_creates_agent_and_login_account(self):
+        image = SimpleUploadedFile(
+            'agent.png',
+            b'agent image data',
+            content_type='image/png',
+        )
+        data = {
+            'name': 'Test Agent',
+            'father_name': '',
+            'role': 'Property Consultant',
+            'experience': '5 years',
+            'email': 'agent@example.com',
+            'password': 'test-password-123',
+            'phone': '9876543210',
+            'image': image,
+        }
+
+        with TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            response = self.client.post(
+                reverse('add_agent'),
+                data,
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+            )
+
+        agent = Agent.objects.get(email='agent@example.com')
+        user = User.objects.get(email='agent@example.com')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Dashboard-Toast'], 'Agent added successfully.')
+        self.assertEqual(agent.name, 'Test Agent')
+        self.assertEqual(user.full_name, 'Test Agent')
+        self.assertEqual(user.mobile_number, '9876543210')
+        self.assertEqual(user.role, 'agent')
+        self.assertTrue(user.check_password('test-password-123'))
+
+    def test_duplicate_email_returns_error_toast_without_creating_agent(self):
+        User.objects.create_user(
+            email='existing@example.com',
+            full_name='Existing Agent',
+            mobile_number='9876543210',
+            password='existing-password',
+            role='agent',
+        )
+
+        response = self.client.post(
+            reverse('add_agent'),
+            {
+                'name': 'New Agent',
+                'father_name': '',
+                'role': 'Property Consultant',
+                'experience': '5 years',
+                'email': 'EXISTING@example.com',
+                'password': 'new-password-123',
+                'phone': '9876543211',
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(
+            response['X-Dashboard-Toast'],
+            'This email is already registered.',
+        )
+        self.assertEqual(response['X-Dashboard-Toast-Type'], 'error')
+        self.assertContains(response, 'value="EXISTING@example.com"', status_code=409)
+        self.assertFalse(Agent.objects.filter(email__iexact='EXISTING@example.com').exists())

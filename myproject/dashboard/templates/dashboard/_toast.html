@@ -29,6 +29,12 @@
         display: none;
     }
 
+    #dashboard-toast[data-type="error"] {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
     #dashboard-toast .toast-icon {
         display: grid;
         flex: 0 0 20px;
@@ -39,6 +45,10 @@
         background: #16a34a;
         color: #fff;
         font-size: 12px;
+    }
+
+    #dashboard-toast[data-type="error"] .toast-icon {
+        background: #dc2626;
     }
 
     #dashboard-toast-message {
@@ -66,15 +76,21 @@
     (function () {
         const toast = document.getElementById('dashboard-toast');
         const message = document.getElementById('dashboard-toast-message');
+        const icon = toast && toast.querySelector('.toast-icon');
         const closeButton = document.getElementById('dashboard-toast-close');
         let hideTimer;
         let dismissTimer;
 
-        window.showDashboardToast = function (text) {
+        window.showDashboardToast = function (text, type) {
             if (!toast || !message) return;
 
             window.clearTimeout(hideTimer);
             window.clearTimeout(dismissTimer);
+            const isError = type === 'error';
+            toast.dataset.type = isError ? 'error' : 'success';
+            toast.setAttribute('role', isError ? 'alert' : 'status');
+            toast.setAttribute('aria-live', isError ? 'assertive' : 'polite');
+            if (icon) icon.textContent = isError ? '!' : '✓';
             message.textContent = text;
             toast.hidden = false;
             requestAnimationFrame(function () {
@@ -102,7 +118,10 @@
 
         {% for message in messages %}
             {% if 'dashboard_toast' in message.tags %}
-                window.showDashboardToast('{{ message|escapejs }}');
+                window.showDashboardToast(
+                    '{{ message|escapejs }}',
+                    '{% if message.level_tag == "error" %}error{% else %}success{% endif %}'
+                );
             {% endif %}
         {% endfor %}
     })();

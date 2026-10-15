@@ -5,30 +5,164 @@
     <title>Edit Admin Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        
-        
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 650px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; border: none; cursor: pointer; }
-        .btn-save { background: #28a745; width: 100%; padding: 12px; font-size: 16px; margin-top: 20px; font-weight: bold; } 
-        .btn-back { background: #6c757d; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 14px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; background: #fff; border-color: #007bff; font-family: inherit; } 
-        textarea { resize: vertical; height: 80px; }
-        .profile-pic-container { text-align: center; margin-bottom: 20px; }
-        .profile-pic { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #007bff; margin-bottom: 10px; }
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-form-box {
+            max-width: 750px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .profile-form-box .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .profile-form-box h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .profile-form-box .btn-back {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .profile-form-box .btn-back:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .profile-form-box .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .profile-form-box form label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .profile-form-box form input,
+        .profile-form-box form textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .profile-form-box form input:focus,
+        .profile-form-box form textarea:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .profile-form-box form input[type="file"] {
+            padding: 8px 10px;
+        }
+
+        .profile-form-box form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .profile-form-box .profile-pic-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .profile-form-box .profile-pic,
+        .profile-form-box .profile-pic-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3b82f6;
+            margin: 0 auto 10px;
+        }
+
+        .profile-form-box .profile-pic-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 36px;
+        }
+
+        .profile-form-box .profile-image-input {
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .profile-form-box form button[type="submit"] {
+            background-color: #22c55e;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .profile-form-box form button[type="submit"]:hover {
+            background-color: #16a34a;
+        }
+
+        @media (max-width: 768px) {
+            .profile-form-box {
+                margin: 15px;
+                padding: 24px;
+            }
+
+            .profile-form-box .form-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2><i class="fa fa-user-edit"></i> Edit Admin Profile</h2>
-            <div>
-                <!-- Cancel button wapas normal profile par le jayega -->
-                <a href="{% url 'admin_profile' %}" class="btn btn-back nav-link-ajax"><i class="fa fa-times"></i> Cancel</a>
-            </div>
+    {% if show_dashboard_toast %}
+        {% include "dashboard/_toast.html" %}
+    {% endif %}
+    <div class="profile-form-box">
+        <div class="form-header">
+            <h2>Edit Admin Profile</h2>
+            <a href="{% url 'admin_profile' %}" class="btn-back nav-link-ajax">← Back to Profile</a>
         </div>
         
         <form method="POST" action="{% url 'admin_profile' %}" enctype="multipart/form-data" class="ajax-form">
@@ -38,12 +172,12 @@
                 {% if user.profile_image %}
                     <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="profile-pic">
                 {% else %}
-                    <div style="width: 90px; height: 90px; border-radius: 50%; background: #e9ecef; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; border: 3px solid #007bff; color: #6c757d; font-size: 36px;">
+                    <div class="profile-pic-placeholder">
                         <i class="fa fa-user"></i>
                     </div>
                 {% endif %}
-                <div style="margin-top: 10px;">
-                    <input type="file" name="profile_image" style="display: inline-block; width: auto; font-size: 13px;">
+                <div class="profile-image-input">
+                    <input type="file" name="profile_image" accept="image/*">
                 </div>
             </div>
 
@@ -77,7 +211,7 @@
                 <input type="text" name="office_address" value="{{ user.office_address|default:'' }}">
             </div>
 
-            <button type="submit" class="btn btn-save"><i class="fa fa-save"></i> Update Profile</button>
+            <button type="submit">Update Profile</button>
         </form>
     </div>
 </body>

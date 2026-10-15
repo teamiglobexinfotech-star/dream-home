@@ -4482,23 +4482,48 @@ updateImageCount();
                 }
             })
             .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
                 const toastMessage =
                     response.headers.get('X-Dashboard-Toast');
+                const toastType =
+                    response.headers.get('X-Dashboard-Toast-Type');
 
-                return response.text().then(html => ({
-                    html,
-                    toastMessage
-                }));
+                return response.text().then(html => {
+                    if (!response.ok) {
+                        const error = new Error(
+                            toastMessage || 'Network response was not ok'
+                        );
+                        error.html = html;
+                        error.toastMessage = toastMessage;
+                        error.toastType = toastType;
+                        throw error;
+                    }
+
+                    return {
+                        html,
+                        toastMessage,
+                        toastType
+                    };
+                });
             })
             .then(result => {
                 mainArea.innerHTML = result.html;
                 if (result.toastMessage) {
-                    window.showDashboardToast(result.toastMessage);
+                    window.showDashboardToast(
+                        result.toastMessage,
+                        result.toastType
+                    );
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                if (error.html && error.toastMessage) {
+                    mainArea.innerHTML = error.html;
+                    window.showDashboardToast(
+                        error.toastMessage,
+                        error.toastType
+                    );
+                    return;
+                }
                 mainArea.innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to save data.</div>';
             });
         });

@@ -11,7 +11,7 @@ urlpatterns = [
     path('verify-otp/', views.verify_otp_view, name='verify_otp'),
     path('reset-password/', views.reset_password_view, name='reset_password'),
 
-    path('agent/add/', views.add_agent_view, name='add_agent'),
+    path('agent/add/', views.add_agent_view, name='customer_add_agent'),
     path('agent/edit/<int:pk>/', views.edit_agent_view, name='edit_agent'),
     path('agent/delete/<int:pk>/', views.delete_agent_view, name='delete_agent'),
     path('customer-dashboard/', views.customer_dashboard_view, name='customer_dashboard'),
