@@ -1157,7 +1157,7 @@
 
                 {% for visit in approved_visit_list %}
 
-                    {% if visit.status == 'Approved' %}
+                    {% if visit.approval_status == 'Approved' %}
 
                     <tr style="border-bottom:1px solid #f3f4f6;">
 
@@ -1171,10 +1171,23 @@
 
                         <td style="padding:12px 16px;">
                             {{ visit.schedule.name }}
+                            {% if visit.schedule.property %}
+                                <div style="color:#6b7280;font-size:12px;">{{ visit.schedule.property.title }}</div>
+                            {% endif %}
+                            <div style="color:#6b7280;font-size:12px;">{{ visit.get_status_display }}</div>
                         </td>
 
                         <td style="padding:12px 16px;">
                             {{ visit.location_visited }}
+                            {% if visit.outcome %}
+                                <div style="color:#374151;font-size:12px;margin-top:4px;">Outcome: {{ visit.outcome }}</div>
+                            {% endif %}
+                            {% if visit.feedback %}
+                                <div style="color:#6b7280;font-size:12px;margin-top:4px;">Feedback: {{ visit.feedback }}</div>
+                            {% endif %}
+                            {% if visit.notes %}
+                                <div style="color:#6b7280;font-size:12px;margin-top:4px;">Notes: {{ visit.notes }}</div>
+                            {% endif %}
                         </td>
 
                         <td style="padding:12px 16px;">
@@ -1313,7 +1326,7 @@
 
                 {% for visit in rejected_visit_list %}
 
-                    {% if visit.status == 'Rejected' %}
+                    {% if visit.approval_status == 'Rejected' %}
 
                     <tr style="border-bottom:1px solid #f3f4f6;">
 
@@ -1331,6 +1344,9 @@
 
                         <td style="padding:12px 16px;">
                             {{ visit.location_visited }}
+                            {% if visit.admin_feedback %}
+                                <div style="color:#842029;font-size:12px;margin-top:4px;">Reason: {{ visit.admin_feedback }}</div>
+                            {% endif %}
                         </td>
 
                         <td style="padding:12px 16px;">
@@ -1494,10 +1510,32 @@
 
                     <td style="padding:12px 16px;">
                         {{ visit.schedule.name }}
+                        {% if visit.schedule.property %}
+                            <div style="color:#6b7280;font-size:12px;">{{ visit.schedule.property.title }}</div>
+                        {% endif %}
+                        <div style="color:#6b7280;font-size:12px;">{{ visit.get_status_display }}</div>
                     </td>
 
                     <td style="padding:12px 16px;">
                         {{ visit.location_visited }}
+                        {% if visit.outcome %}
+                            <div style="color:#374151;font-size:12px;margin-top:4px;">Outcome: {{ visit.outcome }}</div>
+                        {% endif %}
+                        {% if visit.feedback %}
+                            <div style="color:#6b7280;font-size:12px;margin-top:4px;">Feedback: {{ visit.feedback }}</div>
+                        {% endif %}
+                        {% if visit.notes %}
+                            <div style="color:#6b7280;font-size:12px;margin-top:4px;">Notes: {{ visit.notes }}</div>
+                        {% endif %}
+                        {% if visit.admin_feedback %}
+                            <div style="color:#b45309;font-size:12px;margin-top:4px;">Agent response: {{ visit.admin_feedback }}</div>
+                        {% endif %}
+                        {% if visit.visit_type %}
+                            <div style="color:#6b7280;font-size:12px;margin-top:4px;">{{ visit.visit_type }} — {{ visit.visit_purpose }}</div>
+                        {% endif %}
+                        {% if visit.visit_date %}
+                            <div style="color:#6b7280;font-size:12px;margin-top:4px;">Visit date: {{ visit.visit_date|date:"d M Y, h:i A" }}</div>
+                        {% endif %}
                     </td>
 
                     <td style="padding:12px 16px;">
@@ -1548,11 +1586,12 @@
                                 font-weight:500;
                                 font-size:13px;
                             ">
-                            Accept
+                            Approve
                         </button>
 
                         <button
                             data-url="{% url 'visit_action_ajax' visit.id 'reject' %}"
+                            data-requires-reason="true"
                             class="action-btn btn btn-danger"
                             style="
                                 background:#ef4444;
@@ -1565,6 +1604,14 @@
                                 font-size:13px;
                             ">
                             Reject
+                        </button>
+
+                        <button
+                            data-url="{% url 'visit_action_ajax' visit.id 'request-changes' %}"
+                            data-requires-reason="true"
+                            class="action-btn btn"
+                            style="background:#f59e0b;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-weight:500;font-size:13px;">
+                            Request Changes
                         </button>
 
                     </td>
@@ -1704,11 +1751,14 @@
 
                     <td style="padding:12px 16px;">
                         {{ visit.location_visited }}
+                        {% if visit.admin_feedback %}
+                            <div style="color:#6b7280;font-size:12px;margin-top:4px;">Admin feedback: {{ visit.admin_feedback }}</div>
+                        {% endif %}
                     </td>
 
                     <td style="padding:12px 16px;">
 
-                        {% if visit.status == 'Approved' %}
+                        {% if visit.approval_status == 'Approved' %}
 
                             <span style="
                                 background:#d1e7dd;

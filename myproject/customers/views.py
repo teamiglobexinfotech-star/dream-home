@@ -1053,11 +1053,14 @@ def ajax_my_site_visits(request):
         # -----------------------------------
         if site_visit:
 
-            if site_visit.status == 'Approved':
+            if site_visit.approval_status == 'Approved':
                 status = 'Approved'
 
-            elif site_visit.status == 'Rejected':
+            elif site_visit.approval_status == 'Rejected':
                 status = 'Rejected'
+
+            elif site_visit.approval_status == 'Changes Requested':
+                status = 'Changes Requested'
 
             else:
                 status = 'Under Review'
@@ -1156,6 +1159,9 @@ def ajax_my_site_visits(request):
             'agent_phone': agent_phone,
 
             'notes': notes,
+            'outcome': site_visit.outcome if site_visit else '',
+            'feedback': site_visit.feedback if site_visit else '',
+            'admin_feedback': site_visit.admin_feedback if site_visit else '',
 
             'site_visit_id': (
                 site_visit.id

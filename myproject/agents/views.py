@@ -14,9 +14,22 @@ from datetime import datetime
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.db import transaction
+from django.core.exceptions import PermissionDenied
+from functools import wraps
 
 
 # Create your views here.
+def agent_required(view_func):
+    @wraps(view_func)
+    @login_required
+    def wrapped(request, *args, **kwargs):
+        if getattr(request.user, 'role', None) != 'agent':
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+
+    return wrapped
+
+
 @login_required
 def agent_dashboard_view(request):
     properties = Property.objects.filter(
@@ -28,7 +41,9 @@ def agent_dashboard_view(request):
     ).order_by('-created_at')
 
     sitevisit_count = SiteVisit.objects.filter(
-        agent=request.user
+        agent=request.user,
+        status='Completed',
+        approval_status='Approved'
     ).count()
 
     notifications = Notification.objects.filter(
@@ -39,7 +54,9 @@ def agent_dashboard_view(request):
     notification_count = notifications.count()
 
     upcoming_visits = VisitSchedule.objects.filter(
-        agent=request.user
+        agent=request.user,
+        status__in=['Pending', 'Assigned'],
+        visit_date__gte=timezone.now()
     ).order_by('visit_date')
 
     recent_notifications = Notification.objects.filter(
@@ -644,7 +661,8 @@ def agent_logout_view(request):
 #         context
 #     )
 
-@login_required
+@agent_required
+@transaction.atomic
 def agent_site_visits_view(request):
     visits = SiteVisit.objects.filter(
         agent=request.user
@@ -657,22 +675,36 @@ def agent_site_visits_view(request):
         agent=request.user
     ).select_related(
         'property'
+    ).prefetch_related(
+        'site_visits'
     ).order_by('visit_date')
+    assigned_schedules = schedules.filter(status='Assigned')
+    upcoming_schedules = schedules.filter(
+        status__in=['Pending', 'Assigned'],
+        visit_date__gte=timezone.now()
+    )
+    rescheduled_visits = visits.filter(
+        previous_visit__isnull=False
+    ).select_related(
+        'previous_visit',
+        'previous_visit__schedule'
+    )
 
-
-    total_visits_count = visits.count()
-
-    completed_visits_count = visits.count()
-
-    upcoming_visits_count = schedules.filter(
-        status__in=['Pending', 'Assigned']
+    total_visits_count = (
+        schedules.count()
+        + visits.filter(schedule__isnull=True).count()
+    )
+    completed_visits_count = visits.filter(
+        status='Completed',
+        approval_status='Approved'
     ).count()
+    upcoming_visits_count = upcoming_schedules.count()
 
     # ---------------------------------------------------------
     # Logged-in agent ki saari properties
     # ---------------------------------------------------------
     agent_properties = list(
-        Property.objects.all().order_by('title')
+        Property.objects.filter(agent=request.user).order_by('title')
     )
 
     # ---------------------------------------------------------
@@ -755,31 +787,74 @@ def agent_site_visits_view(request):
     # Complete Site Visit Form
     # ---------------------------------------------------------
     if request.method == 'POST':
-
         schedule_id = request.POST.get('schedule_id')
-        location = request.POST.get('location_visited')
-        image = request.FILES.get('visit_image')
-        notes = request.POST.get('notes')
+        schedule = VisitSchedule.objects.filter(
+            pk=schedule_id,
+            agent=request.user,
+            status='Assigned'
+        ).select_related('property').select_for_update(of=('self',)).first()
+        location = (request.POST.get('location_visited') or '').strip()
+        outcome = (request.POST.get('outcome') or '').strip()
 
-        schedule = get_object_or_404(
-            VisitSchedule,
-            id=schedule_id,
-            agent=request.user
-        )
+        if not schedule:
+            return JsonResponse({
+                'success': False,
+                'message': 'Select a visit assigned to your account.'
+            }, status=400)
+        if not location:
+            location = schedule.property.location if schedule.property else ''
+        if not location or not outcome:
+            return JsonResponse({
+                'success': False,
+                'message': 'A visit location and outcome are required.'
+            }, status=400)
 
-        # Actual completed site visit create hoga
-        SiteVisit.objects.create(
+        completed_visit = SiteVisit.objects.filter(
             agent=request.user,
             schedule=schedule,
-            location_visited=location,
-            visit_image=image,
-            notes=notes,
-            visit_date=schedule.visit_date
-        )
+            status='Completed'
+        ).order_by('-created_at').first()
+        if SiteVisit.objects.filter(
+            agent=request.user,
+            schedule=schedule,
+            status='Completed',
+            approval_status='Approved'
+        ).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'This scheduled visit has already been completed.'
+            }, status=400)
+        if completed_visit and completed_visit.approval_status in {
+            'Pending', 'Changes Requested'
+        }:
+            return JsonResponse({
+                'success': False,
+                'message': 'A completion request for this visit is already awaiting admin review.'
+            }, status=400)
 
-        # Future schedule ko completed mark karo
-        schedule.status = 'Completed'
-        schedule.save(update_fields=['status'])
+        visit_data = {
+            'location_visited': location,
+            'visit_date': timezone.now(),
+            'outcome': outcome,
+            'feedback': (request.POST.get('feedback') or '').strip(),
+            'notes': (request.POST.get('notes') or '').strip(),
+            'approval_status': 'Pending',
+            'admin_feedback': '',
+        }
+        if request.FILES.get('visit_image'):
+            visit_data['visit_image'] = request.FILES['visit_image']
+
+        if completed_visit:
+            for field, value in visit_data.items():
+                setattr(completed_visit, field, value)
+            completed_visit.save()
+        else:
+            SiteVisit.objects.create(
+                agent=request.user,
+                schedule=schedule,
+                status='Completed',
+                **visit_data
+            )
 
         # -----------------------------------------------------
         # Database update ke baad fresh data fetch
@@ -795,6 +870,8 @@ def agent_site_visits_view(request):
             agent=request.user
         ).select_related(
             'property'
+        ).prefetch_related(
+            'site_visits'
         ).order_by('visit_date')
 
         # Fresh property data attach
@@ -805,9 +882,19 @@ def agent_site_visits_view(request):
             context = {
                 'visits': visits,
                 'schedules': schedules,
-                'total_visits_count': total_visits_count,
-                'completed_visits_count': completed_visits_count,
-                'upcoming_visits_count': upcoming_visits_count,
+                'assigned_schedules': assigned_schedules,
+                'upcoming_schedules': upcoming_schedules,
+                'rescheduled_visits': rescheduled_visits,
+                'total_visits_count': (
+                    schedules.count()
+                    + visits.filter(schedule__isnull=True).count()
+                ),
+                'completed_visits_count': visits.filter(
+                    status='Completed',
+                    approval_status='Approved'
+                ).count(),
+                'upcoming_visits_count': upcoming_schedules.count(),
+                'rescheduled_visits_count': rescheduled_visits.count(),
             }
 
             return render(
@@ -823,7 +910,14 @@ def agent_site_visits_view(request):
     # ---------------------------------------------------------
     context = {
         'visits': visits,
-        'schedules': schedules
+        'schedules': schedules,
+        'assigned_schedules': assigned_schedules,
+        'upcoming_schedules': upcoming_schedules,
+        'rescheduled_visits': rescheduled_visits,
+        'total_visits_count': total_visits_count,
+        'completed_visits_count': completed_visits_count,
+        'upcoming_visits_count': upcoming_visits_count,
+        'rescheduled_visits_count': rescheduled_visits.count(),
     }
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -843,10 +937,15 @@ def agent_site_visits_view(request):
 
 
 #Edit Site Visit View
-@login_required
+@agent_required
+@transaction.atomic
 def agent_edit_site_visit_view(request, pk):
     visit = get_object_or_404(SiteVisit, pk=pk, agent=request.user)
-    schedules = VisitSchedule.objects.filter(agent=request.user)
+    if visit.approval_status == 'Approved':
+        return JsonResponse({
+            'success': False,
+            'message': 'Approved visits cannot be edited. Request a new visit instead.'
+        }, status=403)
     
     # Fail-safe check: Header ya query parameter dono se detect karega
     is_ajax = (
@@ -854,43 +953,145 @@ def agent_edit_site_visit_view(request, pk):
         request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' or
         request.GET.get('ajax') == 'true'
     )
+    schedules = VisitSchedule.objects.filter(
+        pk=visit.schedule_id,
+        agent=request.user
+    ).select_related('property')
 
     if request.method == 'POST':
-        visit.schedule_id = request.POST.get('schedule_id')
-        visit.location_visited = request.POST.get('location_visited')
-        if request.FILES.get('visit_image'):
-            visit.visit_image = request.FILES.get('visit_image')
-        visit.notes = request.POST.get('notes')
+        if visit.status == 'Scheduled':
+            if not visit.schedule_id:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'This visit request has no linked schedule.'
+                }, status=400)
+            parsed_visit_date = parse_datetime(
+                request.POST.get('visit_date', '').strip()
+            )
+            if not parsed_visit_date:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Enter a valid visit date and time.'
+                }, status=400)
+            if timezone.is_naive(parsed_visit_date):
+                parsed_visit_date = timezone.make_aware(
+                    parsed_visit_date,
+                    timezone.get_current_timezone()
+                )
+            if parsed_visit_date <= timezone.now():
+                return JsonResponse({
+                    'success': False,
+                    'message': 'The visit date must be in the future.'
+                }, status=400)
+            duplicate_schedule = VisitSchedule.objects.filter(
+                agent=request.user,
+                property_id=visit.schedule.property_id,
+                name=visit.schedule.name,
+                phone=visit.schedule.phone,
+                visit_date=parsed_visit_date,
+                status__in=['Pending', 'Assigned']
+            ).exclude(pk=visit.schedule_id).exists()
+            if duplicate_schedule:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Another visit for this customer and property is already scheduled at that time.'
+                }, status=400)
+            valid_visit_types = dict(
+                SiteVisit._meta.get_field('visit_type').choices
+            )
+            if request.POST.get('visit_type', '').strip() not in valid_visit_types:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Select a valid visit type.'
+                }, status=400)
+            visit_purpose = request.POST.get('visit_purpose', '').strip()
+            if not visit_purpose:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Enter a purpose for the requested visit.'
+                }, status=400)
+            visit.visit_date = parsed_visit_date
+            visit.visit_type = request.POST.get('visit_type', '').strip()
+            visit.visit_purpose = visit_purpose
+            visit.schedule.visit_date = parsed_visit_date
+            visit.schedule.message = (
+                request.POST.get('message', '').strip()
+                or visit.visit_purpose
+            )
+            visit.schedule.save(update_fields=['visit_date', 'message'])
+        else:
+            location = request.POST.get('location_visited', '').strip()
+            outcome = request.POST.get('outcome', '').strip()
+            if not location or not outcome:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'A visit location and outcome are required.'
+                }, status=400)
+            visit.location_visited = location
+            visit.outcome = outcome
+            visit.feedback = request.POST.get('feedback', '').strip()
+            if request.FILES.get('visit_image'):
+                visit.visit_image = request.FILES['visit_image']
+        visit.notes = request.POST.get('notes', '').strip()
+        visit.approval_status = 'Pending'
+        visit.admin_feedback = ''
         visit.save()
         
         if is_ajax:
-            visits = SiteVisit.objects.filter(agent=request.user).order_by('-created_at')
-            return render(request, 'agents/site_visit_content.html', {'visits': visits, 'schedules': schedules})
+            return redirect('agent_site_visits')
             
         return redirect('agent_site_visits')
         
-    context = {'visit': visit, 'schedules': schedules}
+    visit_date_value = ''
+    if visit.visit_date:
+        visit_date_value = timezone.localtime(visit.visit_date).strftime(
+            '%Y-%m-%dT%H:%M'
+        )
+    context = {
+        'visit': visit,
+        'schedules': schedules,
+        'visit_date_value': visit_date_value,
+        'min_visit_date': timezone.localtime().strftime('%Y-%m-%dT%H:%M'),
+        'visit_types': SiteVisit._meta.get_field('visit_type').choices,
+    }
     
     if is_ajax:
         return render(request, 'agents/edit_site_visit.html', context)
         
     return render(request, 'agents/agent_dashboard.html', context)
-
 #Delete Site Visit View
-@login_required
+@agent_required
 def agent_delete_site_visit_view(request, pk):
     visit = get_object_or_404(SiteVisit, pk=pk, agent=request.user)
-    
-    if request.method == 'POST' or request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        visit.delete()
-        
-        # Delete hone ke baad updated list fetch karke partial return kar dein
-        visits = SiteVisit.objects.filter(agent=request.user).order_by('-created_at')
-        #enquiries = Enquiry.objects.filter(agent=request.user)
-        schedules = VisitSchedule.objects.filter(agent=request.user)
-        context = {'visits': visits, 'schedules': schedules}
-        return render(request, 'agents/site_visit_content.html', context)
-        
+
+    if visit.approval_status == 'Approved':
+        return JsonResponse({
+            'success': False,
+            'message': 'Approved visits cannot be deleted.'
+        }, status=403)
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid request method.'
+        }, status=400)
+
+    if VisitSchedule.objects.filter(
+        agent=request.user,
+        property_id=selected_property_id,
+        name=previous_schedule.name,
+        phone=previous_schedule.phone,
+        visit_date=parsed_visit_date,
+        status__in=['Pending', 'Assigned']
+    ).exists():
+        return JsonResponse({
+            'success': False,
+            'message': 'A visit for this customer and property is already scheduled at that time.'
+        }, status=400)
+
+    if visit.status == 'Scheduled' and visit.schedule_id:
+        visit.schedule.status = 'Cancelled'
+        visit.schedule.save(update_fields=['status'])
+    visit.delete()
     return redirect('agent_site_visits')
 
 #Agent Commission View
@@ -1036,7 +1237,8 @@ def agent_mark_ajax_read(request):
 #     })
 
 
-@login_required
+@agent_required
+@transaction.atomic
 def agent_next_site_visit_view(request, pk):
     if request.method != 'POST':
         return JsonResponse({
@@ -1044,23 +1246,35 @@ def agent_next_site_visit_view(request, pk):
             'message': 'Invalid request method.'
         }, status=400)
 
-    # Previous completed visit
     previous_visit = get_object_or_404(
-        SiteVisit,
+        SiteVisit.objects.select_for_update(),
         pk=pk,
         agent=request.user
     )
+    if (
+        previous_visit.status not in {'Completed', 'Scheduled'}
+        or previous_visit.approval_status != 'Approved'
+    ):
+        return JsonResponse({
+            'success': False,
+            'message': 'A next visit or reschedule can only be requested for an approved visit.'
+        }, status=400)
 
-    # Previous visit must have a schedule
     previous_schedule = previous_visit.schedule
-
     if not previous_schedule:
         return JsonResponse({
             'success': False,
             'message': 'This site visit is not linked with a scheduled visit.'
         }, status=400)
+    if (
+        previous_visit.status == 'Scheduled'
+        and previous_schedule.status != 'Assigned'
+    ):
+        return JsonResponse({
+            'success': False,
+            'message': 'Only an active approved visit can be rescheduled.'
+        }, status=400)
 
-    # Get future visit data
     selected_property_id = request.POST.get('property_id', '').strip()
     visit_type = request.POST.get('visit_type', '').strip()
     visit_date = request.POST.get('visit_date', '').strip()
@@ -1073,19 +1287,17 @@ def agent_next_site_visit_view(request, pk):
             'message': 'Please select property.'
         }, status=400)
 
-    selected_property = get_object_or_404(
-        Property,
-        pk=selected_property_id
-        
-    )
-
-    # Validation
-    if not visit_type:
+    if visit_type not in dict(SiteVisit._meta.get_field('visit_type').choices):
         return JsonResponse({
             'success': False,
             'message': 'Please select visit type.'
         }, status=400)
 
+    if not visit_purpose:
+        return JsonResponse({
+            'success': False,
+            'message': 'Please enter the visit purpose.'
+        }, status=400)
     if not visit_date:
         return JsonResponse({
             'success': False,
@@ -1104,9 +1316,38 @@ def agent_next_site_visit_view(request, pk):
             parsed_visit_date,
             timezone.get_current_timezone()
         )
+    if parsed_visit_date <= timezone.now():
+        return JsonResponse({
+            'success': False,
+            'message': 'The visit date must be in the future.'
+        }, status=400)
 
-    # Create a NEW future schedule.
-    # Do NOT create SiteVisit here.
+    if SiteVisit.objects.filter(
+        previous_visit=previous_visit,
+        status='Scheduled',
+        approval_status__in=['Pending', 'Changes Requested']
+    ).exists():
+        return JsonResponse({
+            'success': False,
+            'message': 'A next visit request is already awaiting admin review.'
+        }, status=400)
+
+    allowed_customer_properties = VisitSchedule.objects.filter(
+        agent=request.user,
+        name=previous_schedule.name,
+        phone=previous_schedule.phone
+    ).exclude(property__isnull=True).values_list('property_id', flat=True)
+    selected_property = Property.objects.filter(
+        pk=selected_property_id
+    ).filter(
+        Q(agent=request.user) | Q(pk__in=allowed_customer_properties)
+    ).first()
+    if not selected_property:
+        return JsonResponse({
+            'success': False,
+            'message': 'Select one of your properties or a property linked to this customer.'
+        }, status=400)
+
     next_schedule = VisitSchedule.objects.create(
         property=selected_property,
         name=previous_schedule.name,
@@ -1115,12 +1356,24 @@ def agent_next_site_visit_view(request, pk):
         visit_date=parsed_visit_date,
         message=message or visit_purpose,
         agent=request.user,
-        status='Assigned'
+        status='Pending'
+    )
+    SiteVisit.objects.create(
+        agent=request.user,
+        schedule=next_schedule,
+        previous_visit=previous_visit,
+        location_visited=selected_property.location,
+        visit_type=visit_type,
+        visit_purpose=visit_purpose,
+        visit_date=parsed_visit_date,
+        notes=message,
+        status='Scheduled',
+        approval_status='Pending'
     )
 
     return JsonResponse({
         'success': True,
-        'message': 'Next visit scheduled successfully.',
+        'message': 'Next visit request submitted for admin approval.',
         'schedule_id': next_schedule.id,
         'visit_date': next_schedule.visit_date.strftime('%d %b %Y, %I:%M %p'),
         'visit_type': visit_type

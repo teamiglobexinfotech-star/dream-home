@@ -1768,6 +1768,7 @@ def admin_approve_property(request, pk):
 #     }
 #     return render(request, 'dashboard/site_visit_approvals.html', context)
 
+@staff_member_required
 def site_visit_approvals_view(request):
 
     # -----------------------------
@@ -1848,9 +1849,9 @@ def site_visit_approvals_view(request):
     # 5. APPROVED SITE VISITS
     # =========================================================
 
-    approved_visit_list = SiteVisit.objects.filter(
-        status='Approved'
-    ).order_by('-created_at')
+    approved_visit_list = SiteVisit.objects.select_related(
+        'agent', 'schedule', 'schedule__property'
+    ).filter(approval_status='Approved').order_by('-created_at')
 
     approved_visits = approved_visit_list.count()
 
@@ -1859,9 +1860,9 @@ def site_visit_approvals_view(request):
     # 6. REJECTED SITE VISITS
     # =========================================================
 
-    rejected_visit_list = SiteVisit.objects.filter(
-        status='Rejected'
-    ).order_by('-created_at')
+    rejected_visit_list = SiteVisit.objects.select_related(
+        'agent', 'schedule', 'schedule__property'
+    ).filter(approval_status='Rejected').order_by('-created_at')
 
     rejected_visits = rejected_visit_list.count()
 
@@ -1870,8 +1871,10 @@ def site_visit_approvals_view(request):
     # 7. PENDING SITE VISIT APPROVAL REQUESTS
     # =========================================================
 
-    pending_site_visits = SiteVisit.objects.filter(
-        status='Pending'
+    pending_site_visits = SiteVisit.objects.select_related(
+        'agent', 'schedule', 'schedule__property'
+    ).filter(
+        approval_status__in=['Pending', 'Changes Requested']
     ).order_by('-created_at')
 
     approval_visits = pending_site_visits.count()
@@ -1882,8 +1885,10 @@ def site_visit_approvals_view(request):
     # Approved + Rejected
     # =========================================================
 
-    history_visits = SiteVisit.objects.exclude(
-        status='Pending'
+    history_visits = SiteVisit.objects.select_related(
+        'agent', 'schedule', 'schedule__property'
+    ).exclude(
+        approval_status__in=['Pending', 'Changes Requested']
     ).order_by('-created_at')
 
     total_visit_list = paginate_list(request, total_visit_list, 'total_page')
@@ -1982,22 +1987,65 @@ def site_visit_approvals_view(request):
     )
 
 
-# 2. AJAX ke through Accept/Reject handle karne ke liye view
+@staff_member_required
+@transaction.atomic
 def handle_visit_action_ajax(request, pk, action):
-    if request.method == 'POST' or request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        try:
-            visit = SiteVisit.objects.get(pk=pk)
-            if action == 'approve':
-                visit.status = 'Approved'
-            elif action == 'reject':
-                visit.status = 'Rejected'
-            visit.save()
-            return JsonResponse({'success': True, 'message': f'Visit {visit.status} successfully!'})
-        except SiteVisit.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Visit not found.'}, status=404)
-    return JsonResponse({'success': False, 'message': 'Invalid request.'}, status=400)
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+    if action not in {'approve', 'reject', 'request-changes'}:
+        return JsonResponse({'success': False, 'message': 'Invalid visit action.'}, status=400)
 
-# 3. History se record delete karne ke liye view
+    visit = get_object_or_404(
+        SiteVisit.objects.select_for_update(of=('self',)).select_related('schedule'),
+        pk=pk
+    )
+    if visit.approval_status not in {'Pending', 'Changes Requested'}:
+        return JsonResponse({
+            'success': False,
+            'message': 'This visit request has already been reviewed.'
+        }, status=400)
+
+    reason = request.POST.get('reason', '').strip()
+    if action in {'reject', 'request-changes'} and not reason:
+        return JsonResponse({
+            'success': False,
+            'message': 'A reason is required for this action.'
+        }, status=400)
+
+    if action == 'approve':
+        visit.approval_status = 'Approved'
+        visit.admin_feedback = ''
+        if visit.schedule_id:
+            if visit.status == 'Scheduled':
+                visit.schedule.status = 'Assigned'
+            elif visit.status == 'Completed':
+                visit.schedule.status = 'Completed'
+            visit.schedule.save(update_fields=['status'])
+        if (
+            visit.status == 'Scheduled'
+            and visit.previous_visit_id
+            and visit.previous_visit.status == 'Scheduled'
+            and visit.previous_visit.schedule_id
+        ):
+            visit.previous_visit.schedule.status = 'Cancelled'
+            visit.previous_visit.schedule.save(update_fields=['status'])
+    elif action == 'reject':
+        visit.approval_status = 'Rejected'
+        visit.admin_feedback = reason
+        if visit.status == 'Scheduled' and visit.schedule_id:
+            visit.schedule.status = 'Cancelled'
+            visit.schedule.save(update_fields=['status'])
+    else:
+        visit.approval_status = 'Changes Requested'
+        visit.admin_feedback = reason
+
+    visit.save(update_fields=['approval_status', 'admin_feedback'])
+    return JsonResponse({
+        'success': True,
+        'message': f'Visit {visit.approval_status.lower()} successfully.'
+    })
+
+@staff_member_required
 def delete_site_visit(request, visit_id):
     if request.method == 'POST':
         visit = get_object_or_404(SiteVisit, id=visit_id)

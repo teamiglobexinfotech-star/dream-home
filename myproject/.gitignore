@@ -7,6 +7,9 @@
 # C extensions
 *.so
 migrations
+!properties/migrations/
+properties/migrations/*
+!properties/migrations/0036_sitevisit_admin_feedback_sitevisit_approval_status_and_more.py
 # Distribution / packaging
 .Python
 build/

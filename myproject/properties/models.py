@@ -304,12 +304,27 @@ class Booking(models.Model):
 
 # Site Visit Model
 class SiteVisit(models.Model):
+    VISIT_STATUS_CHOICES = (
+        ('Scheduled', 'Scheduled'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
+    )
+    APPROVAL_STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+        ('Changes Requested', 'Changes Requested'),
+    )
+
     agent = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, limit_choices_to={'role': 'agent'})
     #enquiry = models.ForeignKey(Enquiry, on_delete=models.CASCADE, related_name='site_visits')
     schedule = models.ForeignKey('VisitSchedule',on_delete=models.CASCADE,related_name='site_visits',null=True,blank=True)
     location_visited = models.CharField(max_length=255)
-    visit_image = models.ImageField(upload_to='site_visits/')
+    visit_image = models.ImageField(upload_to='site_visits/', blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
+    outcome = models.CharField(max_length=100, blank=True)
+    feedback = models.TextField(blank=True)
+    admin_feedback = models.TextField(blank=True)
 
     # NEW: previous actual site visit
     previous_visit = models.ForeignKey(
@@ -342,12 +357,16 @@ class SiteVisit(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     # === Yeh naya column isi table me jud jayega ===
-    STATUS_CHOICES = (
-        ('Pending', 'Pending'),
-        ('Approved', 'Approved'),
-        ('Rejected', 'Rejected'),
+    status = models.CharField(
+        max_length=20,
+        choices=VISIT_STATUS_CHOICES,
+        default='Completed'
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    approval_status = models.CharField(
+        max_length=20,
+        choices=APPROVAL_STATUS_CHOICES,
+        default='Pending'
+    )
 
     def __str__(self):
         return f"Visit for {self.schedule.name if self.schedule else 'Old Visit'} by {self.agent.email}"

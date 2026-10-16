@@ -1292,6 +1292,38 @@
 // AGENT DASHBOARD JS
 // =====================================================
 
+document.addEventListener("click", function (event) {
+    const card = event.target.closest("[data-visit-toggle]");
+
+    if (!card) {
+        return;
+    }
+
+    const panelId = card.getAttribute("data-visit-toggle");
+    const panel = document.getElementById(panelId);
+    const container = card.closest("#dashboard-dynamic-content");
+
+    if (!panel || !container) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const shouldOpen = panel.hidden;
+    container.querySelectorAll("[data-visit-panel]").forEach(function (visitPanel) {
+        visitPanel.hidden = true;
+    });
+    container.querySelectorAll("[data-visit-toggle]").forEach(function (visitCard) {
+        visitCard.setAttribute("aria-expanded", "false");
+    });
+
+    if (shouldOpen) {
+        panel.hidden = false;
+        card.setAttribute("aria-expanded", "true");
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+});
+
 
 // =====================================================
 // 1. MOBILE SIDEBAR TOGGLE
@@ -1776,6 +1808,13 @@ document.addEventListener(
 // 7. SITE VISIT FORM AJAX SUBMISSION
 // =====================================================
 
+$(document).on("change", "#siteVisitSchedule", function () {
+    const option = this.options[this.selectedIndex];
+    $("#siteVisitCustomer").val(option.dataset.customer || "");
+    $("#siteVisitProperty").val(option.dataset.property || "");
+    $("#siteVisitLocation").val(option.dataset.location || "");
+});
+
 $(document).on(
     "submit",
     "#siteVisitForm",
@@ -1857,6 +1896,8 @@ $(document).on(
                     "Error in site visit submission:",
                     xhr.responseText
                 );
+                const message = xhr.responseJSON && xhr.responseJSON.message;
+                alert(message || "Failed to submit the site visit for approval.");
 
             }
 
@@ -2064,6 +2105,7 @@ $(document).on(
 
 
                 alert(
+                    (xhr.responseJSON && xhr.responseJSON.message) ||
                     "Failed to update site visit. Please check the form data."
                 );
 

@@ -23,11 +23,13 @@
     <!-- ================= SITE VISIT SUMMARY CARDS ============== -->
     <!-- ========================================================= -->
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
 
         <!-- ================= TOTAL VISITS ================= -->
 
-        <a href="#completedVisitsSection"
+        <a href="#totalVisitsSection"
+           data-visit-toggle="totalVisitsSection"
+           aria-expanded="false"
            class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
                   hover:shadow-md hover:border-indigo-300 transition-all duration-200">
 
@@ -44,7 +46,7 @@
                     </h3>
 
                     <p class="text-xs text-slate-400 mt-1">
-                        All scheduled visits
+                        All scheduled visits and standalone records
                     </p>
 
                 </div>
@@ -66,6 +68,8 @@
         <!-- ================= COMPLETED VISITS ================= -->
 
         <a href="#completedVisitsSection"
+           data-visit-toggle="completedVisitsSection"
+           aria-expanded="false"
            class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
                   hover:shadow-md hover:border-emerald-300 transition-all duration-200">
 
@@ -82,7 +86,7 @@
                     </h3>
 
                     <p class="text-xs text-slate-400 mt-1">
-                        Successfully completed
+                        Admin-approved completed visits
                     </p>
 
                 </div>
@@ -104,6 +108,8 @@
         <!-- ================= UPCOMING VISITS ================= -->
 
         <a href="#upcomingVisitsSection"
+           data-visit-toggle="upcomingVisitsSection"
+           aria-expanded="false"
            class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
                   hover:shadow-md hover:border-amber-300 transition-all duration-200">
 
@@ -120,7 +126,7 @@
                     </h3>
 
                     <p class="text-xs text-slate-400 mt-1">
-                        Pending / assigned
+                        Future pending / assigned visits
                     </p>
 
                 </div>
@@ -137,6 +143,132 @@
 
         </a>
 
+        <a href="#rescheduleVisitsSection"
+           data-visit-toggle="rescheduleVisitsSection"
+           aria-expanded="false"
+           class="group block bg-white border border-slate-200 rounded-xl p-5 shadow-sm
+                  hover:shadow-md hover:border-violet-300 transition-all duration-200">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        Reschedule / Next Visits
+                    </p>
+                    <h3 class="text-3xl font-bold text-slate-900 mt-1">
+                        {{ rescheduled_visits_count }}
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Follow-up visit requests
+                    </p>
+                </div>
+
+                <div class="w-11 h-11 rounded-lg bg-violet-50 flex items-center justify-center
+                            group-hover:bg-violet-100 transition">
+                    <i class="fas fa-calendar-plus text-violet-600 text-lg"></i>
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+    <div id="totalVisitsSection" data-visit-panel hidden class="mb-8 scroll-mt-6">
+        <h3 class="text-xl font-bold">All Total Visits</h3>
+        <p class="text-sm text-slate-500 mt-1 mb-4">
+            Each scheduled visit is listed once; standalone visit records are listed separately.
+        </p>
+
+        {% if schedules or visits %}
+            <div class="space-y-3">
+                {% for schedule in schedules %}
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-900">{{ schedule.name }}</h4>
+                                <p class="text-sm text-indigo-600 mt-1">
+                                    {% if schedule.property %}{{ schedule.property.title }}{% else %}Property Not Specified{% endif %}
+                                </p>
+                                <p class="text-sm text-slate-500 mt-1">
+                                    {{ schedule.visit_date|date:"d M Y, h:i A" }}
+                                </p>
+                                {% for visit in schedule.site_visits.all %}
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        Visit record: {{ visit.status }} — {{ visit.approval_status }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                {{ schedule.status }}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% for visit in visits %}
+                    {% if not visit.schedule_id %}
+                        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                            <h4 class="font-semibold text-slate-900">Standalone visit record</h4>
+                            <p class="text-sm text-slate-500 mt-1">
+                                {{ visit.location_visited }} — {{ visit.visit_date|date:"d M Y, h:i A" }}
+                            </p>
+                            <p class="text-xs text-slate-500 mt-1">
+                                {{ visit.status }} — {{ visit.approval_status }}
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
+                <p class="text-slate-500 text-sm">No visits recorded yet.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div id="rescheduleVisitsSection" data-visit-panel hidden class="mb-8 scroll-mt-6">
+        <h3 class="text-xl font-bold">Reschedule / Next Visit Requests</h3>
+        <p class="text-sm text-slate-500 mt-1 mb-4">
+            These follow-up requests are included in Total Visits when they have a schedule.
+        </p>
+
+        {% if rescheduled_visits %}
+            <div class="space-y-3">
+                {% for visit in rescheduled_visits %}
+                    <div class="bg-white border border-violet-200 rounded-xl p-4 shadow-sm">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-900">
+                                    {{ visit.schedule.name|default:"Customer not specified" }}
+                                </h4>
+                                <p class="text-sm text-indigo-600 mt-1">
+                                    {% if visit.schedule and visit.schedule.property %}
+                                        {{ visit.schedule.property.title }}
+                                    {% else %}
+                                        Property Not Specified
+                                    {% endif %}
+                                </p>
+                                <p class="text-sm text-slate-500 mt-1">
+                                    {{ visit.visit_date|date:"d M Y, h:i A" }}
+                                    {% if visit.visit_type %} — {{ visit.get_visit_type_display }}{% endif %}
+                                </p>
+                                {% if visit.admin_feedback %}
+                                    <p class="text-xs text-rose-600 mt-1">{{ visit.admin_feedback }}</p>
+                                {% endif %}
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-violet-50 text-violet-700 border border-violet-200">
+                                {{ visit.approval_status }}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
+                <p class="text-slate-500 text-sm">No reschedule or next-visit requests yet.</p>
+            </div>
+        {% endif %}
     </div>
 
 
@@ -157,11 +289,11 @@
         <div>
 
             <h3 class="text-lg font-semibold text-indigo-600">
-                Complete Site Visit
+                Submit Completed Visit
             </h3>
 
             <p class="text-xs text-slate-500 mt-1">
-                Select the scheduled visit and upload the actual visit details.
+                Select your assigned visit, record its outcome and submit it for admin approval.
             </p>
 
         </div>
@@ -177,7 +309,7 @@
             </label>
 
 
-            <select name="schedule_id"
+            <select id="siteVisitSchedule" name="schedule_id"
                     required
                     class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
 
@@ -186,11 +318,12 @@
                 </option>
 
 
-                {% for schedule in schedules %}
+                {% for schedule in assigned_schedules %}
 
-                    {% if schedule.status != 'Completed' and schedule.status != 'Cancelled' %}
-
-                        <option value="{{ schedule.id }}">
+                        <option value="{{ schedule.id }}"
+                                data-customer="{{ schedule.name }}"
+                                data-property="{% if schedule.property %}{{ schedule.property.title }}{% else %}Property not specified{% endif %}"
+                                data-location="{% if schedule.property %}{{ schedule.property.location }}{% endif %}">
 
                             {{ schedule.name }}
 
@@ -202,11 +335,22 @@
 
                         </option>
 
-                    {% endif %}
-
+                {% empty %}
+                    <option value="" disabled>No assigned visits are available</option>
                 {% endfor %}
 
             </select>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-500">Customer</label>
+                    <input id="siteVisitCustomer" type="text" readonly class="w-full p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-500">Property</label>
+                    <input id="siteVisitProperty" type="text" readonly class="w-full p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-600">
+                </div>
+            </div>
 
         </div>
 
@@ -229,6 +373,7 @@
                 <input type="text"
                        name="location_visited"
                        required
+                       id="siteVisitLocation"
                        class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
 
             </div>
@@ -247,14 +392,22 @@
                 <input type="file"
                        name="visit_image"
                        accept="image/*"
-                       required
                        class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500">
 
             </div>
 
         </div>
 
-
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1 text-slate-700">Outcome</label>
+                <input type="text" name="outcome" required placeholder="e.g. Interested, follow-up required" class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1 text-slate-700">Customer Feedback</label>
+                <textarea name="feedback" rows="2" placeholder="Optional customer feedback" class="w-full p-2.5 rounded-lg bg-white border border-slate-300 text-slate-900"></textarea>
+            </div>
+        </div>
 
         <!-- ================= NOTES ================= -->
 
@@ -279,7 +432,7 @@
         <button type="submit"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-lg transition">
 
-            Complete Visit
+            Submit for Approval
 
         </button>
 
@@ -291,7 +444,7 @@
     <!-- ================= UPCOMING SCHEDULES ==================== -->
     <!-- ========================================================= -->
 
-    <div id="upcomingVisitsSection" class="mb-8">
+    <div id="upcomingVisitsSection" data-visit-panel hidden class="mb-8">
 
 
         <div class="flex items-center justify-between mb-4">
@@ -312,13 +465,11 @@
 
 
 
-        {% if schedules %}
+        {% if upcoming_schedules %}
 
             <div class="space-y-3">
 
-                {% for schedule in schedules %}
-
-                    {% if schedule.status != 'Completed' and schedule.status != 'Cancelled' %}
+                {% for schedule in upcoming_schedules %}
 
                         <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
 
@@ -403,8 +554,6 @@
 
                         </div>
 
-                    {% endif %}
-
                 {% endfor %}
 
             </div>
@@ -430,7 +579,7 @@
     <!-- ================= COMPLETED HISTORY ===================== -->
     <!-- ========================================================= -->
 
-    <div id="completedVisitsSection">
+    <div id="completedVisitsSection" data-visit-panel hidden>
 
 
         <!-- ================= HISTORY HEADER ================= -->
@@ -647,6 +796,12 @@
                                                     </div>
 
                                                 {% endif %}
+                                                {% if visit.outcome %}
+                                                    <div class="mt-1 font-semibold text-slate-700">{{ visit.outcome }}</div>
+                                                {% endif %}
+                                                {% if visit.feedback %}
+                                                    <div class="mt-1 text-[10px] text-slate-500">{{ visit.feedback }}</div>
+                                                {% endif %}
 
                                             </td>
 
@@ -656,38 +811,30 @@
 
                                             <td class="px-3 py-3 whitespace-nowrap">
 
-                                                {% if visit.status == 'Approved' %}
+                                                {% if visit.status == 'Scheduled' %}
 
                                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200">
-
-                                                        <i class="fas fa-check-circle mr-1"></i>
-
-                                                        Approved
-
+                                                        Scheduled
                                                     </span>
-
-
-                                                {% elif visit.status == 'Rejected' %}
-
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-rose-600 bg-rose-50 border border-rose-200">
-
-                                                        <i class="fas fa-times-circle mr-1"></i>
-
-                                                        Rejected
-
-                                                    </span>
-
 
                                                 {% else %}
-
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200">
-
-                                                        <i class="fas fa-clock mr-1"></i>
-
-                                                        Pending
-
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold text-slate-700 bg-slate-100 border border-slate-200">
+                                                        Completed
                                                     </span>
-
+                                                {% endif %}
+                                                <div class="mt-1">
+                                                    {% if visit.approval_status == 'Approved' %}
+                                                        <span class="text-[10px] font-semibold text-emerald-600">Approved</span>
+                                                    {% elif visit.approval_status == 'Rejected' %}
+                                                        <span class="text-[10px] font-semibold text-rose-600">Rejected</span>
+                                                    {% elif visit.approval_status == 'Changes Requested' %}
+                                                        <span class="text-[10px] font-semibold text-orange-600">Changes requested</span>
+                                                    {% else %}
+                                                        <span class="text-[10px] font-semibold text-amber-600">Awaiting approval</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% if visit.admin_feedback %}
+                                                    <p class="mt-1 max-w-[180px] whitespace-normal text-[10px] text-slate-500">{{ visit.admin_feedback }}</p>
                                                 {% endif %}
 
                                             </td>
@@ -715,8 +862,10 @@
                                                             data-location="{{ visit.location_visited|default:'' }}"
 
                                                             data-notes="{{ visit.notes|default:'' }}"
-
                                                             data-status="{{ visit.status }}"
+                                                            data-approval-status="{{ visit.approval_status }}"
+                                                            data-outcome="{{ visit.outcome|default:'' }}"
+                                                            data-feedback="{{ visit.feedback|default:'' }}"
 
                                                             data-visit-type="{{ visit.visit_type|default:'Site Visit' }}"
 
@@ -732,8 +881,11 @@
 
                                                     <!-- ================= NEXT VISIT ================= -->
 
+                                                    {% if visit.approval_status == 'Approved' and visit.status == 'Completed' or visit.approval_status == 'Approved' and visit.status == 'Scheduled' and visit.schedule.status == 'Assigned' %}
                                                     <button type="button"
                                                             class="next-visit-btn bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2 py-1.5 rounded-lg text-[10px] transition"
+                                                            title="{% if visit.status == 'Scheduled' %}Request reschedule{% else %}Schedule next visit{% endif %}"
+                                                            aria-label="{% if visit.status == 'Scheduled' %}Request reschedule{% else %}Schedule next visit{% endif %}"
 
                                                             data-visit-id="{{ visit.id }}"
 
@@ -748,6 +900,7 @@
                                                         <i class="fas fa-calendar-plus"></i>
 
                                                     </button>
+                                                    {% endif %}
 
 
 
@@ -770,6 +923,7 @@
 
                                                     <!-- ================= EDIT ================= -->
 
+                                                    {% if visit.approval_status != 'Approved' %}
                                                     <a href="{% url 'agent_edit_site_visit' visit.id %}"
                                                        class="edit-visit-btn bg-blue-50 hover:bg-blue-100 text-blue-600 px-2 py-1.5 rounded-lg text-[10px] transition">
 
@@ -787,6 +941,7 @@
                                                         <i class="fas fa-trash"></i>
 
                                                     </a>
+                                                    {% endif %}
 
                                                 </div>
 
@@ -1247,8 +1402,8 @@
 
                     <i class="fas fa-circle-info mr-1"></i>
 
-                    This will create a future scheduled visit.
-                    The visit photo will be uploaded after the actual visit.
+                    This will create a new visit request. An administrator must approve it before the visit is scheduled.
+                    The visit photo can be uploaded after the visit takes place.
 
                 </p>
 
