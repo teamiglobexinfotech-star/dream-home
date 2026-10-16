@@ -8951,3 +8951,14 @@ body {
 .footer-contact-link:hover i {
     color: #ffffff;
 }
+
+
+.footer-bottom a {
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-bottom a:hover {
+    color: #38BDF8;
+}

@@ -53,8 +53,8 @@ def home(request):
         featured_properties = properties_query.filter(featured=True)[:4]
 
     categories = Category.objects.all()
-    agents = Agent.objects.all()[:4]
-    projects = Project.objects.all()[:4]
+    agents = Agent.objects.all().order_by('-id')[:4]
+    projects = Project.objects.all().order_by('-id')[:4]
     blogs = BlogPost.objects.all().order_by('-created_at')[:4]
     form = VisitScheduleForm()
 
