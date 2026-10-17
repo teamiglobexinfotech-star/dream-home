@@ -1,6 +1,16 @@
+ {% load static %}
  <!-- 1. Navigation Bar -->
 <header class="header">
-    <div class="logo">🏠 DREAMHOME</div>
+    <!-- <div class="logo">🏠 DREAMHOME</div> -->
+
+    <div class="logo">
+    <a href="{% url 'home' %}" aria-label="DreamHome Home">
+        <img
+            src="{% static 'images/dreamhome_logo_small.png' %}"
+            alt="DreamHome"
+        >
+    </a>
+</div>
     
     <ul class="nav-links" id="primaryNavigation">
         <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
