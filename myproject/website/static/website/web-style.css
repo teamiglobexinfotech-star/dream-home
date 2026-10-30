@@ -102,7 +102,7 @@ body {
 
 /* New Quick Enquiry Button */
 .btn-enquiry {
-  background-color: #f97316;
+  background-color: #ea580c;
   color: #ffffff !important;
   padding: 6px 16px;
   border-radius: 6px;
@@ -114,8 +114,19 @@ body {
 }
 
 .btn-enquiry:hover {
-  background-color: #ea580c;
+  background-color: #c2410c;
   transform: translateY(-1px);
+}
+
+.header .header-actions > .btn-solid:hover,
+.header .header-actions > .btn-enquiry:hover,
+.header .header-actions > .btn-schedule-visit:hover,
+.header .header-actions > .btn-solid:focus-visible,
+.header .header-actions > .btn-enquiry:focus-visible,
+.header .header-actions > .btn-schedule-visit:focus-visible {
+  background-color: #c2410c !important;
+  border-color: #c2410c !important;
+  color: #ffffff !important;
 }
 
 
@@ -182,10 +193,23 @@ body {
   gap: 16px;
 }
 
+.hero-carousel .hero-buttons a {
+  display: inline-flex;
+  height: 46px;
+  min-height: 46px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .btn-explore {
   background-color: #ea580c;
   color: white;
-  padding: 10px 20px;
   border-radius: 6px;
   font-weight: 500;
   border: none;
@@ -193,10 +217,15 @@ body {
   text-decoration: none !important;
 }
 
+.btn-explore:hover,
+.btn-explore:focus-visible {
+  background-color: #c2410c;
+  color: #ffffff;
+}
+
 .btn-contact {
   background-color: white;
   color: #1f2937;
-  padding: 10px 20px;
   border-radius: 6px;
   font-weight: 500;
   border: none;
@@ -1312,15 +1341,15 @@ Individual Agent Card
 .agent-card {
     background: #ffffff;
     border: 1px solid #f1f5f9;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .agent-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
 }
 
 /* Agent Photo Box */
@@ -1416,43 +1445,106 @@ Individual Agent Card
 /* MULTI-SLIDE TESTIMONIAL SECTION STYLING */
 /* ================================================================= */
 .testimonial-section {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 16px;
+  max-width: 1600px;
+  margin: 48px auto;
+  padding: 0 40px;
+}
+
+.testimonial-section .section-header {
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.testimonial-section .section-header h2 {
+  position: relative;
+  padding-top: 12px;
+  color: #17243a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.testimonial-section .section-header h2::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 52px;
+  height: 4px;
+  background: #ea580c;
+  content: "";
+}
+
+.testimonial-section .section-header h2 span {
+  color: #ea580c;
 }
 
 .testimonial-box {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   position: relative;
-  overflow: hidden;
+  padding: 0 56px;
 }
 
 .testimonial-slider-container {
-  flex-grow: 1;
   position: relative;
-  min-height: 160px;
+  width: 100%;
+  min-height: 264px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .testimonial-slide {
-  display: none; /* By default saari slides hidden rahengi */
-  text-align: center;
+  display: none;
+  position: relative;
+  grid-template-columns: minmax(200px, 0.9fr) minmax(0, 2fr) minmax(72px, 0.45fr);
+  align-items: center;
+  gap: 30px;
   width: 100%;
-  padding: 0 20px;
+  min-height: 264px;
+  padding: 36px 48px;
+  border: 1px solid #edf0f4;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
   animation: fadeIn 0.4s ease-in-out;
 }
 
 .testimonial-slide.active {
-  display: block; /* Sirf active slide dikhegi */
+  display: grid;
+}
+
+.testimonial-slide .customer-info {
+  display: grid;
+  grid-column: 1;
+  grid-row: 1;
+  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 22px;
+  text-align: left;
+}
+
+.testimonial-slide .customer-info img {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 120px;
+  height: 120px;
+  margin: 0;
+  border: 5px solid #ffffff;
+  box-shadow: 0 0 0 3px #ffede3;
+}
+
+.testimonial-slide .customer-info h4 {
+  grid-column: 2;
+  align-self: end;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.testimonial-slide .rating-stars {
+  grid-column: 2;
+  align-self: start;
+  font-size: 13px;
+  letter-spacing: -1px;
 }
 
 @keyframes fadeIn {
@@ -1461,18 +1553,25 @@ Individual Agent Card
 }
 
 .quote-icon {
-  font-size: 32px;
-  color: #ea580c;
-  line-height: 1;
-  margin-bottom: 8px;
+  grid-column: 3;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
+  margin: 0;
+  color: #fff0e8;
+  font-size: clamp(80px, 9vw, 150px);
+  font-weight: 700;
+  line-height: 0.7;
 }
 
 .review-text {
+  grid-column: 2;
+  grid-row: 1;
+  max-width: 720px;
+  margin: 0;
+  color: #475569;
   font-size: 15px;
-  color: #374151;
-  max-width: 700px;
-  margin: 0 auto 16px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .customer-info img {
@@ -1496,19 +1595,31 @@ Individual Agent Card
 }
 
 .testimonial-arrow {
+  position: absolute;
+  top: 50%;
   background: #f3f4f6;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  color: #4b5563;
+  font-size: 24px;
+  color: #17243a;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  transform: translateY(-50%);
   transition: background 0.2s, color 0.2s;
   z-index: 10;
+}
+
+.testimonial-arrow.prev {
+  left: 0;
+}
+
+.testimonial-arrow.next {
+  right: 0;
 }
 
 .testimonial-arrow:hover {
@@ -1786,15 +1897,24 @@ OUR PARTNERS
 
 .contact-btn{
 
-    background:#ff8c00;
+    background:#ea580c;
 
     color:#fff;
 
-    padding:15px 32px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+    height:44px;
+    min-height:44px;
+    padding:0 20px;
 
     border-radius:8px;
 
+    font-size:15px;
     text-decoration:none;
+    line-height:1.2;
+    white-space:nowrap;
 
     font-weight:600;
 
@@ -1802,25 +1922,35 @@ OUR PARTNERS
 
 }
 
-.cta-buttons .btn-schedule-visit {
+.cta-buttons .btn-schedule-visit,
+.contact-page-cta .cta-right-buttons .btn-schedule-visit {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    padding: 15px 32px !important;
-    background: #ff8c00 !important;
+    box-sizing: border-box;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 20px !important;
+    background: #ea580c !important;
     color: #ffffff !important;
     border-radius: 8px !important;
+    font-size: 15px !important;
     font-weight: 600 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
     text-align: center;
 }
 
 .cta-buttons .btn-schedule-visit:hover {
-    background: #ff7300 !important;
+    background: #c2410c !important;
+    color: #ffffff !important;
 }
 
-.contact-btn:hover{
+.contact-btn:hover,
+.contact-btn:focus-visible {
 
-    background:#ff7300;
+    background:#c2410c;
+    color:#ffffff;
 
 }
 
@@ -1830,11 +1960,20 @@ OUR PARTNERS
 
     color:#0d6efd;
 
-    padding:15px 32px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+    height:44px;
+    min-height:44px;
+    padding:0 20px;
 
     border-radius:8px;
 
+    font-size:15px;
     text-decoration:none;
+    line-height:1.2;
+    white-space:nowrap;
 
     font-weight:600;
 
@@ -1884,7 +2023,13 @@ width:100%;
 .visit-btn,
 .cta-buttons .btn-schedule-visit {
 
-display:block;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+box-sizing:border-box;
+height:44px;
+min-height:44px;
+padding:0 20px;
 width:100%;
 text-align:center;
 
@@ -2789,19 +2934,28 @@ ABOUT HERO SECTION
 }
 
 .btn-orange {
-    background-color: #f97316;
+    background-color: #ea580c;
     color: #ffffff;
-    padding: 12px 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
+    line-height: 1.2;
     text-decoration: none;
     transition: background-color 0.2s ease;
     white-space: nowrap;
 }
 
-.btn-orange:hover {
-    background-color: #ea580c;
+.btn-orange:hover,
+.btn-orange:focus-visible {
+    background-color: #c2410c;
+    color: #ffffff;
 }
 
 .btn-outline {
@@ -2820,6 +2974,28 @@ ABOUT HERO SECTION
 .btn-outline:hover {
     background-color: #ffffff;
     color: #0b192c;
+}
+
+.dream-cta-buttons .btn-outline {
+    background-color: #ea580c;
+    border-color: #ea580c;
+    color: #ffffff;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px !important;
+    font-size: 15px !important;
+    line-height: 1.2;
+}
+
+.dream-cta-buttons .btn-outline:hover,
+.dream-cta-buttons .btn-outline:focus-visible {
+    background-color: #c2410c;
+    border-color: #c2410c;
+    color: #ffffff;
 }
 
 /* Responsive Design */
@@ -2876,7 +3052,7 @@ body {
 /* General Setup */
 :root {
     --primary-color: #2563eb;
-    --accent-color: #f97316;
+    --accent-color: #ea580c;
     --dark-bg: #0f172a;
     --light-bg: #f8fafc;
     --card-border: #e2e8f0;
@@ -3084,7 +3260,7 @@ body {
     right: -60px;
     top: 50%;
     transform: translateY(-50%) rotate(-90deg);
-    background-color: #f97316;
+    background-color: #ea580c;
     color: #ffffff;
     padding: 10px 20px;
     border-radius: 8px 8px 0 0;
@@ -3097,7 +3273,7 @@ body {
 }
 
 .floating-enquiry-btn:hover {
-    background-color: #ea580c;
+    background-color: #c2410c;
     right: -55px;
 }
 
@@ -3205,7 +3381,7 @@ body {
 }
 
 .btn-modal-submit:hover {
-    background: #c2410c;
+    background: #ea580c;
 }
 
 @keyframes fadeIn {
@@ -3408,7 +3584,7 @@ body {
 
 /* Theme Orange Button (Matching Register / Explore Properties) */
 .btn-send-message {
-    background: #ff6600;
+    background: #ea580c;
     color: #ffffff;
     border: none;
     padding: 12px 32px;
@@ -3419,8 +3595,10 @@ body {
     transition: background 0.2s ease, transform 0.1s ease;
 }
 
-.btn-send-message:hover {
-    background: #e55c00;
+.btn-send-message:hover,
+.btn-send-message:focus-visible {
+    background: #c2410c;
+    color: #ffffff;
 }
 
 
@@ -3780,24 +3958,41 @@ body {
 }
 
 .btn-green-call {
-    background-color: #ff7300;
+    background-color: #ea580c;
     color: #ffffff;
-    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
+    line-height: 1.2;
     text-decoration: none;
+    white-space: nowrap;
 }
 
-.btn-dark-visit {
+.cta-right-buttons .btn-dark-visit {
     background-color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: #0d6efd;
-    padding: 8px 16px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px !important;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 15px !important;
     font-weight: 600;
+    line-height: 1.2 !important;
     text-decoration: none;
+    white-space: nowrap;
+    text-align: center;
 }
 
 /* Popup Modal Styling */
@@ -4518,7 +4713,7 @@ body {
 }
 
 .contact-submit-btn {
-    background: #f97316;
+    background: #ea580c;
     color: #fff;
     border: none;
     padding: 14px 28px;
@@ -4585,7 +4780,7 @@ body {
 .contact-info-item-icon:hover,
 .contact-info-item-icon:focus-visible {
     color: #ffffff;
-    background: #f97316;
+    background: #ea580c;
     transform: translateY(-2px);
     outline: none;
 }
@@ -4690,12 +4885,21 @@ body {
 }
 
 .btn-primary {
-    background: #ff8c00;
+    background: #ea580c;
     color: #fff;
-    padding: 12px 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px;
     border-radius: 6px;
     text-decoration: none;
+    font-size: 15px;
     font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .btn-outline {
@@ -5140,7 +5344,7 @@ body {
 
 /* Schedule Visit Button ko Enquiry jaisa solid orange banane ke liye */
 .btn-schedule-visit {
-  background-color: #f97316 !important;
+  background-color: #ea580c !important;
   color: #ffffff !important;
   padding: 6px 10px !important;
   border-radius: 6px !important;
@@ -5153,7 +5357,7 @@ body {
 }
 
 .btn-schedule-visit:hover {
-  background-color: #ea580c !important;
+  background-color: #c2410c !important;
   transform: translateY(-1px);
 }
 
@@ -5214,7 +5418,7 @@ body {
 }
 
 .project-request-call-btn:hover {
-    background: #c2410c;
+    background: #ea580c;
 }
 
 
@@ -5235,7 +5439,7 @@ body {
 }
 
 .project-page-request-call-btn:hover {
-    background: #c2410c;
+    background: #ea580c;
 }
 
 
@@ -5258,18 +5462,6 @@ body {
     background-color: #4b5563;
     border-radius: 3px;
     transition: all 0.3s ease;
-}
-
-.hamburger-menu.active span:nth-child(1) {
-    transform: rotate(45deg) translate(8px, 8px);
-}
-
-.hamburger-menu.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger-menu.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
 }
 
 /* Mobile Navbar */
@@ -5331,14 +5523,59 @@ body {
 /* 2. FEATURED PROPERTIES - MOBILE SINGLE COLUMN */
 /* ================================================================= */
 @media (max-width: 768px) {
-    .properties-grid {
-        grid-template-columns: 1fr;
+    .properties-section {
+        width: 100%;
+        padding: 0 16px;
+    }
+
+    .properties-section .properties-grid {
+        grid-template-columns: minmax(0, 1fr);
         gap: 16px;
     }
 
-    .property-card {
+    .properties-section .property-card {
         margin: 0 auto;
+        width: 100%;
         max-width: 100%;
+        min-width: 0;
+    }
+
+    .properties-section .property-img-container {
+        height: clamp(180px, 55vw, 240px) !important;
+    }
+
+    .properties-section .property-details {
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .properties-section .property-title {
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+    }
+
+    .properties-section .property-location {
+        overflow-wrap: anywhere;
+        line-height: 1.5;
+    }
+
+    .properties-section .popup-price-box {
+        max-width: 100%;
+    }
+
+    .properties-section .property-price {
+        overflow-wrap: anywhere;
+    }
+
+    .properties-section .property-specs {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px 14px;
+        line-height: 1.4;
+    }
+
+    .properties-section .property-specs span {
+        white-space: nowrap;
     }
 }
 
@@ -5384,13 +5621,22 @@ body {
 /* 5. MEET OUR AGENTS - MOBILE SINGLE COLUMN */
 /* ================================================================= */
 @media (max-width: 768px) {
-    .agent-grid {
+    .our-agents-section .agent-grid {
         grid-template-columns: 1fr;
         gap: 16px;
+        justify-items: center;
     }
 
-    .agent-img-box {
-        height: 180px;
+    .our-agents-section .agent-card {
+        width: 100%;
+        max-width: 520px;
+    }
+
+    .our-agents-section .agent-img-box {
+        height: clamp(240px, 72vw, 320px);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center top;
     }
 }
 
@@ -5414,36 +5660,79 @@ body {
 }
 
 @media (max-width: 768px) {
+    .testimonial-section {
+        margin: 36px auto;
+        padding: 0 16px;
+    }
+
     .testimonial-box {
-        flex-direction: column;
-        padding: 20px;
-        min-height: auto;
+        padding: 0 20px;
     }
 
     .testimonial-arrow {
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
     }
 
     .testimonial-slider-container {
-        min-height: 140px;
+        min-height: 300px;
         width: 100%;
-        margin-bottom: 20px;
+    }
+
+    .testimonial-slide,
+    .testimonial-slide.active {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        gap: 14px;
+        min-height: 300px;
+        padding: 24px 22px;
+        text-align: center;
+    }
+
+    .testimonial-slide .customer-info {
+        grid-column: 1;
+        grid-row: 1;
+        grid-template-columns: 1fr;
+        justify-items: center;
+        row-gap: 6px;
+    }
+
+    .testimonial-slide .customer-info img {
+        grid-column: 1;
+        grid-row: 1;
+        width: 76px;
+        height: 76px;
+    }
+
+    .testimonial-slide .customer-info h4,
+    .testimonial-slide .rating-stars {
+        grid-column: 1;
+    }
+
+    .testimonial-slide .customer-info h4 {
+        align-self: auto;
+        font-size: 15px;
+    }
+
+    .testimonial-slide .rating-stars {
+        font-size: 13px;
     }
 
     .review-text {
-        font-size: 13px;
-        margin-bottom: 12px;
+        grid-column: 1;
+        grid-row: 2;
+        font-size: 15px;
+        line-height: 1.5;
     }
 
-    .customer-info img {
-        width: 40px;
-        height: 40px;
-    }
-
-    .customer-info h4 {
-        font-size: 13px;
+    .quote-icon {
+        position: absolute;
+        top: 20px;
+        right: 22px;
+        grid-column: auto;
+        grid-row: auto;
+        font-size: 48px;
     }
 }
 
@@ -5574,10 +5863,13 @@ body {
         flex-wrap: wrap;
     }
 
-    .btn-explore,
-    .btn-contact {
-        padding: 8px 16px;
-        font-size: 13px;
+    .hero-carousel .hero-buttons a {
+        height: 44px;
+        min-height: 44px;
+        box-sizing: border-box;
+        padding: 11px 18px;
+        font-size: 14px;
+        white-space: nowrap;
     }
 }
 
@@ -5668,9 +5960,16 @@ body {
     }
 
     .contact-btn,
-    .visit-btn {
+    .visit-btn,
+    .cta-buttons .btn-schedule-visit {
         width: 100%;
-        display: block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        height: 44px;
+        min-height: 44px;
+        padding: 0 20px;
         text-align: center;
     }
 }
@@ -5870,7 +6169,9 @@ body {
     .btn-green-call,
     .btn-dark-visit {
         width: 100%;
-        display: block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
     }
 }
@@ -6726,9 +7027,9 @@ body {
         width: 42px;
         height: 42px;
         padding: 8px;
-        border: 0;
-        border-radius: 6px;
-        background: transparent;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #ffffff;
         cursor: pointer;
     }
 
@@ -6754,19 +7055,20 @@ body {
         flex-direction: column;
         align-items: stretch;
         gap: 0;
-        margin: 10px 0 0;
-        padding: 6px 0;
+        margin: 8px 0 0;
+        padding: 4px 12px 0;
         border-top: 1px solid #e5e7eb;
     }
 
     .header .nav-links li {
         width: 100%;
-        border-bottom: 1px solid #f3f4f6;
+        border-bottom: 1px solid #e5e7eb;
     }
 
     .header .nav-links a {
         display: block;
-        padding: 12px 14px;
+        padding: 13px 6px;
+        font-size: 14px;
     }
 
     .header .nav-links .dropdown {
@@ -6835,23 +7137,84 @@ body {
 
     .header.menu-open .header-actions {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         align-items: stretch;
         gap: 8px;
-        padding: 12px 0 4px;
-        border-top: 1px solid #e5e7eb;
+        padding: 14px 12px 8px;
+    }
+
+    .header .header-actions > .login-dropdown {
+        order: 1;
+    }
+
+    .header .header-actions > .btn-solid {
+        order: 2;
+    }
+
+    .header .header-actions > .btn-enquiry {
+        order: 3;
+    }
+
+    .header .header-actions > .btn-schedule-visit {
+        order: 4;
     }
 
     .header .header-actions > a,
     .header .header-actions > .login-dropdown {
-        flex: 1 1 calc(50% - 8px);
+        flex: 0 0 auto;
         min-width: 0;
+        width: 100%;
         text-align: center;
     }
 
+    .header .header-actions > a,
     .header .header-actions .login-dropdown-btn {
-        width: 100%;
-        min-height: 36px;
+        min-height: 42px;
+        padding: 11px 12px !important;
+        border: 1px solid #ea580c !important;
+        border-radius: 6px !important;
+        background: #ea580c !important;
+        color: #ffffff !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 18px !important;
+        text-decoration: none !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .header .header-actions > .btn-solid {
+        background: #ffffff !important;
+        color: #ea580c !important;
+    }
+
+    .header .header-actions .login-dropdown-btn {
+        display: block !important;
+        background: #ffffff !important;
+        color: #1f2937 !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14) !important;
+    }
+
+    .header .header-actions .login-dropdown-btn:hover,
+    .header .header-actions .login-dropdown-btn:focus-visible {
+        border-color: #c2410c !important;
+        background: #c2410c !important;
+        color: #ffffff !important;
+        box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2) !important;
+    }
+
+    .header .header-actions .login-profile-icon {
+        flex-basis: 16px;
+        width: 16px !important;
+        height: 16px !important;
+        background: transparent !important;
+        color: #1f2937 !important;
+        font-size: 14px !important;
+    }
+
+    .header .header-actions .login-dropdown-btn:hover .login-profile-icon,
+    .header .header-actions .login-dropdown-btn:focus-visible .login-profile-icon {
+        color: #ffffff !important;
     }
 
     .hero-carousel {
@@ -6877,6 +7240,14 @@ body {
 @media (max-width: 768px) {
     .header {
         padding: 10px 16px;
+    }
+
+    .header.menu-open {
+        width: calc(100% - 24px);
+        margin: 8px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
     }
 
     .header .logo {
@@ -7820,7 +8191,9 @@ body {
 
     .projects-page-cta .cta-right-buttons a,
     .agents-page-cta .cta-right-buttons a {
-        display: block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
         text-align: center;
     }
@@ -8990,4 +9363,138 @@ body {
         width: 135px;
         height: 35px;
     }
+}
+
+@media (min-width: 1231px) {
+    .header .header-actions > .login-dropdown {
+        order: 1;
+    }
+
+    .header .header-actions > .btn-solid {
+        order: 2;
+    }
+
+    .header .header-actions > .btn-enquiry {
+        order: 3;
+    }
+
+    .header .header-actions > .btn-schedule-visit {
+        order: 4;
+    }
+
+    .header .header-actions > a,
+    .header .header-actions .login-dropdown-btn {
+        min-height: 42px;
+        padding: 11px 12px !important;
+        border: 1px solid #ea580c !important;
+        border-radius: 6px !important;
+        color: #ffffff !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 18px !important;
+        text-decoration: none !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .header .header-actions > .btn-solid,
+    .header .header-actions > .btn-enquiry,
+    .header .header-actions > .btn-schedule-visit {
+        background: #ea580c !important;
+    }
+
+    .header .header-actions > .btn-solid {
+        background: #ffffff !important;
+        color: #ea580c !important;
+    }
+
+    .header .header-actions .login-dropdown-btn {
+        background: #ffffff !important;
+        color: #1f2937 !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14) !important;
+    }
+
+    .header .header-actions .login-dropdown-btn:hover,
+    .header .header-actions .login-dropdown-btn:focus-visible {
+        border-color: #c2410c !important;
+        background: #c2410c !important;
+        color: #ffffff !important;
+        box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2) !important;
+    }
+
+    .header .header-actions .login-profile-icon {
+        flex-basis: 16px;
+        width: 16px !important;
+        height: 16px !important;
+        background: transparent !important;
+        color: #1f2937 !important;
+        font-size: 14px !important;
+    }
+
+    .header .header-actions .login-dropdown-btn:hover .login-profile-icon,
+    .header .header-actions .login-dropdown-btn:focus-visible .login-profile-icon {
+        color: #ffffff !important;
+    }
+}
+
+.header .header-actions .login-dropdown-btn {
+    border-color: #d1d5db !important;
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14) !important;
+}
+
+.header .header-actions .login-dropdown-btn:hover,
+.header .header-actions .login-dropdown-btn:focus-visible {
+    border-color: #c2410c !important;
+    background: #c2410c !important;
+    color: #ffffff !important;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2) !important;
+}
+
+.header .header-actions .login-profile-icon {
+    background: transparent !important;
+    color: #1f2937 !important;
+}
+
+.header .header-actions .login-dropdown-btn:hover .login-profile-icon,
+.header .header-actions .login-dropdown-btn:focus-visible .login-profile-icon {
+    color: #ffffff !important;
+}
+
+.btn-solid:hover,
+.register-btn:hover,
+.main-search-btn:hover,
+.view-details-btn:hover,
+.btn-modal-submit:hover,
+.btn-green-call:hover,
+.contact-submit-btn:hover,
+.btn-primary:hover,
+.project-request-call-btn:hover,
+.project-page-request-call-btn:hover,
+.btn-solid:focus-visible,
+.register-btn:focus-visible,
+.main-search-btn:focus-visible,
+.view-details-btn:focus-visible,
+.btn-modal-submit:focus-visible,
+.btn-green-call:focus-visible,
+.contact-submit-btn:focus-visible,
+.btn-primary:focus-visible,
+.project-request-call-btn:focus-visible,
+.project-page-request-call-btn:focus-visible {
+    background: #fff4ec !important;
+    color: #ea580c !important;
+}
+
+.btn-solid:hover *,
+.register-btn:hover *,
+.main-search-btn:hover *,
+.view-details-btn:hover *,
+.btn-modal-submit:hover *,
+.btn-green-call:hover *,
+.contact-submit-btn:hover *,
+.btn-primary:hover *,
+.project-request-call-btn:hover *,
+.project-page-request-call-btn:hover * {
+    color: #ea580c !important;
 }
