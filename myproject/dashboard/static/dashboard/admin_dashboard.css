@@ -51,11 +51,28 @@ body {
 }
 
 .sidebar-brand {
-    padding: 20px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 12px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar-brand-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 3px 6px;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.sidebar-brand-link img {
+    display: block;
+    width: 100%;
+    max-width: 210px;
+    height: 50px;
+    object-fit: contain;
 }
 
 .brand-icon {

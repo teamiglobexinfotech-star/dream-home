@@ -1,3 +1,24 @@
+document.addEventListener('click', function(event) {
+    if (!(event.target instanceof Element)) return;
+
+    const toggle = event.target.closest('.agent-password-toggle');
+    if (!toggle) return;
+
+    const password = toggle.parentElement.querySelector('input[name="password"]');
+    if (!password) return;
+
+    const visible = password.type === 'password';
+    password.type = visible ? 'text' : 'password';
+    toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+    toggle.setAttribute('title', visible ? 'Hide password' : 'Show password');
+    toggle.setAttribute('aria-pressed', String(visible));
+
+    const icon = toggle.querySelector('i');
+    if (icon) {
+        icon.className = visible ? 'fa fa-eye-slash' : 'fa fa-eye';
+    }
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     console.log("Admin Dashboard JS Loaded Successfully!");
 

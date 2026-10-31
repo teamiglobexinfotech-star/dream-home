@@ -23,7 +23,7 @@ from django.contrib.auth.hashers import make_password,check_password
 from django.utils import timezone
 from django.core.mail import send_mail
 import random
-from datetime import date, timedelta
+from datetime import timedelta
  
 
 
@@ -911,20 +911,6 @@ def book_property(request, property_id):
             'message': 'Booking date is required.'
         }, status=400)
 
-    try:
-        parsed_booking_date = date.fromisoformat(booking_date)
-    except ValueError:
-        return JsonResponse({
-            'success': False,
-            'message': 'Please enter a valid booking date.'
-        }, status=400)
-
-    if parsed_booking_date < timezone.localdate():
-        return JsonResponse({
-            'success': False,
-            'message': 'Booking date cannot be in the past.'
-        }, status=400)
-
     # -------------------------------------------------
     # CREATE PENDING BOOKING
     # -------------------------------------------------
@@ -934,7 +920,7 @@ def book_property(request, property_id):
         customer_name=customer_name,
         customer_email=customer_email,
         mobile_number=mobile_number,
-        booking_date=parsed_booking_date,
+        booking_date=booking_date,
         message=message,
         status='Pending'
     )

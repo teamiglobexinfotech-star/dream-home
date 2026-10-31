@@ -42,7 +42,7 @@
             <label>Password (Naya password set karne ke liye bharein, warna khali chhod dein)</label>
            <div class="edit-agent-password-field">
                <input id="agentPassword" type="password" name="password" minlength="8" title="If changing the password, enter at least 8 characters." placeholder="Leave blank to keep old password">
-               <button type="button" class="edit-agent-password-toggle" aria-label="Show password" aria-pressed="false" title="Show password">
+               <button type="button" class="edit-agent-password-toggle agent-password-toggle" aria-label="Show password" aria-pressed="false" title="Show password">
                    <i class="fa fa-eye" aria-hidden="true"></i>
                </button>
            </div>
@@ -209,15 +209,3 @@
         background: #e0a800;
     }
 </style>
-
-<script>
-    document.querySelector('.edit-agent-password-toggle').addEventListener('click', function () {
-        const password = document.getElementById('agentPassword');
-        const visible = password.type === 'password';
-        password.type = visible ? 'text' : 'password';
-        this.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
-        this.setAttribute('title', visible ? 'Hide password' : 'Show password');
-        this.setAttribute('aria-pressed', String(visible));
-        this.querySelector('i').className = visible ? 'fa fa-eye-slash' : 'fa fa-eye';
-    });
-</script>

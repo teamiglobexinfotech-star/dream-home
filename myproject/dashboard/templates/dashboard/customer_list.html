@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <div class="container admin-list-container">
+    <div class="container admin-list-container customer-management-container">
         <div class="header">
             <h2>Customer Management</h2>
             <div>
@@ -25,16 +25,16 @@
             </div>
         </div>
         
-        <div class="admin-table-wrap">
-        <table>
+        <div class="admin-table-wrap customer-table-wrap">
+        <table class="customer-management-table">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Full Name</th>
-                    <th>Email</th>
-                    <th>Mobile Number</th>
-                    <th>Role</th>
-                    <th>Actions</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Mobile Number</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,9 +45,11 @@
                     <td>{{ customer.email }}</td>
                     <td>{{ customer.mobile_number }}</td>
                     <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 12px; font-size: 12px;">{{ customer.role|title }}</span></td>
-                    <td>
+                    <td class="customer-actions-cell">
+                        <div class="customer-actions">
                         <a href="{% url 'edit_customer' customer.pk %}" class="btn nav-link-ajax" style="background: #ffc107; padding: 5px 10px; color: black; border-radius: 3px; text-decoration: none; font-size: 12px;"><i class="fa fa-pen"></i> Edit</a>
                         <a href="{% url 'delete_customer' customer.pk %}" class="btn nav-link-ajax" style="background: #dc3545; padding: 5px 10px; color: white; border-radius: 3px; text-decoration: none; font-size: 12px;" onclick="return confirm('Kya aap is customer ko delete karna chahte hain?');"><i class="fa fa-trash"></i> Delete</a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

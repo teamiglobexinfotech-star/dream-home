@@ -180,8 +180,7 @@
                 <div class="password-field">
                     <input id="agentPassword" type="password" name="password" required minlength="8" title="Password must be at least 8 characters long." placeholder="Enter login password for agent"
                            oninput="const toggle=this.parentElement.querySelector('.password-toggle'); toggle.hidden=!this.value; if(!this.value){this.type='password'; toggle.setAttribute('aria-label','Show password'); toggle.setAttribute('title','Show password'); toggle.setAttribute('aria-pressed','false'); toggle.querySelector('i').className='fa fa-eye';}">
-                    <button type="button" class="password-toggle" hidden aria-label="Show password" aria-pressed="false" title="Show password"
-                            onclick="const password=this.previousElementSibling; const visible=password.type==='password'; password.type=visible?'text':'password'; this.setAttribute('aria-label',visible?'Hide password':'Show password'); this.setAttribute('title',visible?'Hide password':'Show password'); this.setAttribute('aria-pressed',String(visible)); this.querySelector('i').className=visible?'fa fa-eye-slash':'fa fa-eye';">
+                    <button type="button" class="password-toggle agent-password-toggle" hidden aria-label="Show password" aria-pressed="false" title="Show password">
                         <i class="fa fa-eye" aria-hidden="true"></i>
                     </button>
                 </div>

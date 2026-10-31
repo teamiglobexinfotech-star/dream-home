@@ -2,48 +2,205 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add New Customer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 600px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; border: none; cursor: pointer; }
-        .btn-save { background: #28a745; width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; }
-        .btn-back { background: #6c757d; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .customer-form-box {
+            width: calc(100% - 60px);
+            max-width: 750px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .customer-form-box .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .customer-form-box h2 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .customer-form-box .btn-back {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .customer-form-box .btn-back:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .customer-form-box .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .customer-form-box form label {
+            margin-bottom: 6px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .customer-form-box form input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .customer-form-box form input:focus {
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .customer-form-box .password-field {
+            position: relative;
+        }
+
+        .customer-form-box .password-field input {
+            padding-right: 42px;
+        }
+
+        .customer-form-box .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            border: 0;
+            padding: 4px;
+            color: #64748b;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .customer-form-box .password-toggle[hidden] {
+            display: none;
+        }
+
+        .customer-form-box form button[type="submit"] {
+            padding: 10px 22px;
+            border: 0;
+            border-radius: 8px;
+            background: #22c55e;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .customer-form-box form button[type="submit"]:hover {
+            background: #16a34a;
+        }
+
+        @media (max-width: 768px) {
+            .customer-form-box {
+                width: auto;
+                margin: 15px;
+                padding: 24px;
+            }
+
+            .customer-form-box .form-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    {% if show_dashboard_toast %}
+        {% include "dashboard/_toast.html" %}
+    {% endif %}
+
+    <div class="customer-form-box">
+        <div class="form-header">
             <h2>Add New Customer</h2>
-            <!-- Back button mein nav-link-ajax class add ki gayi hai -->
-            <a href="{% url 'customer_list' %}" class="btn btn-back nav-link-ajax"><i class="fa fa-arrow-left"></i> Back</a>
+            <a href="{% url 'customer_list' %}" class="btn-back nav-link-ajax">
+                <i class="fa fa-arrow-left"></i> Back to Customers
+            </a>
         </div>
-        
-        <!-- Form mein action aur class="ajax-form" add kiya gaya hai -->
+
         <form method="POST" action="{% url 'add_customer' %}" class="ajax-form">
             {% csrf_token %}
+
             <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" name="full_name" required placeholder="Enter full name">
+                <label for="customerFullName">Customer Name</label>
+                <input id="customerFullName" type="text" name="full_name" required placeholder="Enter customer name">
             </div>
+
             <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" required placeholder="Enter email address">
+                <label for="customerEmail">Email Address</label>
+                <input id="customerEmail" type="email" name="email" required placeholder="Enter email address">
             </div>
+
             <div class="form-group">
-                <label>Mobile Number</label>
-                <input type="text" name="mobile_number" required placeholder="Enter mobile number">
+                <label for="customerMobile">Phone Number</label>
+                <input id="customerMobile" type="tel" name="mobile_number" required placeholder="Enter phone number">
             </div>
+
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" required placeholder="Enter password">
+                <label for="customerPassword">Login Password</label>
+                <div class="password-field">
+                    <input
+                        id="customerPassword"
+                        type="password"
+                        name="password"
+                        required
+                        minlength="8"
+                        placeholder="Enter login password for customer"
+                        oninput="const toggle=this.parentElement.querySelector('.password-toggle'); toggle.hidden=!this.value; if(!this.value){this.type='password'; toggle.setAttribute('aria-label','Show password'); toggle.setAttribute('title','Show password'); toggle.setAttribute('aria-pressed','false'); toggle.querySelector('i').className='fa fa-eye';}"
+                    >
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        hidden
+                        aria-label="Show password"
+                        aria-pressed="false"
+                        title="Show password"
+                        onclick="const password=this.parentElement.querySelector('input'); const visible=password.type==='password'; password.type=visible?'text':'password'; this.setAttribute('aria-label',visible?'Hide password':'Show password'); this.setAttribute('title',visible?'Hide password':'Show password'); this.setAttribute('aria-pressed',String(visible)); this.querySelector('i').className=visible?'fa fa-eye-slash':'fa fa-eye';"
+                    >
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
             </div>
-            <button type="submit" class="btn btn-save"><i class="fa fa-save"></i> Save Customer</button>
+
+            <button type="submit"><i class="fa fa-save"></i> Save Customer</button>
         </form>
     </div>
 </body>
