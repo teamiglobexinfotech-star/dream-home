@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from .models import Property
 from .models import VisitSchedule
 from .models import Project
@@ -86,6 +87,18 @@ class VisitScheduleForm(forms.ModelForm):
             'visit_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'message': forms.Textarea(attrs={'placeholder': 'Any specific requirement...', 'rows': 3, 'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['visit_date'].widget.attrs['min'] = timezone.localtime().strftime(
+            '%Y-%m-%dT%H:%M'
+        )
+
+    def clean_visit_date(self):
+        visit_date = self.cleaned_data['visit_date']
+        if visit_date <= timezone.now():
+            raise forms.ValidationError('Please select a future date and time.')
+        return visit_date
 
 
 

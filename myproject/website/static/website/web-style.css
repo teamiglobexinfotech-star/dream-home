@@ -8570,6 +8570,48 @@ body {
     min-width: 0;
 }
 
+.login-page-scope.forgot-password-page .login-wrapper,
+.login-page-scope.reset-password-page .login-wrapper {
+    margin-top: 0;
+    padding-top: 32px !important;
+}
+
+.password-toggle-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-toggle-input {
+    padding-right: 44px !important;
+}
+
+.password-visibility-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.password-visibility-toggle:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.password-visibility-toggle i {
+    pointer-events: none;
+}
+
 .login-page-scope .hero-banner {
     min-height: 250px;
     padding: 54px 24px 112px;

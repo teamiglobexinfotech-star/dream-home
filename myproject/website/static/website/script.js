@@ -831,6 +831,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function openVisitModalFunc(e) {
         if (e) e.preventDefault();
         if (visitModal) {
+            const visitDateInput = visitModal.querySelector('input[name="visit_date"]');
+            if (visitDateInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                visitDateInput.min = now.toISOString().slice(0, 16);
+            }
             visitModal.style.display = 'flex'; 
         }
     }
@@ -901,6 +907,13 @@ if (visitModal) {
                 return; 
             }
 
+            const isVisitForm = this.closest('#visitModal');
+            const isEnquiryForm = this.closest('#enquiryModal');
+
+            if (!isVisitForm && !isEnquiryForm) {
+                return;
+            }
+
             e.preventDefault(); 
 
             let currentForm = this;
@@ -915,54 +928,50 @@ if (visitModal) {
                 }
             })
             .then(response => {
-                if (response.ok) {
-
-                    // Check karein form kis modal ke andar hai
-                    const isVisitForm = currentForm.closest('#visitModal');
-                    const isEnquiryForm = currentForm.closest('#enquiryModal');
-
-                    // Schedule Visit modal close
-                    if (isVisitForm && visitModal) {
-                        visitModal.style.display = 'none';
-                    }
-
-                    // Enquiry modal close
-                    if (isEnquiryForm) {
-                        closeModal();
-                    }
-
-                    if (typeof Swal !== 'undefined') {
-
-                        if (isVisitForm) {
-                            Swal.fire({
-                                title: 'Visit Scheduled!',
-                                text: 'Your visit request has been submitted successfully. Our team will contact you shortly.',
-                                icon: 'success',
-                                confirmButtonColor: '#ff6600',
-                                confirmButtonText: 'Great!'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Enquiry Submitted!',
-                                text: 'Thank you for reaching out. Our team will contact you shortly.',
-                                icon: 'success',
-                                confirmButtonColor: '#ff6600',
-                                confirmButtonText: 'Great!'
-                            });
-                        }
-                    }
-
-                    currentForm.reset();
-
-                } else {
-                    throw new Error('Server response error');
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Submission failed.');
+                    });
                 }
+
+                // Schedule Visit modal close
+                if (isVisitForm && visitModal) {
+                    visitModal.style.display = 'none';
+                }
+
+                // Enquiry modal close
+                if (isEnquiryForm) {
+                    closeModal();
+                }
+
+                if (typeof Swal !== 'undefined') {
+
+                    if (isVisitForm) {
+                        Swal.fire({
+                            title: 'Visit Scheduled!',
+                            text: 'Your visit request has been submitted successfully. Our team will contact you shortly.',
+                            icon: 'success',
+                            confirmButtonColor: '#ff6600',
+                            confirmButtonText: 'Great!'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Enquiry Submitted!',
+                            text: 'Thank you for reaching out. Our team will contact you shortly.',
+                            icon: 'success',
+                            confirmButtonColor: '#ff6600',
+                            confirmButtonText: 'Great!'
+                        });
+                    }
+                }
+
+                currentForm.reset();
             })
             .catch(error => {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'Submission Failed',
-                        text: 'Something went wrong while sending your request. Please try again.',
+                        text: error.message || 'Something went wrong while sending your request. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#ff6600',
                         confirmButtonText: 'Try Again'
@@ -988,6 +997,90 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+(function setupPasswordVisibility() {
+    if (window.passwordVisibilityInitialized) return;
+    window.passwordVisibilityInitialized = true;
+
+    function enhancePasswordInputs(root) {
+        const inputs = [];
+
+        if (root instanceof HTMLInputElement && root.type === 'password') {
+            inputs.push(root);
+        }
+
+        if (root.querySelectorAll) {
+            inputs.push(...root.querySelectorAll('input[type="password"]'));
+        }
+
+        inputs.forEach(function (input) {
+            if (input.closest('.password-toggle-field, .login-password-field')) {
+                return;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'password-toggle-field';
+            input.classList.add('password-toggle-input');
+            input.parentNode.insertBefore(wrapper, input);
+            wrapper.appendChild(input);
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'password-visibility-toggle';
+            button.setAttribute('aria-label', 'Show password');
+            button.setAttribute('aria-pressed', 'false');
+
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-eye';
+            icon.setAttribute('aria-hidden', 'true');
+            button.appendChild(icon);
+            wrapper.appendChild(button);
+        });
+    }
+
+    function initialize() {
+        enhancePasswordInputs(document);
+
+        const observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(enhancePasswordInputs);
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!(event.target instanceof Element)) return;
+
+            const button = event.target.closest('.password-visibility-toggle');
+            if (!button) return;
+
+            const input = button.parentElement.querySelector('input');
+            if (!input) return;
+
+            const showPassword = input.type === 'password';
+            input.type = showPassword ? 'text' : 'password';
+            button.setAttribute('aria-pressed', String(showPassword));
+            button.setAttribute(
+                'aria-label',
+                showPassword ? 'Hide password' : 'Show password'
+            );
+
+            const icon = button.querySelector('i');
+            icon.classList.toggle('fa-eye', !showPassword);
+            icon.classList.toggle('fa-eye-slash', showPassword);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    } else {
+        initialize();
+    }
+})();
 
 
 
@@ -1969,6 +2062,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Open popup
         if (bookingModal) {
+            const bookingDateInput = bookingForm?.querySelector(
+                'input[name="booking_date"]'
+            );
+            if (bookingDateInput) {
+                const today = new Date();
+                const localToday = new Date(
+                    today.getTime() - today.getTimezoneOffset() * 60000
+                ).toISOString().slice(0, 10);
+                bookingDateInput.min = localToday;
+            }
             bookingModal.style.display = "flex";
         }
     }

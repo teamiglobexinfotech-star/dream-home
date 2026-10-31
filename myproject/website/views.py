@@ -1,5 +1,6 @@
 import re
 from django.shortcuts import render,redirect
+from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.contrib import messages
@@ -401,11 +402,19 @@ def submit_visit_schedule(request):
             )
             messages.success(request, "Your site visit has been scheduled successfully!")
             return redirect(request.META.get('HTTP_REFERER', 'home'))
+        error_message = form.errors.get(
+            'visit_date',
+            ['Please check the visit details and try again.']
+        )[0]
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': str(error_message),
+            }, status=400)
+        messages.error(request, error_message)
     return redirect('home')
 
 
-
-from django.http import JsonResponse
 
 def health_check(request):
     return JsonResponse({
