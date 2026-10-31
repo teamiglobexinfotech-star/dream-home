@@ -1513,19 +1513,16 @@ Individual Agent Card
 }
 
 .testimonial-slide .customer-info {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   grid-column: 1;
   grid-row: 1;
-  grid-template-columns: 120px minmax(0, 1fr);
-  grid-template-rows: auto auto;
   align-items: center;
-  column-gap: 22px;
-  text-align: left;
+  gap: 7px;
+  text-align: center;
 }
 
 .testimonial-slide .customer-info img {
-  grid-column: 1;
-  grid-row: 1 / span 2;
   width: 120px;
   height: 120px;
   margin: 0;
@@ -1534,15 +1531,13 @@ Individual Agent Card
 }
 
 .testimonial-slide .customer-info h4 {
-  grid-column: 2;
-  align-self: end;
+  align-self: center;
   font-size: 15px;
   line-height: 1.25;
 }
 
 .testimonial-slide .rating-stars {
-  grid-column: 2;
-  align-self: start;
+  align-self: center;
   font-size: 13px;
   letter-spacing: -1px;
 }
@@ -5693,21 +5688,12 @@ body {
     .testimonial-slide .customer-info {
         grid-column: 1;
         grid-row: 1;
-        grid-template-columns: 1fr;
-        justify-items: center;
-        row-gap: 6px;
+        gap: 6px;
     }
 
     .testimonial-slide .customer-info img {
-        grid-column: 1;
-        grid-row: 1;
         width: 76px;
         height: 76px;
-    }
-
-    .testimonial-slide .customer-info h4,
-    .testimonial-slide .rating-stars {
-        grid-column: 1;
     }
 
     .testimonial-slide .customer-info h4 {
