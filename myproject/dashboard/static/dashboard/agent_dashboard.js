@@ -1472,6 +1472,44 @@ function extractDashboardContent(response) {
 // 4. LOAD DASHBOARD CONTENT
 // =====================================================
 
+function setActiveAgentSidebarPage(url) {
+    let activePath;
+
+    try {
+        activePath = new URL(url, window.location.href).pathname.replace(/\/+$/, "") || "/";
+    } catch (error) {
+        console.error("Could not determine active dashboard page:", error);
+        return;
+    }
+
+    const sidebarLinks = document.querySelectorAll("#sidebar nav a");
+    let activeLink = null;
+
+    sidebarLinks.forEach(function (link) {
+        const linkUrl = link.getAttribute("data-url") || link.getAttribute("href");
+        if (!linkUrl || linkUrl === "#") {
+            return;
+        }
+
+        const linkPath = new URL(linkUrl, window.location.href).pathname.replace(/\/+$/, "") || "/";
+        if (linkPath === activePath) {
+            activeLink = link;
+        }
+    });
+
+    sidebarLinks.forEach(function (link) {
+        link.classList.remove("bg-blue-600", "text-white", "font-medium");
+        link.classList.add("hover:bg-slate-800", "text-slate-300", "transition");
+        link.removeAttribute("aria-current");
+    });
+
+    if (activeLink) {
+        activeLink.classList.remove("hover:bg-slate-800", "text-slate-300", "transition");
+        activeLink.classList.add("bg-blue-600", "text-white", "font-medium");
+        activeLink.setAttribute("aria-current", "page");
+    }
+}
+
 function loadAgentDashboardPage(url) {
 
     if (!url || url === "#") {
@@ -1548,6 +1586,8 @@ function loadAgentDashboardPage(url) {
 
                 container.innerHTML =
                     html;
+
+                setActiveAgentSidebarPage(url);
 
 
                 // ---------------------------------

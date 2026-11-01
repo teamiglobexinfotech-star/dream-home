@@ -34,14 +34,14 @@
         
         <div class="sidebar-category">MAIN</div>
         <ul class="nav-links">
-            <li class="active"><a href="{% url 'customer_dashboard' %}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-            <li><a href="#" onclick="loadSavedPropertiesAjax(); return false;"><i class="fa-solid fa-heart"></i> Saved Properties</a></li>
+            <li class="active"><a href="{% url 'customer_dashboard' %}" id="dashboardMenuLink" aria-current="page"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="#" id="savedPropertiesMenuLink" onclick="loadSavedPropertiesAjax(); return false;"><i class="fa-solid fa-heart"></i> Saved Properties</a></li>
             <li><a href="#" id="enquiryMenuLink"><i class="fa-solid fa-clipboard-question"></i> My Enquiry</a></li>
             <li><a href="#" id="siteVisitMenuLink"><i class="fa-solid fa-calendar-check"></i> Site Visits</a></li>
             <li><a href="#" id="bookingMenuLink"><i class="fa-solid fa-bookmark"></i> My Bookings</a></li>
             <li><a href="#" style="opacity: 0.6; cursor: not-allowed; display: flex; justify-content: space-between; align-items: center;" onclick="return false;"><span><i class="fa-solid fa-wallet"></i> Payments</span> <span style="font-size: 9px; background: #e0f2fe; color: #0369a1; padding: 2px 5px; border-radius: 4px; font-weight: 600;">Soon</span></a></li>
             <li><a href="#" style="opacity: 0.6; cursor: not-allowed; display: flex; justify-content: space-between; align-items: center;" onclick="return false;"><span><i class="fa-solid fa-file-lines"></i> Documents</span> <span style="font-size: 9px; background: #e0f2fe; color: #0369a1; padding: 2px 5px; border-radius: 4px; font-weight: 600;">Soon</span></a></li>
-            <li><a href="#" onclick="event.preventDefault(); loadSupportAjax();"><i class="fa-solid fa-headset"></i> Support</a></li>
+            <li><a href="#" id="supportMenuLink" onclick="event.preventDefault(); loadSupportAjax();"><i class="fa-solid fa-headset"></i> Support</a></li>
         </ul>
 
         <div class="sidebar-category">ACCOUNT</div>
@@ -104,24 +104,14 @@
                     </div>
                 </div>
                 
-                <!-- <div class="user-profile">
-                    {% if user.profile_image %}
-                        <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}">
-                    {% else %}
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="{{ user.full_name }}">
-                    {% endif %}
-                    <div class="user-info">
-                        <div class="name">{{ user.full_name }}</div>
-                        <div class="role">Premium Member</div>
-                    </div>
-                </div> -->
-
                 <div class="user-profile" id="userProfileDropdown">
 
                     {% if user.profile_image %}
                         <img src="{{ user.profile_image.url }}" alt="{{ user.full_name }}">
                     {% else %}
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="{{ user.full_name }}">
+                        <span class="profile-image-placeholder" role="img" aria-label="No profile photo">
+                            <i class="fa-solid fa-user" aria-hidden="true"></i>
+                        </span>
                     {% endif %}
 
                     <div class="user-info">
@@ -376,6 +366,22 @@
 <script>
     const SUPPORT_URL = "{% url 'customer_support' %}";
 
+    function setActiveSidebarLink(linkId) {
+        document.querySelectorAll('.sidebar .nav-links li').forEach(function(item) {
+            item.classList.remove('active');
+            const link = item.querySelector('a');
+            if (link) {
+                link.removeAttribute('aria-current');
+            }
+        });
+
+        const activeLink = document.getElementById(linkId);
+        if (activeLink) {
+            activeLink.closest('li').classList.add('active');
+            activeLink.setAttribute('aria-current', 'page');
+        }
+    }
+
     document.getElementById('sidebarSearchInput').addEventListener('keyup', function() {
         let filter = this.value.toLowerCase();
         let navLinksList = document.querySelectorAll('.nav-links li');
@@ -393,6 +399,7 @@
     });
 
     function loadSavedPropertiesAjax() {
+        setActiveSidebarLink('savedPropertiesMenuLink');
         fetch("{% url 'ajax_all_saved_properties' %}")
             .then(response => response.json())
             .then(data => {
@@ -407,6 +414,7 @@
             
             if (profileLink) {
                 e.preventDefault();
+                setActiveSidebarLink('profileMenuLink');
                 let profileUrl = profileLink.getAttribute('data-url');
                 
                 if (!profileUrl) return;
@@ -431,6 +439,7 @@
     });
 
     function loadProfileView() {
+        setActiveSidebarLink('profileMenuLink');
         fetch("{% url 'customer_profile' %}", {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
@@ -442,6 +451,7 @@
     }
 
     function loadProfileEditForm() {
+        setActiveSidebarLink('profileMenuLink');
         fetch("{% url 'ajax_customer_profile_edit' %}", {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
@@ -454,6 +464,7 @@
 
     document.getElementById('changepasswordMenuLink').addEventListener('click', function(e) {
         e.preventDefault();
+        setActiveSidebarLink('changepasswordMenuLink');
         let url = this.getAttribute('data-url');
         
         fetch(url, {

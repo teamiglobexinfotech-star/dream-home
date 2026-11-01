@@ -262,6 +262,17 @@ body {
     object-fit: cover;
 }
 
+.profile-image-placeholder {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background-color: #e0f2fe;
+    color: #38bdf8;
+}
+
 .user-info .name {
     font-weight: 600;
     font-size: 13px;
@@ -1163,6 +1174,12 @@ body {
     .user-profile img {
         width: 34px;
         height: 34px;
+    }
+
+    .profile-image-placeholder {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
     }
 
     .user-info .name {

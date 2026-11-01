@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function loadMyEnquiries() {
+    setActiveSidebarLink("enquiryMenuLink");
     const contentArea = document.getElementById("dashboard-dynamic-content");
 
     // Loading state (Light theme friendly)
@@ -191,6 +192,7 @@ let customerSiteVisitsData = [];
    ========================================================= */
 
 function loadMySiteVisits() {
+    setActiveSidebarLink("siteVisitMenuLink");
 
     const container = document.getElementById(
         "dashboard-dynamic-content"
@@ -1458,6 +1460,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function loadMyBookings() {
+    setActiveSidebarLink("bookingMenuLink");
     const contentArea = document.getElementById("dashboard-dynamic-content");
     contentArea.innerHTML = `<p style="color: #475569; text-align: center; padding: 40px; font-weight: 500;">Loading your bookings...</p>`;
 
@@ -1475,6 +1478,7 @@ function loadMyBookings() {
 
 // 3. Load Support Tickets via AJAX
 function loadSupportAjax() {
+    setActiveSidebarLink("supportMenuLink");
     fetch(SUPPORT_URL, {
         headers: { "X-Requested-With": "XMLHttpRequest" }
     })
