@@ -48,7 +48,7 @@
                     <td class="customer-actions-cell">
                         <div class="customer-actions">
                         <a href="{% url 'edit_customer' customer.pk %}" class="btn nav-link-ajax" style="background: #ffc107; padding: 5px 10px; color: black; border-radius: 3px; text-decoration: none; font-size: 12px;"><i class="fa fa-pen"></i> Edit</a>
-                        <a href="{% url 'delete_customer' customer.pk %}" class="btn nav-link-ajax" style="background: #dc3545; padding: 5px 10px; color: white; border-radius: 3px; text-decoration: none; font-size: 12px;" onclick="return confirm('Kya aap is customer ko delete karna chahte hain?');"><i class="fa fa-trash"></i> Delete</a>
+                        <a href="{% url 'delete_customer' customer.pk %}" class="btn nav-link-ajax" style="background: #dc3545; padding: 5px 10px; color: white; border-radius: 3px; text-decoration: none; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this customer?');"><i class="fa fa-trash"></i> Delete</a>
                         </div>
                     </td>
                 </tr>
