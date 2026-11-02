@@ -6354,6 +6354,24 @@ window.closeAllVisitSections = function () {
     });
 
 };
+
+
+// Close detail dialogs when the backdrop itself is clicked.
+document.addEventListener('click', function (event) {
+    const modal = event.target.closest(
+        '#adminBookingViewModal, #agentModal, #blogViewModal, ' +
+        '#adminEnquiryViewModal, #adminEnquiryReplyModal, #projectViewModal, ' +
+        '#propertyViewModal, #siteVisitModal, #scheduleDetailsModal'
+    );
+    if (!modal || event.target !== modal) {
+        return;
+    }
+
+    modal.style.display = 'none';
+    if (modal.id === 'blogViewModal' || modal.id === 'projectViewModal') {
+        document.body.style.overflow = '';
+    }
+});
     
 </script>
 
