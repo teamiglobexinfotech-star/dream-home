@@ -1297,8 +1297,8 @@ text-align:center;
 /* ================================================================= */
 /* Agents Section Box */
 .our-agents-section {
-    padding: 30px 0 70px 0;
-    background-color: #ffffff;
+    padding: 48px 0 64px;
+    background-color: #f8fafc;
     margin-top: 0;
     scroll-margin-top: 90px; /* Navbar smooth scroll offset */
 }
@@ -1312,7 +1312,7 @@ text-align:center;
 /* Heading Styling */
 .agent-heading-wrapper {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 28px;
 }
 
 .agent-heading-wrapper .section-title {
@@ -1335,50 +1335,63 @@ text-align:center;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
+    align-items: stretch;
 }
 
 Individual Agent Card
 .agent-card {
     background: #ffffff;
-    border: 1px solid #f1f5f9;
-    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .agent-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
 }
 
 /* Agent Photo Box */
 .agent-img-box {
     width: 100%;
     height: 210px;
+    flex: 0 0 210px;
+    border-radius: 10px;
+    overflow: hidden;
     background-size: cover;
-    background-position: center;
+    background-position: center top;
+    background-repeat: no-repeat;
     background-color: #e2e8f0; /* Fallback color agar image na mile */
 }
 
 /* Agent Info */
 .agent-info {
-    padding: 20px;
+    padding: 16px 8px 8px;
     text-align: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
 .agent-info h3 {
     font-size: 18px;
     font-weight: 700;
     color: #0f172a;
-    margin-bottom: 4px;
+    margin: 0 0 4px;
 }
 
 .agent-info .agent-role {
     font-size: 13px;
     color: #64748b;
-    margin-bottom: 15px;
+    margin: 0 0 15px;
     font-weight: 500;
+    min-height: 20px;
 }
 
 /* Social/Contact Icons */
@@ -1388,6 +1401,7 @@ Individual Agent Card
     gap: 10px;
     border-top: 1px solid #f1f5f9;
     padding-top: 12px;
+    margin-top: auto;
 }
 
 .agent-socials a {
@@ -4074,7 +4088,7 @@ body {
 .hero-search-box button { background-color: #0056d6; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
 
 /* Grid Layout */
-.agents-main-container { max-width: 1300px; margin: 40px auto; padding: 0 40px; }
+.agents-main-container { max-width: 1140px; margin: 40px auto; padding: 0 20px; }
 .agents-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
 
 /* Team Style Card Design */
@@ -5664,6 +5678,7 @@ body {
 
     .our-agents-section .agent-img-box {
         height: clamp(240px, 72vw, 320px);
+        flex-basis: clamp(240px, 72vw, 320px);
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center top;
@@ -7958,12 +7973,16 @@ body {
 
 .projects-content-area .projects-grid-theme,
 .agents-main-container .agents-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .projects-content-area .theme-project-card,
 .agents-main-container .team-agent-card {
     min-width: 0;
+}
+
+.agents-main-container .team-agent-card {
+    padding: 0;
 }
 
 .projects-content-area .card-details-box,
@@ -7983,6 +8002,17 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
+}
+
+.agents-main-container .team-img-box {
+    height: 210px;
+    margin-bottom: 0;
+    border-radius: 0;
+}
+
+.agents-main-container .team-info-box {
+    padding: 20px;
 }
 
 .agents-hero .hero-banner-content {
@@ -8136,14 +8166,16 @@ body {
     .agents-main-container .agents-grid {
         grid-template-columns: minmax(0, 1fr);
         gap: 16px;
+        justify-items: center;
     }
 
     .agents-main-container .team-agent-card {
-        padding: 14px;
+        width: 100%;
+        max-width: 520px;
     }
 
     .agents-main-container .team-img-box {
-        height: clamp(210px, 65vw, 300px);
+        height: clamp(240px, 72vw, 320px);
     }
 
     .agents-hero .hero-banner-content {
